@@ -3,6 +3,13 @@ import HomeUser from '../views/home/HomeUser.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) {
+      return savedPosition
+    } else {
+      return { top: 0 }
+    }
+  },
   routes: [
     {
       path: '/',
@@ -144,7 +151,7 @@ const router = createRouter({
         },
 
         {
-          path: "artikel", 
+          path: "artikel",
           children: [
             {
               path: "",
@@ -157,14 +164,14 @@ const router = createRouter({
               component: () => import('../views/article/single_article/single_page_article_user.vue'),
               // ini udah ada shield nya kalo ga login, parameter setelah login bisa redirect
             },
-             
+
           ]
         },
 
 
       ]
     },
- 
+
     // {
     //   path: "/artikel",
     //   name: 'artikel', 
@@ -181,11 +188,11 @@ const router = createRouter({
     //       component: () => import('../views/article/single_article/single_page_article.vue'),
     //       // ini udah ada shield nya kalo ga login, parameter setelah login bisa redirect
     //     },
-         
+
     //   ]
     // },
 
-    
+
     {
       path: '/expert',
       name: 'main_expert',
@@ -236,7 +243,7 @@ const router = createRouter({
 
 
         {
-          path: "artikel",   
+          path: "artikel",
           children: [
             {
               path: "",

@@ -80,7 +80,7 @@
         </div>
 
 
-        <h2>{{ mod }}</h2>
+        <!-- <h2>{{ mod }}</h2> -->
         <!-- <div class="all">
             {{ content["ops"] }}
         </div> -->
@@ -532,7 +532,7 @@ export default {
                     return;
                 }
 
-                console.log(this.content)
+                // console.log(this.content)
                 // const response = await edit_artikel(
                 //     this.articleId,
                 //     this.judul,
@@ -586,6 +586,11 @@ export default {
                 });
             }
         },
+    },
+    watch: {
+        mod(newVal) {
+            this.content = newVal;
+        }
     }
 }
 </script>

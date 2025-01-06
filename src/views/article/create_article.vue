@@ -76,7 +76,7 @@
 
     <div id="create_new_article" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="akun_header mb-6 px-4 sm:px-0 mt-5">
-            <h1>Buat Artikel Baru</h1>
+            <h1>Buat Artikel Baru</h1> 
         </div>
         <!-- <div class="all">
             {{ content["ops"] }}
