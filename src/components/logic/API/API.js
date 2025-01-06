@@ -1,4 +1,4 @@
-const x_api_endpoint = "https://telecos.live/telecos-be";
+const x_api_endpoint = "https://claudio.codes/telecos-be";
 import axios from 'axios';
 
 async function makeRequest(config) {
