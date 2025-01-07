@@ -38,7 +38,7 @@ const router = createRouter({
           path: 'detail-akun',
           name: 'detail_akun',
           component: () => import('../views/account/ganti_detail_akun.vue'),
-          // ini udah ada shield nya kalo ga login, parameter setelah login bisa redirect
+          
         },
         {
           path: 'ubah-kata-sandi',
@@ -63,7 +63,7 @@ const router = createRouter({
           path: 'daftar-ahli-favorit',
           name: 'daftar_ahli_favorit',
           component: () => import('../views/account/daftar_ahli_fav.vue'),
-          // ini udah ada shield nya kalo ga login, parameter setelah login bisa redirect
+          
         },
 
         {
@@ -104,7 +104,7 @@ const router = createRouter({
           path: 'lapor-telecos-care',
           name: 'lapor_telecos_care',
           component: () => import('../views/settings/create_telecos_care.vue'),
-          // ini udah ada shield nya kalo ga login, parameter setelah login bisa redirect
+          
 
         },
 
@@ -112,14 +112,14 @@ const router = createRouter({
           path: 'telecos-care',
           name: 'telecos_care',
           component: () => import('../views/settings/telecos_care.vue'),
-          // ini udah ada shield nya kalo ga login, parameter setelah login bisa redirect
+          
         },
 
         {
           path: 'telecos-care/:laporan_id',
           name: 'detail_laporan_telecos_care',
           component: () => import('../views/settings/single_laporan_telecos_care.vue'),
-          // ini udah ada shield nya kalo ga login, parameter setelah login bisa redirect
+          
         },
 
         {
@@ -147,7 +147,7 @@ const router = createRouter({
           path: 'ahli/:expertId',
           name: 'detail_expert_id',
           component: () => import('../views/konsultasi/single_page_detail_ahli/detail_ahli.vue'),
-          // ini udah ada shield nya kalo ga login, parameter setelah login bisa redirect
+          
         },
 
         {
@@ -162,8 +162,34 @@ const router = createRouter({
               path: 'baca/:articleId',
               name: 'single_page_article',
               component: () => import('../views/article/single_article/single_page_article_user.vue'),
-              // ini udah ada shield nya kalo ga login, parameter setelah login bisa redirect
+              
             },
+
+          ]
+        },
+
+        {
+          path: "pesanan",
+          children: [
+            {
+              path: "",
+              name: "pesanan_aktif",
+              component: () => import('../views/pesanan/pesanan_saya_aktif.vue'),
+
+              // butuh shield
+            },
+            {
+              path: 'riwayat-pesanan',
+              name: 'riwayat_pesanan',
+              component: () => import('../views/pesanan/riwayat_pesanan.vue'),
+              //butuh shield
+            },
+            {
+              path:'baru/:schedule_id?/:expert_id?',
+              name:'pesanan_baru',
+              component: () => import('../views/pesanan/buat_pesanan_baru.vue'),
+              //butuh shield
+            }
 
           ]
         },
@@ -186,7 +212,7 @@ const router = createRouter({
     //       path: '/baca/:articleId',
     //       name: 'single_page_article',
     //       component: () => import('../views/article/single_article/single_page_article.vue'),
-    //       // ini udah ada shield nya kalo ga login, parameter setelah login bisa redirect
+    //       
     //     },
 
     //   ]
@@ -254,7 +280,7 @@ const router = createRouter({
               path: 'baca/:articleId',
               name: 'single_page_article_expert',
               component: () => import('../views/article/single_article/single_page_article_expert.vue'),
-              // ini udah ada shield nya kalo ga login, parameter setelah login bisa redirect
+              
             },
             {
               path: 'buat-artikel-baru',
@@ -275,7 +301,7 @@ const router = createRouter({
               path: 'berhasil-buat-artikel-baru',
               name: 'berhasil_buat_artikel_expert',
               component: () => import('../views/article/create_article_success.vue'),
-              // ini udah ada shield nya kalo ga login, parameter setelah login bisa redirect
+              
             },
           ]
         },
