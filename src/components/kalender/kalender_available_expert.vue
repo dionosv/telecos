@@ -121,7 +121,11 @@
                                 (!toggleActivities.activate.length && !toggleActivities.deactivate.length) 
                                     ? 'bg-gray-300 cursor-not-allowed' 
                                     : 'bg-orange-600 hover:bg-orange-500 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600']">
-                                <ion-icon name="save"></ion-icon>
+                                <ion-icon name="save" v-if="!isloading"></ion-icon>
+                                <svg v-if="isloading" class="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
                                 Simpan Sesi
                             </button>
 
@@ -184,7 +188,7 @@
 <script>
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
 import tidak_ada_acara from './tidak_ada_acara.vue';
-import { get_schedule_by_expert_id, set_schedule_id } from '../logic/API/schedule/schedule';
+import { delete_by_schedule_id, get_schedule_by_expert_id, set_schedule_id } from '../logic/API/schedule/schedule';
 
 export default {
     components: {
@@ -219,6 +223,7 @@ export default {
             },
             mencapai_maksimum_sesi: false, 
             tarif_konsultasi: '25000', // Set default price to 25000
+            isloading: false
         }
     },
 
@@ -352,7 +357,7 @@ export default {
                     return;
                 }
 
-                console.log(`Processing ${schedules.length} schedules`);
+                // console.log(`Processing ${schedules.length} schedules`);
 
                 // First find the most common rate from all schedules
                 const rates = schedules.map(schedule => schedule.rate);
@@ -381,7 +386,7 @@ export default {
                         const startTime = `${String(startDate.getHours()).padStart(2, '0')}:${String(startDate.getMinutes()).padStart(2, '0')} WIB`;
                         const endTime = `${String(endDate.getHours()).padStart(2, '0')}:${String(endDate.getMinutes()).padStart(2, '0')} WIB`;
                         
-                        console.log(`Looking for meeting on: ${formattedDate} at ${startTime} to ${endTime}`);
+                        // console.log(`Looking for meeting on: ${formattedDate} at ${startTime} to ${endTime}`);
 
                         // Find and update the corresponding meeting
                         const meeting = this.allMeetings.find(m => { 
@@ -390,7 +395,7 @@ export default {
                             const matchEnd = m.end === endTime;
                             
                             if (matchDate && matchStart && matchEnd) {
-                                console.log(`Found matching meeting: ${m.date} ${m.start}-${m.end}`);
+                                // console.log(`Found matching meeting: ${m.date} ${m.start}-${m.end}`);
                                 return true;
                             }
                             return false;
@@ -399,7 +404,7 @@ export default {
                         if (meeting) {
                             meeting.occupied = true;
                             meeting.schedule_id = schedule.scheduleId;
-                            console.log(`Updated meeting with schedule ID: ${schedule.scheduleId}`);
+                            // console.log(`Updated meeting with schedule ID: ${schedule.scheduleId}`);
                         } else {
                             console.log(`No matching meeting found for: ${formattedDate} ${startTime}-${endTime}`);
                         }
@@ -414,6 +419,7 @@ export default {
 
         async handle_simpan_sesi() {
             try {
+                this.isloading = true;
                 if(this.toggleActivities.activate.length != 0) {
                     console.log('Activated Sessions:', this.toggleActivities.activate);
                     for (let i = 0; i < this.toggleActivities.activate.length; i++) {
@@ -432,10 +438,25 @@ export default {
                 }
                 if(this.toggleActivities.deactivate.length != 0) {
                     console.log('Deactivated Sessions:', this.toggleActivities.deactivate);
+                    for (let i = 0; i < this.toggleActivities.deactivate.length; i++) {
+                        try {
+                            await this.handle_delete_api( 
+                                this.toggleActivities.deactivate[i].server_id, 
+                            );
+                        } catch (error) {
+                            console.log('Error uploading session:', error);
+                            continue;
+                        }
+                    }
                 } 
+
                 this.toggleActivities.activate = [];
                 this.toggleActivities.deactivate = [];
+
+                await this.generateAllMeetings(); 
                 await this.handle_on_reload();
+                
+                this.isloading = false;
             } catch (error) {
                 console.log('Error saving sessions:', error);
             }
@@ -444,6 +465,22 @@ export default {
         async handle_upload_to_api(expertId, dateStart, dateEnd, rate) {
             try {
                 const hasil = await set_schedule_id(expertId, dateStart, dateEnd, rate);
+                console.log(hasil);
+            } catch (error) {
+                console.log('Error uploading to API:', error);
+            }
+        },
+        async handle_delete_api(schedule_id) {
+            try {
+                const hasil = await delete_by_schedule_id(schedule_id);
+                if (hasil && hasil.status === 1) {
+                    // Find and update the meeting that was just deleted
+                    const meetingToUpdate = this.allMeetings.find(m => m.schedule_id === schedule_id);
+                    if (meetingToUpdate) {
+                        meetingToUpdate.occupied = false;
+                        meetingToUpdate.schedule_id = null;
+                    }
+                }
                 console.log(hasil);
             } catch (error) {
                 console.log('Error uploading to API:', error);
@@ -478,7 +515,7 @@ export default {
 
             // Create activity object
             const activity = {
-                // id: id,
+                server_id: meeting.schedule_id || null,
                 // date: meeting.date,
                 start: start_session,
                 end: end_session,
@@ -492,7 +529,7 @@ export default {
                 // console.log(activity)
             } else {
                 this.toggleActivities.deactivate.push(activity);
-            }
+            } 
 
             // console.log('Activated sessions:', this.toggleActivities.activate);
             // console.log('Deactivated sessions:', this.toggleActivities.deactivate);
@@ -704,6 +741,8 @@ section.all {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    margin-top: 15px;
+    margin-bottom: 15px;
 }
 
 div.split_1 div.input_price input#price {
@@ -713,12 +752,7 @@ div.split_1 div.input_price input#price {
 .input_price {
     display: flex;
     align-items: center;
-    gap: 10px;
-
-    margin-top: 20px;
-    margin-bottom: 10px;
-
-
+    gap: 10px; 
 }
 
 @media (max-width: 1200px) {

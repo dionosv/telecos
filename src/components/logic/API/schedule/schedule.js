@@ -42,4 +42,25 @@ async function get_schedule_by_expert_id(expertId) {
     return JSON.parse(await makeRequest(config));
 } 
 
-export { set_schedule_id , get_schedule_by_expert_id};
+
+async function delete_by_schedule_id(scheduleId) {
+
+    let data = JSON.stringify({
+        "scheduleId": scheduleId
+    });
+
+    let config = {
+        method: 'post',
+        maxBodyLength: Infinity,
+        url: x_api_endpoint + '/schedules/delete',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        data: data
+    };
+
+    return JSON.parse(await makeRequest(config));
+} 
+
+
+export { set_schedule_id , get_schedule_by_expert_id,delete_by_schedule_id};
