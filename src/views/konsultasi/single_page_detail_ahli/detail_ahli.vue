@@ -229,6 +229,8 @@ import { expert_profile_picture } from '@/components/logic/API/image_processor';
 import { usetelecos_session_detailsStore } from '@/components/logic/API/save_session';
 import { always_scroll_on_top } from '@/components/logic/tools/handle_always_scroll_on_top';
 import Spinner from '@/components/spinner/spinner.vue';
+// Import JSON data directly
+import provinsiData from '@/components/data_lokasi/provinsi.json';
 
 export default {
     components: {
@@ -323,49 +325,37 @@ export default {
         async decode_kode_lokasi() {
             const kode_lokasi = this.data_ahli.currentWorkspace.split('.');
             const provinsi = kode_lokasi[0];
-            // const kota = kode_lokasi[1];
             await this.get_nama_provinsi(provinsi);
-            await this.get_data_kota(provinsi, this.data_ahli.currentWorkspace)
+            await this.get_data_kota(provinsi, this.data_ahli.currentWorkspace);
         },
 
         async get_data_kota(provinsi_code, full_code) {
-            try {
-                const response = await fetch(`../src/components/data_lokasi/lokasi/${provinsi_code}.json`); // Pastikan path benar
-                const data = await response.json();
-                const all_kota = data.data; // Assign fetched data to kotaData
+            try { 
+                const cityModule = await import(`@/components/data_lokasi/lokasi/${provinsi_code}.json`);
+                const all_kota = cityModule.data;
                 this.get_nama_kota(all_kota, full_code);
             } catch (error) {
-                console.error('Error fetching data:', error);
+                console.error('Error loading city data:', error);
+                this.kota = 'Data tidak tersedia';
             }
         },
 
         async get_nama_provinsi(kode_provinsi) {
             try {
-                const response = await fetch(`../src/components/data_lokasi/provinsi.json`); // Pastikan path benar
-                const data = await response.json();
-                const all_kota = data.data; // Assign fetched data to kotaData 
-
-                let x = 0;
-                while (x < all_kota.length) {
-                    if (all_kota[x].code == kode_provinsi) {
-                        this.provinsi = all_kota[x].name;
-                    }
-                    x++;
-                }
-
+                const all_provinsi = provinsiData.data;
+                const provinsi = all_provinsi.find(p => p.code === kode_provinsi);
+                this.provinsi = provinsi ? provinsi.name : 'Provinsi tidak ditemukan';
             } catch (error) {
-                console.error('Error fetching data:', error);
+                console.error('Error getting province name:', error);
+                this.provinsi = 'Data tidak tersedia';
             }
         },
+
         get_nama_kota(data, full_code) {
-            let x = 0;
-            while (x < data.length) {
-                if (data[x].code == full_code) {
-                    this.kota = data[x].name;
-                }
-                x++;
-            }
+            const kota = data.find(k => k.code === full_code);
+            this.kota = kota ? kota.name : 'Kota tidak ditemukan';
         },
+        
         async check_fav_or_not(){ 
             const hasil = await check_fav_by_userId_and_expertId(this.userId, this.expertId);
 

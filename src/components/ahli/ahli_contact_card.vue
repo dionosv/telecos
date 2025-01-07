@@ -69,7 +69,7 @@ import { expert_profile_picture } from '../logic/API/image_processor';
 export default {
     mounted() {
         // console.log(this.expertId);
-        console.log(this.image);
+        // console.log(this.image);
     },
     props: {
         ahli: {

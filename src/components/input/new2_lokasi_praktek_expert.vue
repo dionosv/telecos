@@ -19,7 +19,8 @@
 </template>
 
 <script>
-
+// Import JSON data directly
+import provinsiData from '@/components/data_lokasi/provinsi.json';
 
 export default {
     props: {
@@ -42,7 +43,7 @@ export default {
             this.provinsi = this.parent_component_lokasi.split('.')[0]
             this.hasil_selected = this.parent_component_lokasi
         }
-        this.get_data_provinsi()
+        this.initializeProvinsiData()
     },
     watch: {
         parent_component_lokasi(newVal) {
@@ -77,25 +78,26 @@ export default {
         async do_next_step() {
             this.get_data_kota(this.provinsi);
         },
-        async get_data_provinsi() {
+        async initializeProvinsiData() {
             try {
-                const response = await fetch('../src/components/data_lokasi/provinsi.json'); // Pastikan path benar
-                const data = await response.json();
-                this.provinsiData = data.data; // Assign fetched data to provinsiData
+                this.provinsiData = provinsiData.data;
+                if (this.provinsi) {
+                    await this.get_data_kota(this.provinsi);
+                }
             } catch (error) {
-                console.error('Error fetching data:', error);
+                console.error('Error initializing province data:', error);
+                this.provinsiData = [];
             }
         },
 
         async get_data_kota(provinsi_code) {
             try {
-                const response = await fetch(`../src/components/data_lokasi/lokasi/${provinsi_code}.json`); // Pastikan path benar
-                const data = await response.json();
-                this.kotaData = data.data; // Assign fetched data to kotaData
+                const cityModule = await import(`@/components/data_lokasi/lokasi/${provinsi_code}.json`);
+                this.kotaData = cityModule.data;
             } catch (error) {
-                console.error('Error fetching data:', error);
+                console.error('Error loading city data:', error);
+                this.kotaData = [];
             }
-
         }
     }
 }

@@ -115,16 +115,21 @@
                                 </div>
                             </div>
 
-                            <button type="button" @click="handle_simpan_sesi" 
+
+                            <button type="button" @click="handle_simpan_sesi"
                                 :disabled="!toggleActivities.activate.length && !toggleActivities.deactivate.length"
                                 :class="['inline-flex items-center gap-x-1.5 rounded-md px-3 py-2 text-sm font-semibold shadow-sm w-auto min-w-[120px] justify-center',
-                                (!toggleActivities.activate.length && !toggleActivities.deactivate.length) 
-                                    ? 'bg-gray-300 cursor-not-allowed' 
-                                    : 'bg-orange-600 hover:bg-orange-500 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600']">
+                                    (!toggleActivities.activate.length && !toggleActivities.deactivate.length)
+                                        ? 'bg-gray-300 cursor-not-allowed'
+                                        : 'bg-orange-600 hover:bg-orange-500 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600']">
                                 <ion-icon name="save" v-if="!isloading"></ion-icon>
-                                <svg v-if="isloading" class="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                <svg v-if="isloading" class="animate-spin -ml-1 mr-2 h-5 w-5 text-white"
+                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                        stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor"
+                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                    </path>
                                 </svg>
                                 <span class="whitespace-nowrap">Simpan Sesi</span>
                             </button>
@@ -221,19 +226,19 @@ export default {
                 activate: [],    // Store activated sessions
                 deactivate: []   // Store deactivated sessions
             },
-            mencapai_maksimum_sesi: false, 
+            mencapai_maksimum_sesi: false,
             tarif_konsultasi: '25000', // Set default price to 25000
             isloading: false
         }
     },
 
 
-     
+
     watch: {
         selectedDateISO: {
             immediate: true,
             handler(newDate) {
-                 
+
             }
         },
         tarif_konsultasi: {
@@ -252,7 +257,7 @@ export default {
             }
         }
     },
- 
+
     computed: {
         currentMonthYear() {
             return new Intl.DateTimeFormat('id-ID', {
@@ -306,12 +311,12 @@ export default {
             const startDay = today.getDate();
             const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
             let meeting_id = 1;
-            
+
             for (let day = startDay; day <= daysInMonth; day++) {
                 let sessionCount = 1;
                 // Create date object for current day
                 const currentDate = new Date(today.getFullYear(), today.getMonth(), day);
-                
+
                 for (let hour = 7; hour < 23; hour++) {
                     for (let min = 0; min < 60; min += 30) {
                         const formattedDate = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
@@ -365,10 +370,10 @@ export default {
                     acc[curr] = (acc[curr] || 0) + 1;
                     return acc;
                 }, {});
-                
+
                 const defaultRate = Object.entries(mostCommonRate)
                     .sort((a, b) => b[1] - a[1])[0][0];
-                
+
                 this.tarif_konsultasi = String(defaultRate);
 
                 schedules.forEach(schedule => {
@@ -376,24 +381,24 @@ export default {
                         // Convert UTC to local time
                         const startDateUTC = new Date(schedule.dateStart);
                         const endDateUTC = new Date(schedule.dateEnd);
-                        
+
                         // Add 7 hours to convert to WIB (UTC+7)
                         const startDate = new Date(startDateUTC.getTime());
                         const endDate = new Date(endDateUTC.getTime());
-                        
+
                         // Format the date and time to match our meeting format
                         const formattedDate = this.formatDate(startDate);
                         const startTime = `${String(startDate.getHours()).padStart(2, '0')}:${String(startDate.getMinutes()).padStart(2, '0')} WIB`;
                         const endTime = `${String(endDate.getHours()).padStart(2, '0')}:${String(endDate.getMinutes()).padStart(2, '0')} WIB`;
-                        
+
                         // console.log(`Looking for meeting on: ${formattedDate} at ${startTime} to ${endTime}`);
 
                         // Find and update the corresponding meeting
-                        const meeting = this.allMeetings.find(m => { 
+                        const meeting = this.allMeetings.find(m => {
                             const matchDate = m.date === formattedDate;
                             const matchStart = m.start === startTime;
                             const matchEnd = m.end === endTime;
-                            
+
                             if (matchDate && matchStart && matchEnd) {
                                 // console.log(`Found matching meeting: ${m.date} ${m.start}-${m.end}`);
                                 return true;
@@ -420,12 +425,12 @@ export default {
         async handle_simpan_sesi() {
             try {
                 this.isloading = true;
-                if(this.toggleActivities.activate.length != 0) {
+                if (this.toggleActivities.activate.length != 0) {
                     // console.log('Activated Sessions:', this.toggleActivities.activate);
                     for (let i = 0; i < this.toggleActivities.activate.length; i++) {
                         try {
                             await this.handle_upload_to_api(
-                                this.expertId, 
+                                this.expertId,
                                 this.toggleActivities.activate[i].start,
                                 this.toggleActivities.activate[i].end,
                                 this.tarif_konsultasi
@@ -436,26 +441,26 @@ export default {
                         }
                     }
                 }
-                if(this.toggleActivities.deactivate.length != 0) {
+                if (this.toggleActivities.deactivate.length != 0) {
                     // console.log('Deactivated Sessions:', this.toggleActivities.deactivate);
                     for (let i = 0; i < this.toggleActivities.deactivate.length; i++) {
                         try {
-                            await this.handle_delete_api( 
-                                this.toggleActivities.deactivate[i].server_id, 
+                            await this.handle_delete_api(
+                                this.toggleActivities.deactivate[i].server_id,
                             );
                         } catch (error) {
                             console.log('Error uploading session:', error);
                             continue;
                         }
                     }
-                } 
+                }
 
                 this.toggleActivities.activate = [];
                 this.toggleActivities.deactivate = [];
 
-                await this.generateAllMeetings(); 
+                await this.generateAllMeetings();
                 await this.handle_on_reload();
-                
+
                 this.isloading = false;
             } catch (error) {
                 console.log('Error saving sessions:', error);
@@ -529,7 +534,7 @@ export default {
                 // console.log(activity)
             } else {
                 this.toggleActivities.deactivate.push(activity);
-            } 
+            }
 
             // console.log('Activated sessions:', this.toggleActivities.activate);
             // console.log('Deactivated sessions:', this.toggleActivities.deactivate);
@@ -644,7 +649,7 @@ export default {
         hasEvent(date) {
             return this.allMeetings.some(meeting => meeting.date === date)
         },
- 
+
 
         validateNumberInput(event) {
             // Block any non-numeric key presses
@@ -715,10 +720,10 @@ export default {
 
 #sync_circle {
     font-size: 30px;
-    color: #16C47F;  
+    color: #16C47F;
     transition: fade 2s ease-in-out;
 }
- 
+
 
 section.all {
     user-select: none;
@@ -752,16 +757,17 @@ section.all {
         flex-direction: column;
         align-items: stretch;
     }
-    
+
     .split_3 button {
         width: 100%;
         margin-top: 10px;
     }
 
     .input_price {
-        width: 100%; 
+        width: 100%;
         justify-content: space-between;
     }
+
     #all_meeting_scroll {
         max-height: 35rem;
     }
@@ -774,7 +780,7 @@ div.split_1 div.input_price input#price {
 .input_price {
     display: flex;
     align-items: center;
-    gap: 10px; 
+    gap: 10px;
 }
 
 @media (max-width: 1200px) {
