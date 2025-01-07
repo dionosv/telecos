@@ -1,5 +1,5 @@
 <template>
-    <div class="min-h-screen py-12 px-4 sm:px-6 lg:px-8" id="detail_ahli">
+    <div class="min-h-screen py-12 px-2 sm:px-3 lg:px-4" id="detail_ahli">
 
         <Spinner v-if="!data_load"></Spinner>
 
@@ -81,8 +81,8 @@
 
             </div>
 
-            <div class="max-w-4xl  bg-white rounded-lg shadow-lg overflow-hidden" id="right_side">
-                <Kalender_pesan_jadwal_ahli></Kalender_pesan_jadwal_ahli>
+            <div class="max-w-8xl  bg-white rounded-lg shadow-lg overflow-hidden" id="right_side">
+                <Kalender_pesan_jadwal_ahli :expert_id = "expertId" :user_id = "userId" ></Kalender_pesan_jadwal_ahli>
             </div>
         </div>
     </div>
@@ -221,6 +221,7 @@ div.set_middle div.favkan ion-icon {
 
 }
 </style>
+
 <script>
 import Kalender_pesan_jadwal_ahli from '@/components/kalender/kalender_pesan_jadwal_ahli.vue';
 import { get_experts_byID } from '@/components/logic/API/experts';

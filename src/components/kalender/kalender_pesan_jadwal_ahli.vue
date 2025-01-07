@@ -2,7 +2,7 @@
     <section class="all">
 
 
-        <div class="mx-auto max-w-8xl items-center   p-6 lg:px-8">
+        <div class="mx-auto max-w-9xl items-center   p-6 lg:px-8">
             <div class="md:grid md:grid-cols-2 md:divide-x md:divide-gray-200">
                 <div class="md:pr-10" @touchstart.passive="handleTouchStart" @touchmove="handleTouchMove"
                     @touchend="handleTouchEnd">
@@ -72,8 +72,8 @@
                             <div class="flex-auto">
                                 <p class="text-gray-900">{{ meeting.name }}</p>
                                 <p class="mt-0.5">
-                                    <time :datetime="meeting.startDatetime">{{ meeting.start }}</time> -
-                                    <time :datetime="meeting.endDatetime">{{ meeting.end }}</time>
+                                    <time :datetime="meeting.startDatetime">{{ meeting.start }} WIB</time> -
+                                    <time :datetime="meeting.endDatetime">{{ meeting.end }} WIB</time>
                                 </p>
                             </div>
                             <Menu as="div" class="relative opacity-0 focus-within:opacity-100 group-hover:opacity-100">
@@ -125,6 +125,7 @@
 <script>
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
 import tidak_ada_acara from './tidak_ada_acara.vue';
+import { get_schedule_by_expert_id } from '../logic/API/schedule/schedule';
 
 export default {
     components: {
@@ -135,6 +136,17 @@ export default {
         tidak_ada_acara
     },
 
+    props: {
+        expert_id: {
+            type: String,
+            required: true
+        },
+        user_id: {
+            type: String,
+            required: true
+        }
+    },
+
     data() {
         const now = new Date();
         const currentMonth = new Date(Date.UTC(now.getFullYear(), now.getMonth(), 1));
@@ -142,148 +154,18 @@ export default {
             currentMonth,
             currentDate: new Date(currentMonth),
             selectedDate: new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate())),
-            allMeetings: [
-                {
-                    id: 1,
-                    name: 'Sesi 1',
-                    date: '2025-01-03',
-                    start: '9:00 AM',
-                    startDatetime: '2025-01-03T09:00',
-                    end: '9:30 AM',
-                    endDatetime: '2025-01-03T09:30',
-                },
-                {
-                    id: 2,
-                    name: 'Sesi 2',
-                    date: '2025-01-03',
-                    start: '10:00 AM',
-                    startDatetime: '2025-01-03T10:00',
-                    end: '10:30 AM',
-                    endDatetime: '2025-01-03T10:30',
-                },
-                {
-                    id: 3,
-                    name: 'Sesi 3',
-                    date: '2025-01-03',
-                    start: '11:00 AM',
-                    startDatetime: '2025-01-03T11:00',
-                    end: '11:30 AM',
-                    endDatetime: '2025-01-03T11:30',
-                },
-                {
-                    id: 4,
-                    name: 'Sesi 4',
-                    date: '2025-01-03',
-                    start: '12:00 PM',
-                    startDatetime: '2025-01-03T12:00',
-                    end: '12:30 PM',
-                    endDatetime: '2025-01-03T12:30',
-                },
-                {
-                    id: 5,
-                    name: 'Sesi 5',
-                    date: '2025-01-03',
-                    start: '1:00 PM',
-                    startDatetime: '2025-01-03T13:00',
-                    end: '1:30 PM',
-                    endDatetime: '2025-01-03T13:30',
-                },
-                {
-                    id: 6,
-                    name: 'Sesi 6',
-                    date: '2025-01-03',
-                    start: '2:00 PM',
-                    startDatetime: '2025-01-03T14:00',
-                    end: '2:30 PM',
-                    endDatetime: '2025-01-03T14:30',
-                },
-                {
-                    id: 7,
-                    name: 'Sesi 7',
-                    date: '2025-01-03',
-                    start: '3:00 PM',
-                    startDatetime: '2025-01-03T15:00',
-                    end: '3:30 PM',
-                    endDatetime: '2025-01-03T15:30',
-                },
-                {
-                    id: 8,
-                    name: 'Sesi 8',
-                    date: '2025-01-03',
-                    start: '4:00 PM',
-                    startDatetime: '2025-01-03T16:00',
-                    end: '4:30 PM',
-                    endDatetime: '2025-01-03T16:30',
-                },
-                {
-                    id: 9,
-                    name: 'Sesi 9',
-                    date: '2025-01-03',
-                    start: '5:00 PM',
-                    startDatetime: '2025-01-03T17:00',
-                    end: '5:30 PM',
-                    endDatetime: '2025-01-03T17:30',
-                },
-                {
-                    id: 10,
-                    name: 'Sesi 10',
-                    date: '2025-01-03',
-                    start: '6:00 PM',
-                    startDatetime: '2025-01-03T18:00',
-                    end: '6:30 PM',
-                    endDatetime: '2025-01-03T18:30',
-                },
-                {
-                    id: 11,
-                    name: 'Sesi 11',
-                    date: '2025-01-03',
-                    start: '7:00 PM',
-                    startDatetime: '2025-01-03T19:00',
-                    end: '7:30 PM',
-                    endDatetime: '2025-01-03T19:30',
-                },
-                {
-                    id: 12,
-                    name: 'Sesi 12',
-                    date: '2025-01-03',
-                    start: '8:00 PM',
-                    startDatetime: '2025-01-03T20:00',
-                    end: '8:30 PM',
-                    endDatetime: '2025-01-03T20:30',
-                },
-                {
-                    id: 13,
-                    name: 'Sesi 13',
-                    date: '2025-01-03',
-                    start: '9:00 PM',
-                    startDatetime: '2025-01-03T21:00',
-                    end: '9:30 PM',
-                    endDatetime: '2025-01-03T21:30',
-                },
-                {
-                    id: 14,
-                    name: 'Sesi 14',
-                    date: '2025-01-03',
-                    start: '10:00 PM',
-                    startDatetime: '2025-01-03T22:00',
-                    end: '10:30 PM',
-                    endDatetime: '2025-01-03T22:30',
-                },
-                {
-                    id: 15,
-                    name: 'Sesi 15',
-                    date: '2025-01-03',
-                    start: '11:00 PM',
-                    startDatetime: '2025-01-03T23:00',
-                    end: '11:30 PM',
-                    endDatetime: '2025-01-03T23:30',
-                },
-            ],
+            allMeetings: [], // Initialize as empty array
             touchStartX: 0,
             touchEndX: 0,
             minDate: new Date(Date.UTC(now.getFullYear(), now.getMonth(), 1)),
-            maxDate: new Date(Date.UTC(now.getFullYear(), now.getMonth() + 3, 0)) // Include the entire month
+            maxDate: new Date(Date.UTC(now.getFullYear(), now.getMonth() + 3, 0)),
+            expertId: this.expert_id,
+            userId: this.user_id
         }
+    },
+
+    created() {
+        this.get_jadwal_by_expert_id();
     },
 
     computed: {
@@ -376,6 +258,57 @@ export default {
             }
 
             return days;
+        },
+
+        async get_jadwal_by_expert_id() {
+            try {
+                const response = await get_schedule_by_expert_id(this.expertId);
+                if (response && response.schedules) {
+                    // Group schedules by date first
+                    const schedulesByDate = response.schedules.reduce((acc, schedule) => {
+                        const date = new Date(schedule.dateStart).toISOString().split('T')[0];
+                        if (!acc[date]) {
+                            acc[date] = [];
+                        }
+                        acc[date].push(schedule);
+                        return acc;
+                    }, {});
+
+                    // Create meetings with numbered sessions per day
+                    this.allMeetings = Object.entries(schedulesByDate).flatMap(([date, schedules]) => {
+                        return schedules.map((schedule, index) => {
+                            const startTime = new Date(schedule.dateStart);
+                            const endTime = new Date(schedule.dateEnd);
+                            
+                            return {
+                                id: schedule.scheduleId,
+                                name: `Sesi ${index + 1}`, // Numbering starts from 1 for each day
+                                date: startTime.toISOString().split('T')[0],
+                                start: startTime.toLocaleTimeString('id-ID', { 
+                                    hour: '2-digit', 
+                                    minute: '2-digit',
+                                    hour12: false 
+                                }),
+                                startDatetime: startTime.toISOString(),
+                                end: endTime.toLocaleTimeString('id-ID', {
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                    hour12: false
+                                }),
+                                endDatetime: endTime.toISOString(),
+                                rate: schedule.rate,
+                                status: schedule.status
+                            };
+                        });
+                    });
+                } else {
+                    console.error('Invalid API response structure:', response);
+                    this.allMeetings = [];
+                }
+            } catch (error) {
+                console.error('Error fetching schedule:', error);
+                this.allMeetings = [];
+            }
         },
 
         formatDate(date) {
