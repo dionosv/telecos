@@ -108,16 +108,19 @@
                                     <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                                         <span class="text-gray-500 sm:text-sm">Rp</span>
                                     </div>
-                                    <input type="text" name="price" id="price" v-model="currentDatePrice"
+                                    <input type="text" name="price" id="price" v-model="tarif_konsultasi"
                                         @keypress="validateNumberInput"
                                         class="block w-full rounded-md border-0 pl-10  text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-orange-600 sm:text-sm"
                                         placeholder="25000" aria-describedby="price-currency" />
                                 </div>
                             </div>
 
-                            <button type="button" @click="handle_simpan_sesi"
-                                class="inline-flex items-center gap-x-1.5 rounded-md bg-orange-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                                <!-- <CheckCircleIcon class="-ml-0.5 h-5 w-5" aria-hidden="true" /> -->
+                            <button type="button" @click="handle_simpan_sesi" 
+                                :disabled="!toggleActivities.activate.length && !toggleActivities.deactivate.length"
+                                :class="['inline-flex items-center gap-x-1.5 rounded-md px-3 py-2 text-sm font-semibold shadow-sm',
+                                (!toggleActivities.activate.length && !toggleActivities.deactivate.length) 
+                                    ? 'bg-gray-300 cursor-not-allowed' 
+                                    : 'bg-orange-600 hover:bg-orange-500 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600']">
                                 <ion-icon name="save"></ion-icon>
                                 Simpan Sesi
                             </button>
@@ -155,6 +158,8 @@
                                     <time :datetime="meeting.endDatetime">{{ meeting.end }}</time>
                                 </p>
                             </div>
+
+                            <p>{{ meeting.schedule_id }}</p>
                         </li>
                     </ol>
                 </section>
@@ -175,7 +180,7 @@
 <script>
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
 import tidak_ada_acara from './tidak_ada_acara.vue';
-import { set_schedule_id } from '../logic/API/schedule/schedule';
+import { get_schedule_by_expert_id, set_schedule_id } from '../logic/API/schedule/schedule';
 
 export default {
     components: {
@@ -204,11 +209,17 @@ export default {
             touchEndX: 0,
             minDate: new Date(Date.UTC(now.getFullYear(), now.getMonth(), 1)),
             maxDate: new Date(Date.UTC(now.getFullYear(), now.getMonth() + 3, 0)),
+            toggleActivities: {
+                activate: [],    // Store activated sessions
+                deactivate: []   // Store deactivated sessions
+            },
             mencapai_maksimum_sesi: false, 
-            currentDatePrice: '25000', // Set default price to 25000
+            tarif_konsultasi: '25000', // Set default price to 25000
         }
     },
 
+
+     
     watch: {
         selectedDateISO: {
             immediate: true,
@@ -216,16 +227,23 @@ export default {
                  
             }
         },
-        currentDatePrice: {
+        tarif_konsultasi: {
             immediate: true,
             handler(newPrice) {
                 if (parseInt(newPrice) > 500000) {
-                    this.currentDatePrice = '500000';
+                    this.tarif_konsultasi = '500000';
                 }
+            }
+        },
+        expertId: {
+            immediate: true,
+            handler(newExpertId) {
+                // console.log(newExpertId)
+                this.handle_on_reload();
             }
         }
     },
-
+ 
     computed: {
         currentMonthYear() {
             return new Intl.DateTimeFormat('id-ID', {
@@ -275,16 +293,19 @@ export default {
     methods: {
         generateAllMeetings() {
             const meetings = [];
-
             const today = new Date();
             const startDay = today.getDate();
             const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
             let meeting_id = 1;
+            
             for (let day = startDay; day <= daysInMonth; day++) {
                 let sessionCount = 1;
+                // Create date object for current day
+                const currentDate = new Date(today.getFullYear(), today.getMonth(), day);
+                
                 for (let hour = 6; hour < 24; hour++) {
                     for (let min = 0; min < 60; min += 30) {
-                        const date = `2025-01-${String(day).padStart(2, '0')}`;
+                        const formattedDate = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                         const startHour = String(hour).padStart(2, '0');
                         const endHour = String(hour + (min + 30 >= 60 ? 1 : 0)).padStart(2, '0');
                         const endMin = String((min + 30) % 60).padStart(2, '0');
@@ -292,11 +313,11 @@ export default {
                         meetings.push({
                             id: meeting_id,
                             name: `Sesi ${sessionCount}`,
-                            date,
+                            date: formattedDate,
                             start: `${startHour}:${String(min).padStart(2, '0')} WIB`,
-                            startDatetime: `${date}T${startHour}:${String(min).padStart(2, '0')}:00.000Z`,
+                            startDatetime: `${formattedDate} ${startHour}:${String(min).padStart(2, '0')}:00`,
                             end: `${endHour}:${endMin} WIB`,
-                            endDatetime: `${date}T${endHour}:${endMin}:00.000Z`,
+                            endDatetime: `${formattedDate} ${endHour}:${endMin}:00`,
                             occupied: false,
                             schedule_id: null
                         });
@@ -306,6 +327,122 @@ export default {
                 }
             }
             return meetings;
+        },
+
+        async handle_on_reload() {
+            try {
+                const response = await get_schedule_by_expert_id(this.expertId);
+                if (response && response.status === 1 && response.schedules) {
+                    this.syncSchedulesToMeetings(response.schedules);
+                    console.log(response.schedules);
+                }
+            } catch (error) {
+                console.log('No meetings found for expert:', error);
+            }
+        },
+
+        syncSchedulesToMeetings(schedules) {
+            try {
+                if (!Array.isArray(schedules)) {
+                    console.log('No schedules available');
+                    return;
+                }
+
+                console.log(`Processing ${schedules.length} schedules`);
+
+                // First find the most common rate from all schedules
+                const rates = schedules.map(schedule => schedule.rate);
+                const mostCommonRate = rates.reduce((acc, curr) => {
+                    acc[curr] = (acc[curr] || 0) + 1;
+                    return acc;
+                }, {});
+                
+                const defaultRate = Object.entries(mostCommonRate)
+                    .sort((a, b) => b[1] - a[1])[0][0];
+                
+                this.tarif_konsultasi = String(defaultRate);
+
+                schedules.forEach(schedule => {
+                    try {
+                        // Convert UTC to local time
+                        const startDateUTC = new Date(schedule.dateStart);
+                        const endDateUTC = new Date(schedule.dateEnd);
+                        
+                        // Add 7 hours to convert to WIB (UTC+7)
+                        const startDate = new Date(startDateUTC.getTime());
+                        const endDate = new Date(endDateUTC.getTime());
+                        
+                        // Format the date and time to match our meeting format
+                        const formattedDate = this.formatDate(startDate);
+                        const startTime = `${String(startDate.getHours()).padStart(2, '0')}:${String(startDate.getMinutes()).padStart(2, '0')} WIB`;
+                        const endTime = `${String(endDate.getHours()).padStart(2, '0')}:${String(endDate.getMinutes()).padStart(2, '0')} WIB`;
+                        
+                        console.log(`Looking for meeting on: ${formattedDate} at ${startTime} to ${endTime}`);
+
+                        // Find and update the corresponding meeting
+                        const meeting = this.allMeetings.find(m => { 
+                            const matchStart = m.start === startTime;
+                            const matchEnd = m.end === endTime;
+                            
+                            if (matchStart && matchEnd) {
+                                console.log(`Found matching meeting: ${m.date} ${m.start}-${m.end}`);
+                                return true;
+                            }
+                            return false;
+                        });
+
+                        if (meeting) {
+                            meeting.occupied = true;
+                            meeting.schedule_id = schedule.scheduleId;
+                            console.log(`Updated meeting with schedule ID: ${schedule.scheduleId}`);
+                        } else {
+                            console.log(`No matching meeting found for: ${formattedDate} ${startTime}-${endTime}`);
+                        }
+                    } catch (error) {
+                        console.log('Error processing schedule:', error);
+                    }
+                });
+            } catch (error) {
+                console.log('Error syncing schedules:', error);
+            }
+        },
+
+        async handle_simpan_sesi() {
+            try {
+                if(this.toggleActivities.activate.length != 0) {
+                    console.log('Activated Sessions:', this.toggleActivities.activate);
+                    for (let i = 0; i < this.toggleActivities.activate.length; i++) {
+                        try {
+                            await this.handle_upload_to_api(
+                                this.expertId, 
+                                this.toggleActivities.activate[i].start,
+                                this.toggleActivities.activate[i].end,
+                                this.tarif_konsultasi
+                            );
+                        } catch (error) {
+                            console.log('Error uploading session:', error);
+                            continue;
+                        }
+                    }
+                }
+                if(this.toggleActivities.deactivate.length != 0) {
+                    console.log('Deactivated Sessions:', this.toggleActivities.deactivate);
+                } 
+                this.toggleActivities.activate = [];
+                this.toggleActivities.deactivate = [];
+                await this.handle_on_reload();
+            } catch (error) {
+                console.log('Error saving sessions:', error);
+            }
+        },
+
+        async handle_upload_to_api(expertId, dateStart, dateEnd, rate) {
+            try {
+                const hasil = await set_schedule_id(expertId, dateStart, dateEnd, rate);
+                console.log(hasil);
+            } catch (error) {
+                console.log('Error uploading to API:', error);
+            }
         },
 
         handle_toogle_block(id, start_session, end_session) {
@@ -318,7 +455,7 @@ export default {
                     m.date === date && m.occupied
                 ).length;
 
-                console.log("Start : " + start_session + "\nEnd : " + end_session);
+                // console.log("Start : " + start_session + "\nEnd : " + end_session);
 
                 if (occupiedSessionsForDay >= 10) {
                     this.mencapai_maksimum_sesi = true;
@@ -329,35 +466,32 @@ export default {
                     return;
                 }
             } else {
-                console.log(`Meeting canceled time start: ${start_session} time end: ${end_session}`);
+                // console.log(`Meeting canceled time start: ${start_session} time end: ${end_session}`);
             }
 
             meeting.occupied = !meeting.occupied;
-        },
 
-        async handle_simpan_sesi() {
-            const selectedDateData = this.allMeetings.filter(meeting =>
-                meeting.occupied && meeting.schedule_id === null
-            ).map(meeting => ({ 
-                start: meeting.startDatetime,
-                end: meeting.endDatetime
-            }));
-            // console.log("Selected dates and prices:", selectedDateData);
+            // Create activity object
+            const activity = {
+                // id: id,
+                // date: meeting.date,
+                start: start_session,
+                end: end_session,
+                // timestamp: new Date().toISOString()
+            };
 
-            // await this.handle_upload_to_api(this.expertId, selectedDateData[0].start, selectedDateData[0].end, this.currentDatePrice);
-            for (const meeting of selectedDateData) {
-                await this.handle_upload_to_api(this.expertId, meeting.start, meeting.end, this.currentDatePrice);
+            // Push to appropriate array based on action
+            if (meeting.occupied) {
+
+                this.toggleActivities.activate.push(activity);
+                // console.log(activity)
+            } else {
+                this.toggleActivities.deactivate.push(activity);
             }
 
+            // console.log('Activated sessions:', this.toggleActivities.activate);
+            // console.log('Deactivated sessions:', this.toggleActivities.deactivate);
         },
-
-        async handle_upload_to_api(expertId, dateStart, dateEnd, rate){
-
-            const hasil = await set_schedule_id(expertId, dateStart, dateEnd, rate);
-            console.log(hasil);
-
-        },
-
 
         generateCalendarDays(year, month) {
             const days = [];
@@ -445,7 +579,7 @@ export default {
                 this.selectedDate = selectedDate;
                 this.currentDate = new Date(Date.UTC(year, month - 1, 1));
                 // Update current price when date is selected
-                this.currentDatePrice = this.prices[day.date] || '';
+                // this.tarif_konsultasi = this.prices[day.date] || '';
             }
         },
 

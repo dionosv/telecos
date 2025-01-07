@@ -23,4 +23,23 @@ async function set_schedule_id(expertId, dateStart, dateEnd, rate) {
 }
 
 
-export { set_schedule_id };
+async function get_schedule_by_expert_id(expertId) {
+
+    let data = JSON.stringify({
+        "expertId": expertId
+    });
+
+    let config = {
+        method: 'post',
+        maxBodyLength: Infinity,
+        url: x_api_endpoint + '/schedules/getByExpertId',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        data: data
+    };
+
+    return JSON.parse(await makeRequest(config));
+} 
+
+export { set_schedule_id , get_schedule_by_expert_id};
