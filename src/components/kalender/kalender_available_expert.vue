@@ -84,7 +84,7 @@
                                     :class="[day.isSelected && 'text-white', !day.isSelected && day.isToday && 'text-orange-600', !day.isSelected && !day.isToday && day.isCurrentMonth && 'text-gray-900', !day.isSelected && !day.isToday && !day.isCurrentMonth && 'text-gray-400', day.isSelected && day.isToday && 'bg-orange-600', day.isSelected && !day.isToday && 'bg-gray-900', !day.isSelected && 'hover:bg-gray-200', (day.isSelected || day.isToday) && 'font-semibold', 'mx-auto flex h-8 w-8 items-center justify-center rounded-full']">
                                     <time :datetime="day.date">{{ day.date.split('-').pop().replace(/^0/, '') }}</time>
                                 </button>
-                                <span v-if="hasEvent(day.date)"
+                                <span v-if="hasSavedSession(day.date)"
                                     class="absolute bottom-0 transform translate-y-2 block w-1 h-1 rounded-full bg-orange-600"></span>
                             </div>
                         </div>
@@ -159,7 +159,11 @@
                                 </p>
                             </div>
 
-                            <p>{{ meeting.schedule_id }}</p>
+                            <!-- <p>{{ meeting.schedule_id }}</p> -->
+
+                            <div v-if="meeting.schedule_id" class="custom_div">
+                                <ion-icon name="sync-circle" id="sync_circle"></ion-icon>
+                            </div>
                         </li>
                     </ol>
                 </section>
@@ -303,7 +307,7 @@ export default {
                 // Create date object for current day
                 const currentDate = new Date(today.getFullYear(), today.getMonth(), day);
                 
-                for (let hour = 6; hour < 24; hour++) {
+                for (let hour = 7; hour < 23; hour++) {
                     for (let min = 0; min < 60; min += 30) {
                         const formattedDate = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                         const startHour = String(hour).padStart(2, '0');
@@ -381,10 +385,11 @@ export default {
 
                         // Find and update the corresponding meeting
                         const meeting = this.allMeetings.find(m => { 
+                            const matchDate = m.date === formattedDate;
                             const matchStart = m.start === startTime;
                             const matchEnd = m.end === endTime;
                             
-                            if (matchStart && matchEnd) {
+                            if (matchDate && matchStart && matchEnd) {
                                 console.log(`Found matching meeting: ${m.date} ${m.start}-${m.end}`);
                                 return true;
                             }
@@ -611,6 +616,10 @@ export default {
                 event.preventDefault();
             }
         },
+
+        hasSavedSession(date) {
+            return this.allMeetings.some(meeting => meeting.date === date && meeting.schedule_id);
+        },
     }
 }
 </script>
@@ -661,6 +670,18 @@ export default {
     color: red;
 }
 
+.custom_div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#sync_circle {
+    font-size: 30px;
+    color: #16C47F;  
+    transition: fade 2s ease-in-out;
+}
+ 
 
 section.all {
     user-select: none;
