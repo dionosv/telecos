@@ -117,7 +117,7 @@
 
                             <button type="button" @click="handle_simpan_sesi" 
                                 :disabled="!toggleActivities.activate.length && !toggleActivities.deactivate.length"
-                                :class="['inline-flex items-center gap-x-1.5 rounded-md px-3 py-2 text-sm font-semibold shadow-sm',
+                                :class="['inline-flex items-center gap-x-1.5 rounded-md px-3 py-2 text-sm font-semibold shadow-sm w-auto min-w-[120px] justify-center',
                                 (!toggleActivities.activate.length && !toggleActivities.deactivate.length) 
                                     ? 'bg-gray-300 cursor-not-allowed' 
                                     : 'bg-orange-600 hover:bg-orange-500 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600']">
@@ -126,7 +126,7 @@
                                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                 </svg>
-                                Simpan Sesi
+                                <span class="whitespace-nowrap">Simpan Sesi</span>
                             </button>
 
                         </div>
@@ -343,7 +343,7 @@ export default {
                 const response = await get_schedule_by_expert_id(this.expertId);
                 if (response && response.status === 1 && response.schedules) {
                     this.syncSchedulesToMeetings(response.schedules);
-                    console.log(response.schedules);
+                    // console.log(response.schedules);
                 }
             } catch (error) {
                 console.log('No meetings found for expert:', error);
@@ -421,7 +421,7 @@ export default {
             try {
                 this.isloading = true;
                 if(this.toggleActivities.activate.length != 0) {
-                    console.log('Activated Sessions:', this.toggleActivities.activate);
+                    // console.log('Activated Sessions:', this.toggleActivities.activate);
                     for (let i = 0; i < this.toggleActivities.activate.length; i++) {
                         try {
                             await this.handle_upload_to_api(
@@ -437,7 +437,7 @@ export default {
                     }
                 }
                 if(this.toggleActivities.deactivate.length != 0) {
-                    console.log('Deactivated Sessions:', this.toggleActivities.deactivate);
+                    // console.log('Deactivated Sessions:', this.toggleActivities.deactivate);
                     for (let i = 0; i < this.toggleActivities.deactivate.length; i++) {
                         try {
                             await this.handle_delete_api( 
@@ -465,7 +465,7 @@ export default {
         async handle_upload_to_api(expertId, dateStart, dateEnd, rate) {
             try {
                 const hasil = await set_schedule_id(expertId, dateStart, dateEnd, rate);
-                console.log(hasil);
+                // console.log(hasil);
             } catch (error) {
                 console.log('Error uploading to API:', error);
             }
@@ -481,7 +481,7 @@ export default {
                         meetingToUpdate.schedule_id = null;
                     }
                 }
-                console.log(hasil);
+                // console.log(hasil);
             } catch (error) {
                 console.log('Error uploading to API:', error);
             }
@@ -741,8 +741,30 @@ section.all {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
     margin-top: 15px;
     margin-bottom: 15px;
+}
+
+@media (max-width: 768px) {
+    .split_3 {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .split_3 button {
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    .input_price {
+        width: 100%; 
+        justify-content: space-between;
+    }
+    #all_meeting_scroll {
+        max-height: 35rem;
+    }
 }
 
 div.split_1 div.input_price input#price {
