@@ -4,7 +4,7 @@
             <ion-icon name="calendar-outline" class="text-xl"></ion-icon>
         </div>
         <div class="no_event_text">
-            <p>Belum ada jadwal</p>
+            <p>Tidak ada sesi</p>
         </div>
     </div>
 </template>

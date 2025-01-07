@@ -1,4 +1,39 @@
 <template>
+
+    <div aria-live="assertive" class="pointer-events-none fixed inset-0 flex items-end px-4 py-6 sm:items-start sm:p-6">
+        <div class="flex w-full flex-col items-center space-y-4 sm:items-end">
+            <transition enter-active-class="transform ease-out duration-300 transition"
+                enter-from-class="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2"
+                enter-to-class="translate-y-0 opacity-100 sm:translate-x-0"
+                leave-active-class="transition ease-in duration-100" leave-from-class="opacity-100"
+                leave-to-class="opacity-0">
+                <div v-if="mencapai_maksimum_sesi"
+                    class="pointer-events-auto w-full max-w-sm overflow-hidden rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5">
+                    <div class="p-4">
+                        <div class="flex items-start align-items-center">
+                            <div class="flex-shrink-0">
+                                <ion-icon name="alert-circle" class="mt-1" id="alert"></ion-icon>
+                            </div>
+                            <div class="ml-3 w-0 flex-1 pt-0.5">
+                                <p class="text-sm font-medium text-gray-900">Gagal Menyimpan Sesi</p>
+                                <p class="mt-1 text-sm text-gray-500">Maksimal 10 sesi dalam satu hari</p>
+                            </div>
+                            <div class="ml-4 flex flex-shrink-0">
+                                <button type="button" @click="mencapai_maksimum_sesi = false"
+                                    class="inline-flex rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                                    <span class="sr-only">Close</span>
+                                    <ion-icon name="close"></ion-icon>
+                                    <!-- <XMarkIcon class="h-5 w-5" aria-hidden="true" /> -->
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </transition>
+        </div>
+    </div>
+
+
     <section class="all">
 
 
@@ -57,28 +92,68 @@
                 </div>
 
                 <section class="mt-12 md:mt-0 md:pl-10">
-                    <h2 class="text-base font-semibold leading-6 text-gray-900">
-                        Jadwal untuk <time :datetime="selectedDateISO">{{ selectedDateFormatted }}</time>
-                    </h2>
+
+                    <div class="split_1">
+
+
+                        <h2 class="text-base font-semibold leading-6 text-gray-900">
+                            Jadwal untuk <time :datetime="selectedDateISO">{{ selectedDateFormatted }}</time>
+                        </h2>
+
+                        <div class="split_3">
+                            <div class="input_price">
+                                <label for="price" class="  text-sm font-medium  text-gray-900">Tarif
+                                    Konsultasi</label>
+                                <div class="relative rounded-md shadow-sm">
+                                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                                        <span class="text-gray-500 sm:text-sm">Rp</span>
+                                    </div>
+                                    <input type="text" name="price" id="price" v-model="currentDatePrice"
+                                        @keypress="validateNumberInput"
+                                        class="block w-full rounded-md border-0 pl-10  text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-orange-600 sm:text-sm"
+                                        placeholder="25000" aria-describedby="price-currency" />
+                                </div>
+                            </div>
+
+                            <button type="button" @click="handle_simpan_sesi"
+                                class="inline-flex items-center gap-x-1.5 rounded-md bg-orange-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                                <!-- <CheckCircleIcon class="-ml-0.5 h-5 w-5" aria-hidden="true" /> -->
+                                <ion-icon name="save"></ion-icon>
+                                Simpan Sesi
+                            </button>
+
+                        </div>
+                        <div class="note_1">
+                            <p>
+                                Tarif konsultasi dapat di atur (maksimal Rp 500.000). <br>Harap atur
+                                tarif konsultasi terlebih dahulu sebelum membuat jadwal sesi konsultasi
+                            </p>
+                        </div>
+
+                    </div>
+
+
                     <ol class="mt-4 space-y-1 text-sm leading-6 text-gray-500" id="all_meeting_scroll">
                         <li v-if="selectedDayMeetings.length === 0" class="text-gray-500 py-4">
-                            <!-- Tidak ada jadwal untuk hari ini -->
                             <tidak_ada_acara></tidak_ada_acara>
                         </li>
-                        <li v-for="meeting in selectedDayMeetings" :key="meeting.id"
-                            :class="['group flex items-center space-x-4 rounded-xl px-4 py-2 focus-within:bg-gray-100 hover:bg-gray-100 cursor-pointer', 
-                                    meeting.occupied ? 'bg-orange-100' : '']"
-                            @click="handle_toogle_block(meeting.id)">
-                            <!-- <img :src="meeting.imageUrl" alt="" /> -->
-                            <ion-icon name="add-circle" class="h-10 w-10 flex-none rounded-full"></ion-icon>
+                        <li v-for="meeting in selectedDayMeetings" :key="meeting.id" :class="['group flex items-center space-x-4 rounded-xl px-4 py-2 focus-within:bg-gray-100 hover:bg-gray-100 cursor-pointer',
+                            meeting.occupied ? 'bg-orange-100 hover:bg-orange-300' : '']"
+                            @click="handle_toogle_block(meeting.id, meeting.startDatetime, meeting.endDatetime)">
+
+                            <!-- <ion-icon name="add-circle" ></ion-icon> -->
+                            <ion-icon name="checkmark-circle"
+                                class="h-10 w-10 flex-none rounded-full fill-orange-500 bg-white-100"
+                                v-if="meeting.occupied"></ion-icon>
+                            <ion-icon name="add-circle" class="h-10 w-10 flex-none rounded-full"
+                                v-if="!meeting.occupied"></ion-icon>
+
                             <div class="flex-auto">
                                 <p class="text-gray-900">{{ meeting.name }}</p>
                                 <p class="mt-0.5">
                                     <time :datetime="meeting.startDatetime">{{ meeting.start }}</time> -
                                     <time :datetime="meeting.endDatetime">{{ meeting.end }}</time>
                                 </p>
-
-                                <!-- <p>{{ meeting.occupied }}</p> -->
                             </div>
                         </li>
                     </ol>
@@ -100,6 +175,7 @@
 <script>
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
 import tidak_ada_acara from './tidak_ada_acara.vue';
+import { set_schedule_id } from '../logic/API/schedule/schedule';
 
 export default {
     components: {
@@ -108,6 +184,12 @@ export default {
         MenuItem,
         MenuItems,
         tidak_ada_acara
+    },
+    props: {
+        expertId: {
+            type: String,
+            required: true
+        }
     },
 
     data() {
@@ -121,10 +203,29 @@ export default {
             touchStartX: 0,
             touchEndX: 0,
             minDate: new Date(Date.UTC(now.getFullYear(), now.getMonth(), 1)),
-            maxDate: new Date(Date.UTC(now.getFullYear(), now.getMonth() + 3, 0)) // Include the entire month
+            maxDate: new Date(Date.UTC(now.getFullYear(), now.getMonth() + 3, 0)),
+            mencapai_maksimum_sesi: false, 
+            currentDatePrice: '25000', // Set default price to 25000
         }
     },
- 
+
+    watch: {
+        selectedDateISO: {
+            immediate: true,
+            handler(newDate) {
+                 
+            }
+        },
+        currentDatePrice: {
+            immediate: true,
+            handler(newPrice) {
+                if (parseInt(newPrice) > 500000) {
+                    this.currentDatePrice = '500000';
+                }
+            }
+        }
+    },
+
     computed: {
         currentMonthYear() {
             return new Intl.DateTimeFormat('id-ID', {
@@ -180,7 +281,7 @@ export default {
             const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
             let meeting_id = 1;
             for (let day = startDay; day <= daysInMonth; day++) {
-            let sessionCount = 1;
+                let sessionCount = 1;
                 for (let hour = 6; hour < 24; hour++) {
                     for (let min = 0; min < 60; min += 30) {
                         const date = `2025-01-${String(day).padStart(2, '0')}`;
@@ -193,10 +294,11 @@ export default {
                             name: `Sesi ${sessionCount}`,
                             date,
                             start: `${startHour}:${String(min).padStart(2, '0')} WIB`,
-                            startDatetime: `${date}T${startHour}:${String(min).padStart(2, '0')}`,
+                            startDatetime: `${date}T${startHour}:${String(min).padStart(2, '0')}:00.000Z`,
                             end: `${endHour}:${endMin} WIB`,
-                            endDatetime: `${date}T${endHour}:${endMin}`,
-                            occupied:false
+                            endDatetime: `${date}T${endHour}:${endMin}:00.000Z`,
+                            occupied: false,
+                            schedule_id: null
                         });
                         sessionCount++;
                         meeting_id++;
@@ -206,34 +308,64 @@ export default {
             return meetings;
         },
 
-        handle_toogle_block(id) {
+        handle_toogle_block(id, start_session, end_session) {
             const meeting = this.allMeetings.find(m => m.id === id);
-            if (!meeting) return;
+            if (!meeting) { return };
 
             if (!meeting.occupied) {
-                // Check limit before setting to true
                 const date = meeting.date;
-                const occupiedSessionsForDay = this.allMeetings.filter(m => 
+                const occupiedSessionsForDay = this.allMeetings.filter(m =>
                     m.date === date && m.occupied
                 ).length;
 
-                if (occupiedSessionsForDay >= 18) {
-                    alert('Anda sudah mencapai batas maksimal 18 sesi per hari');
+                console.log("Start : " + start_session + "\nEnd : " + end_session);
+
+                if (occupiedSessionsForDay >= 10) {
+                    this.mencapai_maksimum_sesi = true;
+
+                    setTimeout(() => {
+                        this.mencapai_maksimum_sesi = false;
+                    }, 4000);
                     return;
                 }
+            } else {
+                console.log(`Meeting canceled time start: ${start_session} time end: ${end_session}`);
             }
-            
+
             meeting.occupied = !meeting.occupied;
         },
+
+        async handle_simpan_sesi() {
+            const selectedDateData = this.allMeetings.filter(meeting =>
+                meeting.occupied && meeting.schedule_id === null
+            ).map(meeting => ({ 
+                start: meeting.startDatetime,
+                end: meeting.endDatetime
+            }));
+            // console.log("Selected dates and prices:", selectedDateData);
+
+            // await this.handle_upload_to_api(this.expertId, selectedDateData[0].start, selectedDateData[0].end, this.currentDatePrice);
+            for (const meeting of selectedDateData) {
+                await this.handle_upload_to_api(this.expertId, meeting.start, meeting.end, this.currentDatePrice);
+            }
+
+        },
+
+        async handle_upload_to_api(expertId, dateStart, dateEnd, rate){
+
+            const hasil = await set_schedule_id(expertId, dateStart, dateEnd, rate);
+            console.log(hasil);
+
+        },
+
 
         generateCalendarDays(year, month) {
             const days = [];
             const firstDayOfMonth = new Date(Date.UTC(year, month, 1));
             const lastDayOfMonth = new Date(Date.UTC(year, month + 1, 0));
             const daysInMonth = lastDayOfMonth.getUTCDate();
-            const startPadding = (firstDayOfMonth.getUTCDay() + 6) % 7; // Adjusting for Monday start
+            const startPadding = (firstDayOfMonth.getUTCDay() + 6) % 7;
 
-            // Add previous month padding
             const prevMonthLastDay = new Date(Date.UTC(year, month, 0));
             for (let i = startPadding - 1; i >= 0; i--) {
                 const date = new Date(Date.UTC(year, month - 1, prevMonthLastDay.getUTCDate() - i));
@@ -245,7 +377,6 @@ export default {
                 });
             }
 
-            // Add current month days
             for (let i = 1; i <= daysInMonth; i++) {
                 const date = new Date(Date.UTC(year, month, i));
                 days.push({
@@ -256,8 +387,7 @@ export default {
                 });
             }
 
-            // Add next month padding
-            const remainingDays = 42 - days.length; // Always show 6 weeks
+            const remainingDays = 42 - days.length;
             for (let i = 1; i <= remainingDays; i++) {
                 const date = new Date(Date.UTC(year, month + 1, i));
                 days.push({
@@ -314,6 +444,8 @@ export default {
             if (selectedDate >= this.minDate && selectedDate <= this.maxDate) {
                 this.selectedDate = selectedDate;
                 this.currentDate = new Date(Date.UTC(year, month - 1, 1));
+                // Update current price when date is selected
+                this.currentDatePrice = this.prices[day.date] || '';
             }
         },
 
@@ -335,7 +467,16 @@ export default {
 
         hasEvent(date) {
             return this.allMeetings.some(meeting => meeting.date === date)
-        }
+        },
+ 
+
+        validateNumberInput(event) {
+            // Block any non-numeric key presses
+            const charCode = (event.which) ? event.which : event.keyCode;
+            if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+                event.preventDefault();
+            }
+        },
     }
 }
 </script>
@@ -363,9 +504,27 @@ export default {
     color: #b2b2b2;
 }
 
-#all_meeting_scroll{
-    max-height: 27rem;
+.note_1 {
+    display: flex;
+    justify-content: center;
+    /* align-items: center; */
+    flex-direction: column;
+}
+
+.note_1 p {
+    font-size: 12px;
+    color: #b2b2b2;
+}
+
+
+#all_meeting_scroll {
+    max-height: 20rem;
     overflow-y: auto;
+}
+
+#alert {
+    font-size: 22px;
+    color: red;
 }
 
 
@@ -379,6 +538,32 @@ section.all {
 
 #hari_big {
     display: grid;
+}
+
+.split_1 {
+    display: flex;
+    flex-direction: column;
+}
+
+.split_3 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+div.split_1 div.input_price input#price {
+    width: 120px;
+}
+
+.input_price {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    margin-top: 20px;
+    margin-bottom: 10px;
+
+
 }
 
 @media (max-width: 1200px) {
@@ -398,10 +583,10 @@ section.all {
         color: #b2b2b2;
     }
 
-    .note{
+    .note {
         padding-top: 10px;
         padding-bottom: 15px;
     }
 
-    }
+}
 </style>
