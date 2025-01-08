@@ -195,6 +195,7 @@ import Logo_aja from '@/components/logo/logo_aja.vue';
 import { get_user_data } from '@/components/logic/API/user';
 import { get_schedule_by_schedule_id } from '@/components/logic/API/schedule/schedule';
 import Spinner from '@/components/spinner/spinner.vue';
+import { kurangi_saldo } from '@/components/logic/API/saldo/saldo';
 
 export default {
     components: {
@@ -216,8 +217,8 @@ export default {
         this.check_fav_or_not();
         this.data_load = true;
         this.getExpertDetail();
-        this.get_schedule_detail(); 
-    }, 
+        this.get_schedule_detail();
+    },
     data() {
         return {
             scheduleId: this.$route.params.schedule_id,
@@ -274,14 +275,14 @@ export default {
     methods: {
         updateTime() {
             const now = new Date();
-            this.current_time = now.toLocaleTimeString('id-ID', { 
-                hour: '2-digit', 
+            this.current_time = now.toLocaleTimeString('id-ID', {
+                hour: '2-digit',
                 minute: '2-digit',
-                hour12: false 
+                hour12: false
             });
         },
 
-         
+
         async try_get_session() {
             try {
                 const sessionStore = usetelecos_session_detailsStore();
@@ -426,35 +427,48 @@ export default {
 
         async check_saldo() {
             if (this.user.wallet < this.meeting.price) {
-                console.log("Saldo anda tidak mencukupi")
-                return;
+                // console.log("Saldo anda tidak mencukupi")
+                return false;
             }
             else {
-                console.log("Saldo mencukupi")
+                // console.log("Saldo mencukupi")
+                return true
             }
+        },
+
+        async proses_kurangi_saldo() {
+            await console.log(kurangi_saldo(this.userId, this.meeting.price));
+
         },
 
         async handle_button_konfirmasi() {
-            await this.check_saldo();
-            await this.updateTime(); 
-            this.slide =2;
-        },
+            if (await this.check_saldo()) {
+                await this.updateTime();
+                await this.proses_kurangi_saldo();
+                this.slide = 2;
 
-        validateAllData() {
-            // Wait a small delay to ensure all async operations are complete
-            setTimeout(() => {
-                const { user_api, expert_api, schedule_api } = this.validasi_loading_data;
-
-                // Only update final_validasi if we have a complete set of responses
-                if (user_api !== null && expert_api !== null && schedule_api !== null) {
-                    this.final_validasi = user_api && expert_api && schedule_api;
-                }
-                else {
-                    this.final_validasi = false;
-                }
-            }, 500);
+            }
+            else{
+                console.log("Saldo anda tidak mencukupi")
         }
+
     },
+
+    validateAllData() {
+        // Wait a small delay to ensure all async operations are complete
+        setTimeout(() => {
+            const { user_api, expert_api, schedule_api } = this.validasi_loading_data;
+
+            // Only update final_validasi if we have a complete set of responses
+            if (user_api !== null && expert_api !== null && schedule_api !== null) {
+                this.final_validasi = user_api && expert_api && schedule_api;
+            }
+            else {
+                this.final_validasi = false;
+            }
+        }, 500);
+    }
+},
 }
 </script>
 <style scoped>
@@ -622,7 +636,7 @@ div.set_middle div.bottom_description div.menu_list div.detail_ahli p#bawah {
 
 .end_side {
     background-color: white;
-    width: 300px;
+    width: 360px;
     padding: 20px 15px;
     font-family: 'Courier New', monospace;
     position: relative;
@@ -718,13 +732,26 @@ div.set_middle div.bottom_description div.menu_list div.detail_ahli p#bawah {
         max-width: 300px;
         margin: 20px auto;
     }
-}
 
-@media (max-width: 768px) {
+    .mid_side {
+        width: 100%;
+        max-width: 100%;
+        margin: 10px auto;
+    }
+
     .end_side {
         width: 100%;
-        max-width: 300px;
+        max-width: 100%;
         margin: 10px auto;
+    }
+
+    .wrapper_pesanan_baru {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .left_side {
+        display: none;
     }
 }
 </style>

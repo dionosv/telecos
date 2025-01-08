@@ -78,9 +78,9 @@ const router = createRouter({
           component: () => import('../views/account/daftar_gagal.vue'),
         },
         {
-          path: 'pembayaran',
-          name: 'pembayaran',
-          component: () => import('../views/account/pembayaran.vue'),
+          path: 'wallet',
+          name: 'wallet',
+          component: () => import('../views/account/wallet.vue'),
         },
         {
           path: 'pusat-bantuan',
