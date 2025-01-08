@@ -70,18 +70,33 @@
             <div class="right_side">
 
                 <div class="header">
-                    <p>Detail Pesan Konsultasi</p>
+                    <p>Detail Pesan Sesi Konsultasi</p>
                 </div>
 
                 <div class="detail">
-                    <p>Konsultasi dengan {{data_ahli.description}} {{ data_ahli.name }}</p>
-                    <p>Konsultasi akan di lakukan pada </p>
-                    <p>Tarif Konsultasi</p>
+                    <p>Konsultasi dengan {{ data_ahli.description }} {{ data_ahli.name }}</p>
+                    <p>Konsultasi akan di lakukan pada {{ meeting.meetingDate }}</p>
+                    <p>Konsultasi akan di lakukan pada pukul {{ meeting.startHour }} - {{ meeting.endHour }}</p>
+
+                    <p>Tarif Konsultasi Rp {{ meeting.price }}</p>
                     <!-- <p>{{ data_ahli }}</p> -->
-                    <p>Sesi Konsultasi ini dipesan oleh {{ userId }}</p>
+                    <p>Sesi Konsultasi ini dipesan oleh {{ user.name }}</p>
                 </div>
 
-                <div class="detail_tombol">a</div>
+                <div class="detail_tombol">
+                    <button type="button" @click="handle_button_batal"
+                        class="inline-flex items-center gap-x-1.5 rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600">
+
+                        <ion-icon name="close-circle"></ion-icon>
+                        Batalkan
+                    </button>
+                    <button type="button" @click="handle_button_konfirmasi"
+                        class="inline-flex items-center gap-x-1.5 rounded-md bg-lime-400 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-lime-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-600">
+                        <!-- <CheckCircleIcon class="-ml-0.5 h-5 w-5" aria-hidden="true" /> -->
+                        <ion-icon name="checkmark-circle"></ion-icon>
+                        Konfirmasi
+                    </button>
+                </div>
             </div>
 
         </div>
@@ -93,24 +108,35 @@ import { get_experts_byID } from '@/components/logic/API/experts';
 import { check_fav_by_userId_and_expertId } from '@/components/logic/API/favourite';
 import { expert_profile_picture } from '@/components/logic/API/image_processor';
 import { usetelecos_session_detailsStore } from '@/components/logic/API/save_session';
-import provinsiData from '@/components/data_lokasi/provinsi.json'; 
+import provinsiData from '@/components/data_lokasi/provinsi.json';
 import Logo_aja from '@/components/logo/logo_aja.vue';
+import { get_user_data } from '@/components/logic/API/user';
+import { get_schedule_by_schedule_id } from '@/components/logic/API/schedule/schedule';
 
 export default {
-    components: { 
+    components: {
         Logo_aja
     },
     mounted() {
         this.try_get_session();
         this.check_fav_or_not();
         this.data_load = true;
-        this.getExpertDetail(); 
+        this.getExpertDetail();
+        this.get_schedule_detail();
     },
     data() {
         return {
             scheduleId: this.$route.params.schedule_id,
             expertId: this.$route.params.expert_id,
             userId: "",
+
+            meeting: {
+                meetingDate: '',
+                startHour: '',
+                endDate: '',
+                endHour: '',
+                price: ''
+            },
 
             user: {
                 name: '',
@@ -148,10 +174,11 @@ export default {
 
                 if (sessionDetails === false) {
                     this.$router.push({ name: 'akun' });
-                    // console.log('session not found');
                 } else {
                     if (sessionDetails.phase == 1) {
-                        this.userId = sessionDetails.userid; 
+                        this.userId = sessionDetails.userid;
+                        const data_user = await get_user_data(this.userId);
+                        this.user.name = data_user.user.name;
                     }
                 }
             } catch (error) {
@@ -191,6 +218,33 @@ export default {
                     this.$router.push({ name: 'home' });
                 }
             }
+        },
+
+        async get_schedule_detail() {
+            const cek_jadwal = await get_schedule_by_schedule_id(this.scheduleId);
+            if (cek_jadwal.status === 1) {
+                let startTime = new Date(cek_jadwal.schedules[0].dateStart);
+                let endTime = new Date(cek_jadwal.schedules[0].dateEnd);
+                this.meeting.price = cek_jadwal.schedules[0].rate;
+                this.meeting.startHour = startTime.toLocaleTimeString('id-ID', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false
+                });
+                this.meeting.endHour = endTime.toLocaleTimeString('id-ID', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false
+                })
+                this.meeting.endDate = endTime; 
+                const options = { day: 'numeric', month: 'long', year: 'numeric' };
+                const dayNames = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+                const dayName = dayNames[startTime.getDay()];
+                const formattedDate = startTime.toLocaleDateString('id-ID', options);
+                this.meeting.meetingDate = `${dayName}, ${formattedDate}`;
+                console.log(this.meeting)
+            }
+            // console.log(cek_jadwal)
         },
 
 
@@ -238,6 +292,14 @@ export default {
                 this.toogle_fav = false;
             }
         },
+
+        async handle_button_batal() {
+            this.$router.back();
+        },
+
+        async handle_button_konfirmasi() {
+            console.log("ok")
+        }
     },
 }
 </script>
@@ -253,7 +315,7 @@ export default {
     animation: flyIn 0.3s ease-in;
 }
 
-.wrap_left_side{
+.wrap_left_side {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -292,10 +354,26 @@ div.bottom_description div.menu_list ion-icon {
         opacity: 0;
         transform: translateY(20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+div.detail_tombol {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+
+    margin-top: 45px;
+    margin-bottom: 5px;
+    gap: 10px;
+}
+
+div.detail_tombol button ion-icon.md.hydrated {
+    font-size: 1.2rem;
 }
 
 .menu_list {
@@ -326,7 +404,7 @@ div.set_middle div.bottom_description div.menu_list div.detail_ahli p#bawah {
     border-radius: 10px;
     padding: 20px;
     box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-    width:500px;
+    width: 500px;
 }
 
 .right_side .header {
@@ -365,7 +443,8 @@ div.set_middle div.bottom_description div.menu_list div.detail_ahli p#bawah {
         gap: 10px;
         height: auto;
     }
-    .right_side{
+
+    .right_side {
         width: 100%;
     }
 

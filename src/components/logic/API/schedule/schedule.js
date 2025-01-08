@@ -42,6 +42,25 @@ async function get_schedule_by_expert_id(expertId) {
     return JSON.parse(await makeRequest(config));
 } 
 
+async function get_schedule_by_schedule_id(scheduleId) {
+
+    let data = JSON.stringify({
+        "scheduleId": scheduleId
+    });
+
+    let config = {
+        method: 'post',
+        maxBodyLength: Infinity,
+        url: x_api_endpoint + '/schedules/get',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        data: data
+    };
+
+    return JSON.parse(await makeRequest(config));
+} 
+
 
 async function delete_by_schedule_id(scheduleId) {
 
@@ -63,4 +82,4 @@ async function delete_by_schedule_id(scheduleId) {
 } 
 
 
-export { set_schedule_id , get_schedule_by_expert_id,delete_by_schedule_id};
+export { set_schedule_id , get_schedule_by_expert_id,delete_by_schedule_id, get_schedule_by_schedule_id};
