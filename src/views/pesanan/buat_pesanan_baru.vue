@@ -7,8 +7,8 @@
         <p>Expert ID: {{ $route.params.expert_id }}</p>
         <p>User ID: {{ userId }}</p> -->
 
-
-        <div class="wrapper_pesanan_baru">
+        <Spinner v-if="final_validasi === null"></Spinner>
+        <div class="wrapper_pesanan_baru" v-if="final_validasi === true">
             <!-- <div class="set_middle">
                 <div class="top_image">
                     <img :src=data_ahli.imageName alt="Gambar Ahli" class="w-40 h-40 rounded-full mx-auto">
@@ -80,7 +80,7 @@
 
                     <p>Tarif Konsultasi Rp {{ meeting.price }}</p>
                     <!-- <p>{{ data_ahli }}</p> -->
-                    <p>Sesi Konsultasi ini dipesan oleh {{ user.name }}</p>
+                    <p>Sesi Konsultasi ini dipesan untuk {{ user.name }}</p>
                 </div>
 
                 <div class="detail_tombol">
@@ -97,8 +97,30 @@
                         Konfirmasi
                     </button>
                 </div>
+
+                <p>Harap isi saldo terlebih dahulu</p>
+
             </div>
 
+            
+
+        </div>
+
+        <div class="wrapper_pesanan_salah" v-if="final_validasi === false">
+
+            <main class="flex w-full max-w-7xl flex-auto flex-col justify-center py-24 sm:py-64">
+                <p class="text-base font-semibold leading-8 text-lime-600">Mohon maaf, </p>
+                <h1 class="mt-4 text-3xl font-bold tracking-tight text-gray-900 sm:text-5xl">Pesanan Invalid</h1>
+                <p class="mt-6 text-base leading-7 text-gray-600">Silahkan ulangi kembali untuk melakukan pesanan ulang
+                </p>
+
+                <!-- <div class="mt-10">
+                <router-link :to="{ name: 'lihat_artikel_saya_expert' }" class="text-sm font-semibold leading-7 text-lime-600">
+                    Kembali ke artikel saya
+                </router-link>
+            </div> -->
+
+            </main>
         </div>
 
     </div>
@@ -112,10 +134,22 @@ import provinsiData from '@/components/data_lokasi/provinsi.json';
 import Logo_aja from '@/components/logo/logo_aja.vue';
 import { get_user_data } from '@/components/logic/API/user';
 import { get_schedule_by_schedule_id } from '@/components/logic/API/schedule/schedule';
+import Spinner from '@/components/spinner/spinner.vue';
 
 export default {
     components: {
-        Logo_aja
+        Logo_aja,
+        Spinner
+    },
+    watch: {
+
+        validasi_loading_data: {
+            deep: true,
+            handler(newVal) {
+                this.validateAllData();
+            }
+        }
+
     },
     mounted() {
         this.try_get_session();
@@ -141,7 +175,8 @@ export default {
             user: {
                 name: '',
                 email: '',
-                phoneNum: ''
+                phoneNum: '',
+                wallet : 0
             },
 
             data_ahli: {
@@ -158,6 +193,13 @@ export default {
                 imageName: '',
                 currentWorkspace: '',
                 almamater: ''
+            },
+
+            final_validasi: null,
+            validasi_loading_data: {
+                user_api: null,
+                expert_api: null,
+                schedule_api: null
             },
 
             toogle_fav: false,
@@ -179,18 +221,22 @@ export default {
                         this.userId = sessionDetails.userid;
                         const data_user = await get_user_data(this.userId);
                         this.user.name = data_user.user.name;
+                        this.user.wallet = data_user.user.wallet;
+                        this.validasi_loading_data.user_api = true; 
+
+                        // console.log("wallet : "+this.user.wallet)
                     }
                 }
             } catch (error) {
                 console.error('Failed to load session details:', error);
+                this.validasi_loading_data.user_api = false;
             } finally {
                 this.isLoading = false;
             }
         },
 
         async getExpertDetail() {
-            // console.log(this.data_load);
-            if (this.data_load) {
+            try {
                 const hasil = await get_experts_byID(this.expertId);
                 if (hasil.status === 1) {
                     this.expertDetail = hasil.user;
@@ -211,40 +257,46 @@ export default {
                     };
 
                     this.final_data = true;
-
                     this.decode_kode_lokasi();
+                    this.validasi_loading_data.expert_api = true;
                 }
-                else {
-                    this.$router.push({ name: 'home' });
-                }
+            } catch (error) {
+                console.error('Failed to load expert details:', error);
+                this.validasi_loading_data.expert_api = false;
             }
         },
 
         async get_schedule_detail() {
-            const cek_jadwal = await get_schedule_by_schedule_id(this.scheduleId);
-            if (cek_jadwal.status === 1) {
-                let startTime = new Date(cek_jadwal.schedules[0].dateStart);
-                let endTime = new Date(cek_jadwal.schedules[0].dateEnd);
-                this.meeting.price = cek_jadwal.schedules[0].rate;
-                this.meeting.startHour = startTime.toLocaleTimeString('id-ID', {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    hour12: false
-                });
-                this.meeting.endHour = endTime.toLocaleTimeString('id-ID', {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    hour12: false
-                })
-                this.meeting.endDate = endTime; 
-                const options = { day: 'numeric', month: 'long', year: 'numeric' };
-                const dayNames = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-                const dayName = dayNames[startTime.getDay()];
-                const formattedDate = startTime.toLocaleDateString('id-ID', options);
-                this.meeting.meetingDate = `${dayName}, ${formattedDate}`;
-                console.log(this.meeting)
+            try {
+                const cek_jadwal = await get_schedule_by_schedule_id(this.scheduleId);
+                if (cek_jadwal.status === 1) {
+                    let startTime = new Date(cek_jadwal.schedules[0].dateStart);
+                    let endTime = new Date(cek_jadwal.schedules[0].dateEnd);
+                    this.meeting.price = cek_jadwal.schedules[0].rate;
+                    this.meeting.startHour = startTime.toLocaleTimeString('id-ID', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: false
+                    });
+                    this.meeting.endHour = endTime.toLocaleTimeString('id-ID', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: false
+                    })
+                    this.meeting.endDate = endTime;
+                    const options = { day: 'numeric', month: 'long', year: 'numeric' };
+                    const dayNames = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+                    const dayName = dayNames[startTime.getDay()];
+                    const formattedDate = startTime.toLocaleDateString('id-ID', options);
+                    this.meeting.meetingDate = `${dayName}, ${formattedDate}`;
+                    this.validasi_loading_data.schedule_api = true;
+                    // console.log(this.meeting)
+                }
+                // console.log(cek_jadwal)
+            } catch (error) {
+                console.error('Failed to load schedule details:', error);
+                this.validasi_loading_data.schedule_api = false;
             }
-            // console.log(cek_jadwal)
         },
 
 
@@ -297,8 +349,50 @@ export default {
             this.$router.back();
         },
 
+
+        async check_saldo(){
+            if(this.user.wallet < this.meeting.price){
+                alert("Saldo anda tidak mencukupi")
+                return;
+            }
+            else{
+
+                alert("Saldo mencukupi")
+
+            }
+
+        },
+
         async handle_button_konfirmasi() {
             console.log("ok")
+
+            ///cek saldo
+            
+            // tarik_duit
+
+            // buat transaksi 
+
+            // blokir sesi
+
+            // buat session
+
+            //redirect ke halaman jadwal pribadi
+
+        },
+
+        validateAllData() {
+            // Wait a small delay to ensure all async operations are complete
+            setTimeout(() => {
+                const { user_api, expert_api, schedule_api } = this.validasi_loading_data;
+                
+                // Only update final_validasi if we have a complete set of responses
+                if (user_api !== null && expert_api !== null && schedule_api !== null) {
+                    this.final_validasi = user_api && expert_api && schedule_api;
+                }
+                else{
+                    this.final_validasi = false;
+                }
+            }, 500);
         }
     },
 }
@@ -370,6 +464,8 @@ div.detail_tombol {
     margin-top: 45px;
     margin-bottom: 5px;
     gap: 10px;
+
+    font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
 div.detail_tombol button ion-icon.md.hydrated {
@@ -400,52 +496,152 @@ div.set_middle div.bottom_description div.menu_list div.detail_ahli p#bawah {
 }
 
 .right_side {
-    background-color: white;
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-    width: 500px;
+    /* background-color: #fff9f5; */
+    border-radius: 0;
+    padding: 25px 15px;
+    width: 300px;
+    /* font-family: 'Courier New', monospace; */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    position: relative;
+    min-height: 400px;
+}
+
+.right_side::before {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 5px,
+        #eee 5px,
+        #eee 10px
+    );
+}
+
+.right_side::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 5px,
+        #eee 5px,
+        #eee 10px
+    );
 }
 
 .right_side .header {
-    border-bottom: 1px solid #e5e7eb;
-    padding-bottom: 10px;
-    margin-bottom: 15px;
+    text-align: center;
+    border-bottom: 2px dotted #000;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
 }
 
 .right_side .header p {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: #1f2937;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #000;
+    letter-spacing: 1px;
+    text-transform: uppercase;
 }
 
 .right_side .detail {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 15px;
+    padding: 0;
 }
 
 .right_side .detail p {
-    color: #4b5563;
-    font-size: 0.95rem;
+    color: #000;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    padding: 5px 0;
+    display: flex;
+    justify-content: space-between;
+    border: none;
+    position: relative;
+}
+
+.right_side .detail p::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-bottom: 1px dotted #aaa;
+}
+
+.right_side .detail p:last-child {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 2px dotted #000;
+}
+
+.detail_tombol {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 2px dotted #000;
+}
+
+/* Add thermal printer line effect */
+.right_side::before,
+.right_side::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(
+        to right,
+        transparent 0%,
+        rgba(0,0,0,0.1) 50%,
+        transparent 100%
+    );
+}
+
+@media print {
+    .right_side {
+        box-shadow: none;
+        padding: 0;
+    }
 }
 
 @media (max-width: 768px) {
+    .right_side {
+        width: 100%;
+        max-width: 300px;
+        margin: 10px auto;
+    }
+}
+
+@media (max-width: 768px) {
+
+    .wrapper_pesanan_baru{
+        flex-direction: column;
+        gap: 10px;
+    }
     .right_side {
         width: 100%;
         margin: 10px;
-    }
-}
-
-@media (max-width: 768px) {
-    div.wrapper_pesanan_baru {
-        flex-direction: column;
-        gap: 10px;
-        height: auto;
+        height: 100%;
     }
 
-    .right_side {
-        width: 100%;
+    #telecos_fine_logo{
+        display: flex;
+        justify-content: center;
+    }
+    div.left_side div.wrap_left_side{
+        gap: 5px;
+        margin-top: 5px;
     }
 
     div.set_middle div.bottom_description div.menu_list div.detail_ahli p#atas {
