@@ -67,43 +67,103 @@
 
 
             </div>
-            <div class="right_side">
 
-                <div class="header">
-                    <p>Detail Pesan Sesi Konsultasi</p>
+            <div class="wrapper_mid_side" v-show="slide === 1">
+
+
+                <div class="mid_side">
+
+                    <div class="summary">
+                        <div class="summary_item">
+                            <ion-icon name="person"></ion-icon>
+                            <div class="text">
+                                <p class="label">Konsultasi dengan</p>
+                                <p class="value">{{ data_ahli.description }} {{ data_ahli.name }}</p>
+                            </div>
+                        </div>
+
+                        <div class="summary_item">
+                            <ion-icon name="calendar"></ion-icon>
+                            <div class="text">
+                                <p class="label">Jadwal</p>
+                                <p class="value">{{ meeting.meetingDate }}</p>
+                                <p class="value">{{ meeting.startHour }} - {{ meeting.endHour }}</p>
+                            </div>
+                        </div>
+
+                        <div class="summary_item">
+                            <ion-icon name="wallet"></ion-icon>
+                            <div class="text">
+                                <p class="label">Biaya</p>
+                                <p class="value">Rp {{ meeting.price }}</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="detail">
-                    <p>Konsultasi dengan {{ data_ahli.description }} {{ data_ahli.name }}</p>
-                    <p>Konsultasi akan di lakukan pada {{ meeting.meetingDate }}</p>
-                    <p>Konsultasi akan di lakukan pada pukul {{ meeting.startHour }} - {{ meeting.endHour }}</p>
 
-                    <p>Tarif Konsultasi Rp {{ meeting.price }}</p>
-                    <!-- <p>{{ data_ahli }}</p> -->
-                    <p>Sesi Konsultasi ini dipesan untuk {{ user.name }}</p>
-                </div>
-
-                <div class="detail_tombol">
+                <div class="action_buttons">
                     <button type="button" @click="handle_button_batal"
                         class="inline-flex items-center gap-x-1.5 rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600">
-
                         <ion-icon name="close-circle"></ion-icon>
                         Batalkan
                     </button>
                     <button type="button" @click="handle_button_konfirmasi"
                         class="inline-flex items-center gap-x-1.5 rounded-md bg-lime-400 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-lime-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-600">
-                        <!-- <CheckCircleIcon class="-ml-0.5 h-5 w-5" aria-hidden="true" /> -->
                         <ion-icon name="checkmark-circle"></ion-icon>
                         Konfirmasi
                     </button>
                 </div>
 
-                <p>Harap isi saldo terlebih dahulu</p>
-
             </div>
 
-            
+            <div class="wrapper_end_side" v-show="slide === 2">
 
+
+                <div class="end_side">
+
+                    <div class="header_1">
+
+                        <Logo_aja></Logo_aja>
+                        <!-- <p>Detail Pesan Sesi Konsultasi</p> -->
+                        <!-- <Logo_aja></Logo_aja> -->
+
+                        <div class="tanggal">
+
+                            <p>
+                                {{ current_date }}
+                            </p>
+
+                            <p>
+                                {{ current_time }}
+
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div class="detail">
+
+                        <div class="split_1">
+                            <p>Konsultasi {{ data_ahli.description }}</p>
+                            <p> Rp {{ meeting.price }}</p>
+                        </div>
+
+                        <div class="split_1">
+                            <p>Metode Pembayaran</p>
+                            <p>Wallet</p>
+                        </div>
+                    </div>
+
+                    <p>Transaksi Berhasil</p>
+                    <p>Transaksi ini diterbitkan atas nama {{ user.name }}</p>
+
+                </div>
+
+
+
+            </div>
         </div>
 
         <div class="wrapper_pesanan_salah" v-if="final_validasi === false">
@@ -156,14 +216,15 @@ export default {
         this.check_fav_or_not();
         this.data_load = true;
         this.getExpertDetail();
-        this.get_schedule_detail();
-    },
+        this.get_schedule_detail(); 
+    }, 
     data() {
         return {
             scheduleId: this.$route.params.schedule_id,
             expertId: this.$route.params.expert_id,
             userId: "",
-
+            current_date: new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
+            current_time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false }),
             meeting: {
                 meetingDate: '',
                 startHour: '',
@@ -171,12 +232,13 @@ export default {
                 endHour: '',
                 price: ''
             },
+            slide: 1,
 
             user: {
                 name: '',
                 email: '',
                 phoneNum: '',
-                wallet : 0
+                wallet: 0
             },
 
             data_ahli: {
@@ -205,10 +267,21 @@ export default {
             toogle_fav: false,
             final_data: false,
             kota: '',
-            provinsi: ''
+            provinsi: '',
+            timer: null
         }
     },
     methods: {
+        updateTime() {
+            const now = new Date();
+            this.current_time = now.toLocaleTimeString('id-ID', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                hour12: false 
+            });
+        },
+
+         
         async try_get_session() {
             try {
                 const sessionStore = usetelecos_session_detailsStore();
@@ -222,7 +295,8 @@ export default {
                         const data_user = await get_user_data(this.userId);
                         this.user.name = data_user.user.name;
                         this.user.wallet = data_user.user.wallet;
-                        this.validasi_loading_data.user_api = true; 
+                        this.validasi_loading_data.user_api = true;
+                        console.log(data_user);
 
                         // console.log("wallet : "+this.user.wallet)
                     }
@@ -350,46 +424,32 @@ export default {
         },
 
 
-        async check_saldo(){
-            if(this.user.wallet < this.meeting.price){
-                alert("Saldo anda tidak mencukupi")
+        async check_saldo() {
+            if (this.user.wallet < this.meeting.price) {
+                console.log("Saldo anda tidak mencukupi")
                 return;
             }
-            else{
-
-                alert("Saldo mencukupi")
-
+            else {
+                console.log("Saldo mencukupi")
             }
-
         },
 
         async handle_button_konfirmasi() {
-            console.log("ok")
-
-            ///cek saldo
-            
-            // tarik_duit
-
-            // buat transaksi 
-
-            // blokir sesi
-
-            // buat session
-
-            //redirect ke halaman jadwal pribadi
-
+            await this.check_saldo();
+            await this.updateTime(); 
+            this.slide =2;
         },
 
         validateAllData() {
             // Wait a small delay to ensure all async operations are complete
             setTimeout(() => {
                 const { user_api, expert_api, schedule_api } = this.validasi_loading_data;
-                
+
                 // Only update final_validasi if we have a complete set of responses
                 if (user_api !== null && expert_api !== null && schedule_api !== null) {
                     this.final_validasi = user_api && expert_api && schedule_api;
                 }
-                else{
+                else {
                     this.final_validasi = false;
                 }
             }, 500);
@@ -495,162 +555,176 @@ div.set_middle div.bottom_description div.menu_list div.detail_ahli p#bawah {
     justify-content: center;
 }
 
-.right_side {
-    /* background-color: #fff9f5; */
-    border-radius: 0;
-    padding: 25px 15px;
+.mid_side {
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
     width: 300px;
-    /* font-family: 'Courier New', monospace; */
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    position: relative;
-    min-height: 400px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-family: ui-sans-serif, system-ui, sans-serif;
 }
 
-.right_side::before {
-    content: '';
-    position: absolute;
-    top: -5px;
-    left: 0;
-    right: 0;
-    height: 5px;
-    background: repeating-linear-gradient(
-        45deg,
-        transparent,
-        transparent 5px,
-        #eee 5px,
-        #eee 10px
-    );
-}
-
-.right_side::after {
-    content: '';
-    position: absolute;
-    bottom: -5px;
-    left: 0;
-    right: 0;
-    height: 5px;
-    background: repeating-linear-gradient(
-        45deg,
-        transparent,
-        transparent 5px,
-        #eee 5px,
-        #eee 10px
-    );
-}
-
-.right_side .header {
+.mid_side .header {
     text-align: center;
-    border-bottom: 2px dotted #000;
-    padding-bottom: 15px;
     margin-bottom: 20px;
 }
 
-.right_side .header p {
-    font-size: 1rem;
-    font-weight: bold;
-    color: #000;
-    letter-spacing: 1px;
-    text-transform: uppercase;
+.mid_side .header p {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #374151;
 }
 
-.right_side .detail {
+.mid_side .summary {
     display: flex;
     flex-direction: column;
-    gap: 15px;
-    padding: 0;
+    gap: 20px;
 }
 
-.right_side .detail p {
-    color: #000;
-    font-size: 0.85rem;
-    line-height: 1.5;
-    padding: 5px 0;
+.summary_item {
     display: flex;
-    justify-content: space-between;
-    border: none;
-    position: relative;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px;
+    background-color: #f9fafb;
+    border-radius: 6px;
 }
 
-.right_side .detail p::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    border-bottom: 1px dotted #aaa;
+.summary_item ion-icon {
+    font-size: 1.5rem;
+    color: #84cc16;
+    margin-top: 2px;
 }
 
-.right_side .detail p:last-child {
-    margin-top: 15px;
-    padding-top: 15px;
-    border-top: 2px dotted #000;
+.summary_item .text {
+    flex: 1;
 }
 
-.detail_tombol {
-    margin-top: 30px;
-    padding-top: 20px;
-    border-top: 2px dotted #000;
+.summary_item .label {
+    font-size: 0.85rem;
+    color: #6b7280;
+    margin-bottom: 2px;
 }
 
-/* Add thermal printer line effect */
-.right_side::before,
-.right_side::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(
-        to right,
-        transparent 0%,
-        rgba(0,0,0,0.1) 50%,
-        transparent 100%
-    );
-}
-
-@media print {
-    .right_side {
-        box-shadow: none;
-        padding: 0;
-    }
+.summary_item .value {
+    font-size: 0.95rem;
+    color: #111827;
+    font-weight: 500;
 }
 
 @media (max-width: 768px) {
-    .right_side {
+    .mid_side {
         width: 100%;
         max-width: 300px;
         margin: 10px auto;
     }
 }
 
+.end_side {
+    background-color: white;
+    width: 300px;
+    padding: 20px 15px;
+    font-family: 'Courier New', monospace;
+    position: relative;
+    min-height: 400px;
+    border: 1px solid #ddd;
+}
+
+.end_side::before,
+.end_side::after {
+    content: '';
+    position: absolute;
+    left: -5px;
+    right: -5px;
+    height: 5px;
+    background: repeating-linear-gradient(90deg,
+            #fff 0px,
+            #fff 4px,
+            transparent 4px,
+            transparent 8px);
+}
+
+.end_side::before {
+    top: -5px;
+}
+
+.end_side::after {
+    bottom: -5px;
+}
+
+.end_side .header_1 {
+    text-align: center;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+    border-bottom: 1px dashed #000;
+}
+
+.end_side .tanggal {
+    margin-top: 15px;
+    font-size: 0.8rem;
+    color: #333;
+    /* text-align: right; */
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.end_side .detail {
+    padding: 10px 0;
+    border-bottom: 1px dashed #000;
+}
+
+.end_side .split_1 {
+    padding: 8px 0;
+    font-size: 0.85rem;
+    color: #000;
+    display: flex;
+    justify-content: space-between;
+    line-height: 1.4;
+}
+
+.end_side .split_1 p:last-child {
+    font-weight: bold;
+}
+
+.end_side .detail_tombol {
+    margin-top: 20px;
+    padding-top: 15px;
+    text-align: center;
+}
+
+.end_side>p {
+    margin-top: 15px;
+    font-size: 0.8rem;
+    text-align: center;
+    color: #666;
+    font-style: italic;
+}
+
+.action_buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+    width: 300px;
+    font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
 @media (max-width: 768px) {
-
-    .wrapper_pesanan_baru{
-        flex-direction: column;
-        gap: 10px;
-    }
-    .right_side {
+    .action_buttons {
         width: 100%;
-        margin: 10px;
-        height: 100%;
+        max-width: 300px;
+        margin: 20px auto;
     }
+}
 
-    #telecos_fine_logo{
-        display: flex;
-        justify-content: center;
-    }
-    div.left_side div.wrap_left_side{
-        gap: 5px;
-        margin-top: 5px;
-    }
-
-    div.set_middle div.bottom_description div.menu_list div.detail_ahli p#atas {
-        font-weight: bold;
-        font-size: 1.1rem;
-    }
-
-    div.set_middle div.bottom_description div.menu_list div.detail_ahli p#bawah {
-        font-size: 0.8rem;
+@media (max-width: 768px) {
+    .end_side {
+        width: 100%;
+        max-width: 300px;
+        margin: 10px auto;
     }
 }
 </style>
