@@ -21,8 +21,7 @@
             "value": "true"
           }
         ]
-      },
-      { "routes": [{ "src": "/[^.]+", "dest": "/", "status": 200 }] }
+      }
     ]
   }
   
