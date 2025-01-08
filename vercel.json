@@ -1,5 +1,10 @@
 {
-    
+    "rewrites": [
+      {
+        "source": "/:path*", 
+        "destination": "https://telecos.live/:path*"  
+      }
+    ],
     "headers": [
       {
         "source": "/:path*", 
@@ -21,7 +26,7 @@
             "value": "true"
           }
         ]
-      }
+      } 
     ]
   }
   
