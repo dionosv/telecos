@@ -1,10 +1,5 @@
 {
-    "rewrites": [
-      {
-        "source": "/:path*", 
-        "destination": "https://telecos.live/:path*"  
-      }
-    ],
+  "routes": [{ "src": "/[^.]+", "dest": "/", "status": 200 }] ,
     "headers": [
       {
         "source": "/:path*", 
