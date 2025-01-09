@@ -300,6 +300,10 @@ div#block_bar.left_section{
     .content#kanan{
         height: 500px;
     }
+
+    div#block_bar.left_section{
+        justify-content: flex-start;
+    }
 }
 
 @media (max-width: 480px) {

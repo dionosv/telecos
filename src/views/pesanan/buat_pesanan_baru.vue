@@ -25,13 +25,13 @@
                                         </router-link>
                                     </p>
                                 </div>
-                                <div class="ml-4 flex flex-shrink-0">
+                                <!-- <div class="ml-4 flex flex-shrink-0">
                                     <button type="button" @click="save_success = false"
                                         class="inline-flex rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                                         <span class="sr-only">Close</span>
                                         <ion-icon name="close" class="h-5 w-5"></ion-icon>
                                     </button>
-                                </div>
+                                </div> -->
                             </div>
                         </div>
                     </div>
@@ -776,7 +776,7 @@ div.set_middle div.bottom_description div.menu_list div.detail_ahli p#bawah {
     }
 
     .mid_side {
-        width: 350px;
+        width: 330px;
         max-width: 100%;
         margin: 10px auto;
     }
