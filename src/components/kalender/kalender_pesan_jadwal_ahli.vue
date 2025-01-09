@@ -251,10 +251,10 @@ export default {
                 if (response && response.schedules) {
                     const now = new Date();
                     
-                    // Filter out past schedules first
+                    // Filter out past schedules including time check
                     const futureSchedules = response.schedules.filter(schedule => {
                         const scheduleStart = new Date(schedule.dateStart);
-                        return scheduleStart > now;
+                        return scheduleStart  ; // This now compares both date and time
                     });
 
                     // Group remaining schedules by date
@@ -271,30 +271,25 @@ export default {
                     this.allMeetings = Object.entries(schedulesByDate).flatMap(([date, schedules]) => {
                         schedules.sort((a, b) => new Date(a.dateStart) - new Date(b.dateStart));
 
-                        return schedules.map((schedule, index) => {
-                            const startTime = new Date(schedule.dateStart);
-                            const endTime = new Date(schedule.dateEnd);
-
-                            return {
-                                id: schedule.scheduleId,
-                                name: `Sesi ${index + 1}`,
-                                date: startTime.toISOString().split('T')[0],
-                                start: startTime.toLocaleTimeString('id-ID', {
-                                    hour: '2-digit',
-                                    minute: '2-digit',
-                                    hour12: false
-                                }),
-                                startDatetime: startTime.toISOString(),
-                                end: endTime.toLocaleTimeString('id-ID', {
-                                    hour: '2-digit',
-                                    minute: '2-digit',
-                                    hour12: false
-                                }),
-                                endDatetime: endTime.toISOString(),
-                                rate: schedule.rate,
-                                status: schedule.status
-                            };
-                        });
+                        return schedules.map((schedule, index) => ({
+                            id: schedule.scheduleId,
+                            name: `Sesi ${index + 1}`,
+                            date: date,
+                            start: new Date(schedule.dateStart).toLocaleTimeString('id-ID', {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                hour12: false
+                            }),
+                            startDatetime: schedule.dateStart,
+                            end: new Date(schedule.dateEnd).toLocaleTimeString('id-ID', {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                hour12: false
+                            }),
+                            endDatetime: schedule.dateEnd,
+                            rate: schedule.rate,
+                            status: schedule.status
+                        }));
                     });
                     this.data_is_loaded = true;
                 } else {

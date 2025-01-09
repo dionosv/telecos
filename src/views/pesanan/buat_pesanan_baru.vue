@@ -229,7 +229,7 @@ import { usetelecos_session_detailsStore } from '@/components/logic/API/save_ses
 import provinsiData from '@/components/data_lokasi/provinsi.json';
 import Logo_aja from '@/components/logo/logo_aja.vue';
 import { get_user_data } from '@/components/logic/API/user';
-import { get_schedule_by_schedule_id } from '@/components/logic/API/schedule/schedule';
+import { block_by_schedule_id, check_schedule_availability, get_schedule_by_schedule_id } from '@/components/logic/API/schedule/schedule';
 import Spinner from '@/components/spinner/spinner.vue';
 import { kurangi_saldo } from '@/components/logic/API/saldo/saldo';
 
@@ -476,15 +476,20 @@ export default {
 
         async proses_kurangi_saldo() {
             await console.log(kurangi_saldo(this.userId, this.meeting.price));
-
         },
+
+         
 
         async handle_button_konfirmasi() {
             if (await this.check_saldo()) {
-                await this.updateTime();
-                await this.proses_kurangi_saldo();
-                this.slide = 2;
-
+                if (await check_schedule_availability(this.scheduleId) === "true"){
+                    await block_by_schedule_id(this.scheduleId);
+                    
+                    console.log("ada")
+                } 
+                else{
+                    console.log("tidak ada jadwal")
+                }
             }
             else {
                 this.saldo_kurang = true;

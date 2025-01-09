@@ -61,6 +61,26 @@ async function get_schedule_by_schedule_id(scheduleId) {
     return JSON.parse(await makeRequest(config));
 } 
 
+async function check_schedule_availability(scheduleId) {
+
+    let data = JSON.stringify({
+        "scheduleId": scheduleId
+    });
+
+    let config = {
+        method: 'post',
+        maxBodyLength: Infinity,
+        url: x_api_endpoint + '/schedules/get',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        data: data
+    };
+
+    const res =  JSON.parse(await makeRequest(config)); 
+    return res.schedules[0].availability;
+} 
+
 
 async function delete_by_schedule_id(scheduleId) {
 
@@ -82,4 +102,26 @@ async function delete_by_schedule_id(scheduleId) {
 } 
 
 
-export { set_schedule_id , get_schedule_by_expert_id,delete_by_schedule_id, get_schedule_by_schedule_id};
+async function block_by_schedule_id(scheduleId) {
+
+    let data = JSON.stringify({
+        "scheduleId": scheduleId
+    });
+
+    let config = {
+        method: 'post',
+        maxBodyLength: Infinity,
+        url: x_api_endpoint + '/schedules/blockSchedule',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        data: data
+    };
+
+    const res =  JSON.parse(await makeRequest(config));
+    // console.log(res);
+    return res;
+} 
+
+
+export { set_schedule_id , get_schedule_by_expert_id,delete_by_schedule_id, get_schedule_by_schedule_id, check_schedule_availability, block_by_schedule_id};
