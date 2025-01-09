@@ -236,7 +236,7 @@ div#block_bar.left_section{
 .show_transfer, .show_virtual_account {
     margin-top: 20px;
     /* padding: 15px; */
-    background-color: #f8f9fa;
+    /* background-color: #f8f9fa; */
     border-radius: 10px;
 }
 

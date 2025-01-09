@@ -11,7 +11,7 @@
             <div class="flex-shrink-0 mb-0 mt-0.4">
               <ion-icon name="checkmark-circle" class="text-2xl mb-0 text-green-400"></ion-icon>
             </div>
-            <div class="ml-3 flex-1 md:flex md:justify-between">
+            <div class="flex ml-3 flex-1 md:flex md:justify-between">
               <p class="text-sm font-bold text-green-800 mt-0.5">Berhasil Masuk</p>
               <div class="md:ml-6">
                 <div class="batas_running_text">

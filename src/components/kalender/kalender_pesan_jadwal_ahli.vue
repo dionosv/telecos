@@ -3,22 +3,9 @@
 
         <div class="mx-auto max-w-9xl items-center p-6 lg:px-8" v-if="data_is_loaded">
             <div class="md:grid md:grid-cols-2 md:divide-x md:divide-gray-200">
-                <div class="md:pr-10" @touchstart.passive="handleTouchStart" @touchmove="handleTouchMove"
-                    @touchend="handleTouchEnd">
+                <div class="md:pr-10">
                     <div class="flex items-center">
                         <h2 class="flex-auto text-sm font-semibold text-gray-900">{{ currentMonthYear }}</h2>
-                        <button type="button" @click="previousMonth"
-                            :class="['hidden md:flex -my-1.5 flex-none items-center justify-center p-1.5 text-gray-400 hover:text-gray-500', isPreviousDisabled && 'cursor-not-allowed']"
-                            :disabled="isPreviousDisabled">
-                            <span class="sr-only">Previous month</span>
-                            <ion-icon name="caret-back"></ion-icon>
-                        </button>
-                        <button type="button" @click="nextMonth"
-                            :class="['hidden md:flex -my-1.5 -mr-1.5 ml-2 flex-none items-center justify-center p-1.5 text-gray-400 hover:text-gray-500', isNextDisabled && 'cursor-not-allowed']"
-                            :disabled="isNextDisabled">
-                            <span class="sr-only">Next month</span>
-                            <ion-icon name="caret-forward"></ion-icon>
-                        </button>
                     </div>
                     <div class="mt-10 grid grid-cols-7 text-center text-xs leading-6 text-gray-500" id="hari_big">
                         <div>Senin</div>
@@ -164,10 +151,6 @@ export default {
             currentDate: new Date(currentMonth),
             selectedDate: new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate())),
             allMeetings: [], // Initialize as empty array
-            touchStartX: 0,
-            touchEndX: 0,
-            minDate: new Date(Date.UTC(now.getFullYear(), now.getMonth(), 1)),
-            maxDate: new Date(Date.UTC(now.getFullYear(), now.getMonth() + 3, 0)),
             expertId: this.expert_id,
             userId: this.user_id,
             data_is_loaded: false
@@ -213,14 +196,6 @@ export default {
         selectedDayMeetings() {
             const selectedDateString = this.selectedDate.toISOString().split('T')[0]
             return this.allMeetings.filter(meeting => meeting.date === selectedDateString)
-        },
-
-        isPreviousDisabled() {
-            return this.currentDate <= this.minDate
-        },
-
-        isNextDisabled() {
-            return this.currentDate >= this.maxDate
         }
     },
 
@@ -274,8 +249,16 @@ export default {
             try {
                 const response = await get_schedule_by_expert_id(this.expertId);
                 if (response && response.schedules) {
-                    // Group schedules by date first
-                    const schedulesByDate = response.schedules.reduce((acc, schedule) => {
+                    const now = new Date();
+                    
+                    // Filter out past schedules first
+                    const futureSchedules = response.schedules.filter(schedule => {
+                        const scheduleStart = new Date(schedule.dateStart);
+                        return scheduleStart > now;
+                    });
+
+                    // Group remaining schedules by date
+                    const schedulesByDate = futureSchedules.reduce((acc, schedule) => {
                         const date = new Date(schedule.dateStart).toISOString().split('T')[0];
                         if (!acc[date]) {
                             acc[date] = [];
@@ -284,9 +267,8 @@ export default {
                         return acc;
                     }, {});
 
-                    // Create meetings with numbered sessions per day and sort by time
+                    // Rest of the processing remains the same
                     this.allMeetings = Object.entries(schedulesByDate).flatMap(([date, schedules]) => {
-                        // Sort schedules by start time first
                         schedules.sort((a, b) => new Date(a.dateStart) - new Date(b.dateStart));
 
                         return schedules.map((schedule, index) => {
@@ -295,7 +277,7 @@ export default {
 
                             return {
                                 id: schedule.scheduleId,
-                                name: `Sesi ${index + 1}`, // Numbering starts from 1 for each sorted day
+                                name: `Sesi ${index + 1}`,
                                 date: startTime.toISOString().split('T')[0],
                                 start: startTime.toLocaleTimeString('id-ID', {
                                     hour: '2-digit',
@@ -342,49 +324,15 @@ export default {
                 date1.getUTCDate() === date2.getUTCDate();
         },
 
-        previousMonth() {
-            const minMonth = new Date(Date.UTC(this.minDate.getUTCFullYear(), this.minDate.getUTCMonth(), 1));
-            if (this.currentDate > minMonth) {
-                this.currentDate = new Date(Date.UTC(this.currentDate.getUTCFullYear(), this.currentDate.getUTCMonth() - 1, 1));
-            }
-        },
-
-        nextMonth() {
-            const maxMonth = new Date(Date.UTC(this.maxDate.getUTCFullYear(), this.maxDate.getUTCMonth(), 1));
-            if (this.currentDate < maxMonth) {
-                this.currentDate = new Date(Date.UTC(this.currentDate.getUTCFullYear(), this.currentDate.getUTCMonth() + 1, 1));
-            }
+        selectDate(day) {
+            const [year, month, date] = day.date.split('-').map(Number);
+            const selectedDate = new Date(Date.UTC(year, month - 1, date));
+            this.selectedDate = selectedDate;
         },
 
         getLocalDate(dateString) {
             const date = new Date(dateString);
             return new Date(date.getTime() + date.getTimezoneOffset() * 60000);
-        },
-
-        selectDate(day) {
-            const [year, month, date] = day.date.split('-').map(Number);
-            const selectedDate = new Date(Date.UTC(year, month - 1, date));
-
-            if (selectedDate >= this.minDate && selectedDate <= this.maxDate) {
-                this.selectedDate = selectedDate;
-                this.currentDate = new Date(Date.UTC(year, month - 1, 1));
-            }
-        },
-
-        handleTouchStart(event) {
-            this.touchStartX = event.changedTouches[0].screenX
-        },
-
-        handleTouchMove(event) {
-            this.touchEndX = event.changedTouches[0].screenX
-        },
-
-        handleTouchEnd() {
-            if (this.touchStartX - this.touchEndX > 50) {
-                this.nextMonth()
-            } else if (this.touchEndX - this.touchStartX > 50) {
-                this.previousMonth()
-            }
         },
 
         hasEvent(date) {

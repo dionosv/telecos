@@ -1,12 +1,48 @@
 <template>
+    <div class="notification_success">
+        <div aria-live="assertive"
+            class="pointer-events-none fixed inset-0 flex items-end px-4 py-6 sm:items-start sm:p-6 z-10">
+            <div class="flex w-full flex-col items-center space-y-4 sm:items-end">
+                <transition enter-active-class="transform ease-out duration-300 transition"
+                    enter-from-class="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2"
+                    enter-to-class="translate-y-0 opacity-100 sm:translate-x-0"
+                    leave-active-class="transition ease-in duration-100" leave-from-class="opacity-100"
+                    leave-to-class="opacity-0">
+                    <div v-if="saldo_kurang"
+                        class="pointer-events-auto w-full max-w-sm overflow-hidden rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5">
+                        <div class="p-4">
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0">
+                                    <ion-icon name="close-circle" class="text-2xl mb-0 text-red-400"></ion-icon>
+                                </div>
+                                <div class="ml-3 w-0 flex-1 pt-0.5">
+                                    <p class="text-sm font-medium text-gray-900">Saldo anda kurang</p>
+                                    <p class="mt-1 text-sm text-gray-500">Silahkan top up saldo anda terlebih dahulu
+                                        pada halaman
+                                        <router-link :to="{ name: 'wallet' }"
+                                            class="right_saldo text-gray-700 hover:text-lime-500 text-sm font-semibold leading-6">
+                                            wallet
+                                        </router-link>
+                                    </p>
+                                </div>
+                                <div class="ml-4 flex flex-shrink-0">
+                                    <button type="button" @click="save_success = false"
+                                        class="inline-flex rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                                        <span class="sr-only">Close</span>
+                                        <ion-icon name="close" class="h-5 w-5"></ion-icon>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </transition>
+            </div>
+        </div>
+    </div>
+
+
+
     <div id="all" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-
-        <!-- buat pesanan baru
-
-        <p>Schedule ID: {{ $route.params.schedule_id }}</p>
-        <p>Expert ID: {{ $route.params.expert_id }}</p>
-        <p>User ID: {{ userId }}</p> -->
-
         <Spinner v-if="final_validasi === null"></Spinner>
         <div class="wrapper_pesanan_baru" v-if="final_validasi === true">
             <!-- <div class="set_middle">
@@ -233,6 +269,8 @@ export default {
                 endHour: '',
                 price: ''
             },
+
+            saldo_kurang: false,
             slide: 1,
 
             user: {
@@ -448,27 +486,31 @@ export default {
                 this.slide = 2;
 
             }
-            else{
-                console.log("Saldo anda tidak mencukupi")
-        }
-
-    },
-
-    validateAllData() {
-        // Wait a small delay to ensure all async operations are complete
-        setTimeout(() => {
-            const { user_api, expert_api, schedule_api } = this.validasi_loading_data;
-
-            // Only update final_validasi if we have a complete set of responses
-            if (user_api !== null && expert_api !== null && schedule_api !== null) {
-                this.final_validasi = user_api && expert_api && schedule_api;
-            }
             else {
-                this.final_validasi = false;
+                this.saldo_kurang = true;
+                setTimeout(() => {
+                    this.saldo_kurang = false;
+                }, 7000);
+                // console.log("Saldo anda tidak mencukupi")
             }
-        }, 500);
-    }
-},
+
+        },
+
+        validateAllData() {
+            // Wait a small delay to ensure all async operations are complete
+            setTimeout(() => {
+                const { user_api, expert_api, schedule_api } = this.validasi_loading_data;
+
+                // Only update final_validasi if we have a complete set of responses
+                if (user_api !== null && expert_api !== null && schedule_api !== null) {
+                    this.final_validasi = user_api && expert_api && schedule_api;
+                }
+                else {
+                    this.final_validasi = false;
+                }
+            }, 500);
+        }
+    },
 }
 </script>
 <style scoped>
@@ -628,7 +670,7 @@ div.set_middle div.bottom_description div.menu_list div.detail_ahli p#bawah {
 
 @media (max-width: 768px) {
     .mid_side {
-        width: 100%;
+        width: 300px;
         max-width: 300px;
         margin: 10px auto;
     }
@@ -734,7 +776,7 @@ div.set_middle div.bottom_description div.menu_list div.detail_ahli p#bawah {
     }
 
     .mid_side {
-        width: 100%;
+        width: 350px;
         max-width: 100%;
         margin: 10px auto;
     }
