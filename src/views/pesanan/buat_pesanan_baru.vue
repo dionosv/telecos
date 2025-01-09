@@ -297,7 +297,7 @@ export default {
                         this.user.name = data_user.user.name;
                         this.user.wallet = data_user.user.wallet;
                         this.validasi_loading_data.user_api = true;
-                        console.log(data_user);
+                        // console.log(data_user);
 
                         // console.log("wallet : "+this.user.wallet)
                     }
