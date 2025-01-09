@@ -636,7 +636,7 @@ div.set_middle div.bottom_description div.menu_list div.detail_ahli p#bawah {
 
 .end_side {
     background-color: white;
-    width: 360px;
+    width: 400px;
     padding: 20px 15px;
     font-family: 'Courier New', monospace;
     position: relative;

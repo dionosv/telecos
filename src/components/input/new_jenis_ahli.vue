@@ -7,7 +7,7 @@
             @change="handleChange($event)">
             <option value="Dokter Kecantikan">Dokter Kecantikan</option>
             <option value="Dokter Kulit">Dokter Kulit</option>
-            <option value="Tenaga Ahli Kecantikan">Tenaga Ahli Kecantikan</option>
+            <!-- <option value="Tenaga Ahli Kecantikan">Tenaga Ahli Kecantikan</option> -->
 
         </select>
     </div>
