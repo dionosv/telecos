@@ -194,8 +194,21 @@ export default {
         },
 
         selectedDayMeetings() {
-            const selectedDateString = this.selectedDate.toISOString().split('T')[0]
-            return this.allMeetings.filter(meeting => meeting.date === selectedDateString)
+            const selectedDateString = this.selectedDate.toISOString().split('T')[0];
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            const selectedDate = new Date(this.selectedDate);
+            selectedDate.setHours(0, 0, 0, 0);
+
+            // Only show meetings if selected date is today or in the future
+            if (selectedDate >= today) {
+                return this.allMeetings.filter(meeting => 
+                    meeting.date === selectedDateString && 
+                    meeting.avail === "true"
+                );
+            }
+            return []; // Return empty array for past dates
         }
     },
 
@@ -288,7 +301,8 @@ export default {
                             }),
                             endDatetime: schedule.dateEnd,
                             rate: schedule.rate,
-                            status: schedule.status
+                            status: schedule.status,
+                            avail:schedule.availability
                         }));
                     });
                     this.data_is_loaded = true;
@@ -331,7 +345,18 @@ export default {
         },
 
         hasEvent(date) {
-            return this.allMeetings.some(meeting => meeting.date === date)
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const checkDate = new Date(date);
+            
+            // Only show dots for today and future dates
+            if (checkDate >= today) {
+                return this.allMeetings.some(meeting => 
+                    meeting.date === date && 
+                    meeting.avail === "true"
+                );
+            }
+            return false;
         }
     }
 }
@@ -377,7 +402,7 @@ section.all {
     display: grid;
 }
 
-.spin_full {
+spin_full {
     width: 733px;
     height: 0px;
     display: flex;
