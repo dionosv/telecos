@@ -49,7 +49,7 @@
             </div>
         </div>
 
-        <div class="med_menu">
+        <!-- <div class="med_menu">
             <div class="long-container">
                 <router-link :to="{ name: 'buat_artikel_expert' }">
                     <div class="long_menu">
@@ -70,7 +70,7 @@
                 </router-link>
                 <span class="mobile-label">Baca Artikel</span>
             </div>
-        </div>
+        </div> -->
 
     </div>
 </template>
