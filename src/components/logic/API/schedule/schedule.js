@@ -78,6 +78,8 @@ async function check_schedule_availability(scheduleId) {
     };
 
     const res =  JSON.parse(await makeRequest(config)); 
+    console.log(res);
+
     return res.schedules[0].availability;
 } 
 
@@ -105,13 +107,14 @@ async function delete_by_schedule_id(scheduleId) {
 async function block_by_schedule_id(scheduleId) {
 
     let data = JSON.stringify({
-        "scheduleId": scheduleId
+        "scheduleId": scheduleId,
+        "availability": 0
     });
 
     let config = {
         method: 'post',
         maxBodyLength: Infinity,
-        url: x_api_endpoint + '/schedules/blockSchedule',
+        url: x_api_endpoint + '/schedules/changeAvailability',
         headers: {
             'Content-Type': 'application/json'
         },

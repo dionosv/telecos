@@ -51,10 +51,52 @@
                             <!-- Tidak ada jadwal untuk hari ini -->
                             <tidak_ada_acara></tidak_ada_acara>
                         </li>
-                        <li v-for="meeting in selectedDayMeetings" :key="meeting.id"
-                            >
+                        <li v-for="meeting in selectedDayMeetings" :key="meeting.id">
+                            <div class="group flex items-center space-x-4 rounded-xl px-4 py-2 focus-within:bg-gray-100 hover:bg-red-100 cursor-pointer" v-if="meeting.start < meeting.current">
+                                <!-- <img :src="meeting.imageUrl" alt="" /> -->
+                                <ion-icon name="close-circle" class="h-10 w-10 flex-none rounded-full fill-red-600"></ion-icon>
+                                <div class="flex-auto">
+                                    <p class="text-gray-900">{{ meeting.name }}</p>
+                                    <p class="mt-0.5">
+                                        <time :datetime="meeting.startDatetime">{{ meeting.start }} WIB</time> -
+                                        <time :datetime="meeting.endDatetime">{{ meeting.end }} WIB</time>
+                                    </p>
+                                </div>
+                                <Menu as="div"
+                                    class="relative opacity-0 focus-within:opacity-100 group-hover:opacity-100">
+                                    <div>
+                                        <MenuButton
+                                            class="-m-2 flex items-center rounded-full p-1.5 text-gray-500 hover:text-gray-600">
+                                            <span class="sr-only">Open options</span>
+                                            <!-- <EllipsisVerticalIcon class="h-6 w-6" aria-hidden="true" /> -->
+                                        </MenuButton>
+                                    </div>
 
-                            <router-link :to="{ name : 'pesanan_baru', params : { schedule_id : meeting.id , expert_id : this.expertId} }" class="group flex items-center space-x-4 rounded-xl px-4 py-2 focus-within:bg-gray-100 hover:bg-gray-100 cursor-pointer">
+                                    <transition enter-active-class="transition ease-out duration-100"
+                                        enter-from-class="transform opacity-0 scale-95"
+                                        enter-to-class="transform opacity-100 scale-100"
+                                        leave-active-class="transition ease-in duration-75"
+                                        leave-from-class="transform opacity-100 scale-100"
+                                        leave-to-class="transform opacity-0 scale-95">
+                                        <MenuItems
+                                            class="absolute right-0 z-10 mt-2 w-36 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                            <div class="py-1">
+                                                <MenuItem v-slot="{ active }">
+                                                <a href="#"
+                                                    :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']">Edit</a>
+                                                </MenuItem>
+                                                <MenuItem v-slot="{ active }">
+                                                <a href="#"
+                                                    :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']">Cancel</a>
+                                                </MenuItem>
+                                            </div>
+                                        </MenuItems>
+                                    </transition>
+                                </Menu>
+
+                            </div>
+
+                            <router-link :to="{ name : 'pesanan_baru', params : { schedule_id : meeting.id , expert_id : this.expertId} }" class="group flex items-center space-x-4 rounded-xl px-4 py-2 focus-within:bg-gray-100 hover:bg-gray-100 cursor-pointer" v-else>
                                 <!-- <img :src="meeting.imageUrl" alt="" /> -->
                                 <ion-icon name="add-circle" class="h-10 w-10 flex-none rounded-full"></ion-icon>
                                 <div class="flex-auto">
@@ -97,6 +139,8 @@
                                 </Menu>
 
                             </router-link>
+
+
                         </li>
                     </ol>
                 </section>
@@ -204,8 +248,8 @@ export default {
             // Only show meetings if selected date is today or in the future
             if (selectedDate >= today) {
                 return this.allMeetings.filter(meeting => 
-                    meeting.date === selectedDateString && 
-                    meeting.avail === "true"
+                    meeting.date === selectedDateString 
+                    // meeting.avail === "true"
                 );
             }
             return []; // Return empty array for past dates
@@ -261,7 +305,7 @@ export default {
         async get_jadwal_by_expert_id() {
             try {
                 const response = await get_schedule_by_expert_id(this.expertId);
-                if (response && response.schedules) {
+                if (response.status === 1) {
                     const now = new Date();
                     
                     // Filter out past schedules including time check
@@ -299,14 +343,24 @@ export default {
                                 minute: '2-digit',
                                 hour12: false
                             }),
+                            current:new Date().toLocaleTimeString('id-ID', {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                hour12: false
+                            }),
                             endDatetime: schedule.dateEnd,
                             rate: schedule.rate,
                             status: schedule.status,
-                            avail:schedule.availability
+                            // avail:schedule.availability
                         }));
                     });
                     this.data_is_loaded = true;
-                } else {
+                } 
+                else if( response.status === 0){
+                    this.allMeetings = [];
+                    this.data_is_loaded = true;
+                }
+                else {
                     console.error('Invalid API response structure:', response);
                     this.allMeetings = [];
                 }
@@ -402,7 +456,7 @@ section.all {
     display: grid;
 }
 
-spin_full {
+.spin_full {
     width: 733px;
     height: 0px;
     display: flex;

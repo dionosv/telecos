@@ -106,7 +106,7 @@ export default {
       formData.append("image", this.imageFile);
 
       try {
-        const response = await fetch("http://45.159.222.100/images/upload", {
+        const response = await fetch("https://claudio.codes/telecos-be/images/upload", {
           method: "POST",
           body: formData,
         });

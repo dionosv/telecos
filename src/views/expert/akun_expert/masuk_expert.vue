@@ -125,7 +125,7 @@ export default {
   },
   data() {
     return {
-      akun_email: 'nicolas.preo@gmail.com',
+      akun_email: 'dion.hananto@binus.ac.id',
       akun_sandi: 'Solo2121!',
       login_failed: false,
       login_success: false,
@@ -146,7 +146,7 @@ export default {
 
         await new Promise(resolve => setTimeout(resolve, 5000));
         this.login_success = true; 
-        this.$router.push({ name: 'main_expert' });
+        this.$router.push({ name: 'home_expert' });
 
       } else {
         this.login_failed = true;

@@ -34,7 +34,7 @@
     </div>
 
 
-    <section class="all">
+    <section class="all" v-if="all_loaded">
 
 
         <div class="mx-auto max-w-8xl items-center   p-6 lg:px-8">
@@ -96,9 +96,18 @@
                     <div class="split_1">
 
 
+                        <div class="split_hari">
+
                         <h2 class="text-base font-semibold leading-6 text-gray-900">
                             Jadwal untuk <time :datetime="selectedDateISO">{{ selectedDateFormatted }}</time>
                         </h2>
+
+                        <p id="total_sesi_hari_ini" v-if="totalSessionsForSelectedDay > 0" class="text-sm text-orange-600">
+                            {{ totalSessionsForSelectedDay }} sesi dijadwalkan
+                        </p>
+
+                    </div>
+
 
                         <div class="split_3">
                             <div class="input_price">
@@ -188,12 +197,15 @@
         </div>
 
     </section>
+
+    <Spinner v-else></Spinner>
 </template>
 
 <script>
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
 import tidak_ada_acara from './tidak_ada_acara.vue';
 import { delete_by_schedule_id, get_schedule_by_expert_id, set_schedule_id } from '../logic/API/schedule/schedule';
+import Spinner from '../spinner/spinner.vue';
 
 export default {
     components: {
@@ -201,7 +213,8 @@ export default {
         MenuButton,
         MenuItem,
         MenuItems,
-        tidak_ada_acara
+        tidak_ada_acara,
+        Spinner
     },
     props: {
         expertId: {
@@ -228,7 +241,8 @@ export default {
             },
             mencapai_maksimum_sesi: false,
             tarif_konsultasi: '25000', // Set default price to 25000
-            isloading: false
+            isloading: false, 
+            all_loaded : false
         }
     },
 
@@ -253,6 +267,12 @@ export default {
             immediate: true,
             handler(newExpertId) {
                 // console.log(newExpertId)
+                this.handle_on_reload();
+            }
+        },
+        selectedDate: {
+            immediate: true,
+            handler(newDate) {
                 this.handle_on_reload();
             }
         }
@@ -301,6 +321,12 @@ export default {
 
         isNextDisabled() {
             return this.currentDate >= this.maxDate
+        },
+
+        totalSessionsForSelectedDay() {
+            return this.allMeetings.filter(meeting => 
+                meeting.date === this.selectedDateISO && meeting.occupied
+            ).length;
         }
     },
 
@@ -346,8 +372,9 @@ export default {
         async handle_on_reload() {
             try {
                 const response = await get_schedule_by_expert_id(this.expertId);
-                if (response && response.status === 1 && response.schedules) {
+                if (response.status === 1) {
                     this.syncSchedulesToMeetings(response.schedules);
+                    this.all_loaded = true;  
                     // console.log(response.schedules);
                 }
             } catch (error) {
@@ -426,7 +453,6 @@ export default {
             try {
                 this.isloading = true;
                 if (this.toggleActivities.activate.length != 0) {
-                    // console.log('Activated Sessions:', this.toggleActivities.activate);
                     for (let i = 0; i < this.toggleActivities.activate.length; i++) {
                         try {
                             await this.handle_upload_to_api(
@@ -442,14 +468,19 @@ export default {
                     }
                 }
                 if (this.toggleActivities.deactivate.length != 0) {
-                    // console.log('Deactivated Sessions:', this.toggleActivities.deactivate);
                     for (let i = 0; i < this.toggleActivities.deactivate.length; i++) {
                         try {
-                            await this.handle_delete_api(
-                                this.toggleActivities.deactivate[i].server_id,
-                            );
+                            const scheduleId = this.toggleActivities.deactivate[i].server_id;
+                            await this.handle_delete_api(scheduleId);
+                            
+                            // Update the corresponding meeting in allMeetings
+                            const meetingToUpdate = this.allMeetings.find(m => m.schedule_id === scheduleId);
+                            if (meetingToUpdate) {
+                                meetingToUpdate.occupied = false;
+                                meetingToUpdate.schedule_id = null;
+                            }
                         } catch (error) {
-                            console.log('Error uploading session:', error);
+                            console.log('Error deleting session:', error);
                             continue;
                         }
                     }
@@ -457,13 +488,12 @@ export default {
 
                 this.toggleActivities.activate = [];
                 this.toggleActivities.deactivate = [];
-
-                await this.generateAllMeetings();
                 await this.handle_on_reload();
-
+                
                 this.isloading = false;
             } catch (error) {
                 console.log('Error saving sessions:', error);
+                this.isloading = false;
             }
         },
 
@@ -478,17 +508,10 @@ export default {
         async handle_delete_api(schedule_id) {
             try {
                 const hasil = await delete_by_schedule_id(schedule_id);
-                if (hasil && hasil.status === 1) {
-                    // Find and update the meeting that was just deleted
-                    const meetingToUpdate = this.allMeetings.find(m => m.schedule_id === schedule_id);
-                    if (meetingToUpdate) {
-                        meetingToUpdate.occupied = false;
-                        meetingToUpdate.schedule_id = null;
-                    }
-                }
-                // console.log(hasil);
+                return hasil;
             } catch (error) {
-                console.log('Error uploading to API:', error);
+                console.log('Error deleting from API:', error);
+                throw error;
             }
         },
 
@@ -805,5 +828,17 @@ div.split_1 div.input_price input#price {
         padding-bottom: 15px;
     }
 
+}
+
+.split_hari {
+    display: flex;
+    flex-direction: row;
+    /* gap: 5px; */
+    justify-content: space-between;
+    align-items: center;
+}
+
+#total_sesi_hari_ini {
+    font-weight: 500;
 }
 </style>

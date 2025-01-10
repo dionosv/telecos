@@ -21,7 +21,7 @@
                         class="text-gray-700 hover:bg-orange-50 hover:text-orange-500 group flex gap-x-3 rounded-md p-2 pl-3 text-sm font-semibold leading-6">Daftar Ahli Favorit</router-link>
                 </li> -->
                 <li>
-                    <router-link :to="{ name: 'pembayaran' }"
+                    <router-link :to="{ name: 'view_payroll' }"
                         class="text-gray-700 hover:bg-orange-50 hover:text-orange-500 group flex gap-x-3 rounded-md p-2 pl-3 text-sm font-semibold leading-6">Saldo</router-link>
                 </li>
                 <li>

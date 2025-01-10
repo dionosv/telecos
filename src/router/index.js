@@ -123,9 +123,9 @@ const router = createRouter({
         },
 
         {
-          path: 'konsultasi/buat-konsultasi',
-          name: 'buat_konsultasi',
-          component: () => import('../views/konsultasi/konsultasi_baru.vue'),
+          path: 'konsultasi/sesi-aktif',
+          name: 'sesi_aktif',
+          component: () => import('../views/konsultasi/sesi_aktif.vue'),
         },
 
         {
@@ -197,28 +197,7 @@ const router = createRouter({
 
       ]
     },
-
-    // {
-    //   path: "/artikel",
-    //   name: 'artikel', 
-    //   component: () => import('../App_user.vue'),
-    //   children: [
-    //     {
-    //       path: "",
-    //       name: "landing_page_artikel",
-    //       component: () => import('../views/article/landing_page_article.vue'),
-    //     },
-    //     {
-    //       path: '/baca/:articleId',
-    //       name: 'single_page_article',
-    //       component: () => import('../views/article/single_article/single_page_article.vue'),
-    //       
-    //     },
-
-    //   ]
-    // },
-
-
+ 
     {
       path: '/expert',
       name: 'main_expert',
@@ -304,6 +283,34 @@ const router = createRouter({
               
             },
           ]
+        },
+        {
+          path:'saldo',
+          children:[
+            {
+              path:'',
+              name:'view_payroll',
+              component:()=>import('../views/expert/saldo_expert/payroll_expert.vue')
+            },
+
+            {
+              path:'tarik-saldo',
+              name:'tarik_saldo',
+              component:()=>import('../views/expert/saldo_expert/withdraw_saldo.vue')
+            },
+          ]
+        },
+        {
+          path:'sesi',
+          children:[
+            {
+              path:'',
+              name:'sesi_aktif',
+              component:()=>import('../views/expert/sesi_aktif/sesi_aktif_expert.vue')
+            },
+             
+          ]
+
         },
       ]
     },

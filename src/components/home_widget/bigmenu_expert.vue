@@ -3,14 +3,14 @@
     <div class="all_menu">
         <div class="big_menu">
             <div class="menu-container">
-                <router-link :to="{ name: 'buat_konsultasi' }">
+                <router-link :to="{ name: 'sesi_aktif' }">
                     <div class="single_menu">
                         <ion-icon name="videocam-outline"></ion-icon>
-                        <span class="tooltip">Konsultasi</span>
+                        <span class="tooltip">Sesi Aktif</span>
                     </div>
                 </router-link>
 
-                <span class="mobile-label">Konsultasi</span>
+                <span class="mobile-label">Sesi Aktif</span>
             </div>
 
             <div class="menu-container">

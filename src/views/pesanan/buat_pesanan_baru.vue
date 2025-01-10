@@ -482,7 +482,7 @@ export default {
 
         async handle_button_konfirmasi() {
             if (await this.check_saldo()) {
-                if (await check_schedule_availability(this.scheduleId) === "true"){
+                if (await check_schedule_availability(this.scheduleId) === 1){
                     await block_by_schedule_id(this.scheduleId);
                     
                     console.log("ada")
