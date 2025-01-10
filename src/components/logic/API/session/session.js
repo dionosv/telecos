@@ -25,7 +25,7 @@ async function create_new_session(expertId, userId, sessionName, rate, dateStart
     return JSON.parse(await makeRequest(config));
 }
 
-async function get_session_by_userId(userId) {
+async function get_session_by_user_Id(userId) {
 
     let data = JSON.stringify({ 
         "userId": userId, 
@@ -103,4 +103,4 @@ async function change_session_id_status(sessionId, status) {
 } 
 
 
-export {create_new_session, get_session_by_userId, get_session_by_expert_Id, get_session_by_session_Id, change_session_id_status};
+export {create_new_session, get_session_by_user_Id, get_session_by_expert_Id, get_session_by_session_Id, change_session_id_status};
