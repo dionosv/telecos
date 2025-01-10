@@ -98,15 +98,16 @@
 
                         <div class="split_hari">
 
-                        <h2 class="text-base font-semibold leading-6 text-gray-900">
-                            Jadwal untuk <time :datetime="selectedDateISO">{{ selectedDateFormatted }}</time>
-                        </h2>
+                            <h2 class="text-base font-semibold leading-6 text-gray-900">
+                                Jadwal untuk <time :datetime="selectedDateISO">{{ selectedDateFormatted }}</time>
+                            </h2>
 
-                        <p id="total_sesi_hari_ini" v-if="totalSessionsForSelectedDay > 0" class="text-sm text-orange-600">
-                            {{ totalSessionsForSelectedDay }} sesi dijadwalkan
-                        </p>
+                            <p id="total_sesi_hari_ini" v-if="totalSessionsForSelectedDay > 0"
+                                class="text-sm text-orange-600">
+                                {{ totalSessionsForSelectedDay }} sesi dijadwalkan
+                            </p>
 
-                    </div>
+                        </div>
 
 
                         <div class="split_3">
@@ -160,7 +161,7 @@
                         </li>
                         <li v-for="meeting in selectedDayMeetings" :key="meeting.id" :class="['group flex items-center space-x-4 rounded-xl px-4 py-2 focus-within:bg-gray-100 hover:bg-gray-100 cursor-pointer',
                             meeting.occupied ? 'bg-orange-100 hover:bg-orange-300' : '']"
-                            @click="handle_toogle_block(meeting.id, meeting.startDatetime, meeting.endDatetime)">
+                            @click="handle_toogle_block(meeting.id, meeting.startDatetime, meeting.endDatetime , meeting.availability)">
 
                             <!-- <ion-icon name="add-circle" ></ion-icon> -->
                             <ion-icon name="checkmark-circle"
@@ -170,15 +171,17 @@
                                 v-if="!meeting.occupied"></ion-icon>
 
                             <div class="flex-auto">
-                                <p class="text-gray-900">{{ meeting.name }}</p>
+                                <div class="x_flex_x">
+                                    <p class="text-gray-900">{{ meeting.name }}</p>
+                                    <p v-if="meeting.availability === 0" class="mt-0.5 text-xs text-orange-600">
+                                        Sesi telah di pesan
+                                    </p>
+                                </div>
                                 <p class="mt-0.5">
                                     <time :datetime="meeting.startDatetime">{{ meeting.start }}</time> -
                                     <time :datetime="meeting.endDatetime">{{ meeting.end }}</time>
                                 </p>
                             </div>
-
-                            <!-- <p>{{ meeting.schedule_id }}</p> -->
-
                             <div v-if="meeting.schedule_id" class="custom_div">
                                 <ion-icon name="sync-circle" id="sync_circle"></ion-icon>
                             </div>
@@ -241,8 +244,8 @@ export default {
             },
             mencapai_maksimum_sesi: false,
             tarif_konsultasi: '25000', // Set default price to 25000
-            isloading: false, 
-            all_loaded : false
+            isloading: false,
+            all_loaded: false
         }
     },
 
@@ -324,7 +327,7 @@ export default {
         },
 
         totalSessionsForSelectedDay() {
-            return this.allMeetings.filter(meeting => 
+            return this.allMeetings.filter(meeting =>
                 meeting.date === this.selectedDateISO && meeting.occupied
             ).length;
         }
@@ -359,7 +362,8 @@ export default {
                             end: `${endHour}:${endMin} WIB`,
                             endDatetime: `${formattedDate} ${endHour}:${endMin}:00`,
                             occupied: false,
-                            schedule_id: null
+                            schedule_id: null,
+                            availability: 1
                         });
                         sessionCount++;
                         meeting_id++;
@@ -374,7 +378,9 @@ export default {
                 const response = await get_schedule_by_expert_id(this.expertId);
                 if (response.status === 1) {
                     this.syncSchedulesToMeetings(response.schedules);
-                    this.all_loaded = true;  
+                    // console.log('Schedules loaded:', response.schedules);
+                    this.all_loaded = true;
+                    // console.log(this.allMeetings);
                     // console.log(response.schedules);
                 }
             } catch (error) {
@@ -425,6 +431,7 @@ export default {
                             const matchDate = m.date === formattedDate;
                             const matchStart = m.start === startTime;
                             const matchEnd = m.end === endTime;
+                            // const meeting_booked = m.availability;
 
                             if (matchDate && matchStart && matchEnd) {
                                 // console.log(`Found matching meeting: ${m.date} ${m.start}-${m.end}`);
@@ -436,6 +443,7 @@ export default {
                         if (meeting) {
                             meeting.occupied = true;
                             meeting.schedule_id = schedule.scheduleId;
+                            meeting.availability = schedule.availability;
                             // console.log(`Updated meeting with schedule ID: ${schedule.scheduleId}`);
                         } else {
                             console.log(`No matching meeting found for: ${formattedDate} ${startTime}-${endTime}`);
@@ -472,7 +480,7 @@ export default {
                         try {
                             const scheduleId = this.toggleActivities.deactivate[i].server_id;
                             await this.handle_delete_api(scheduleId);
-                            
+
                             // Update the corresponding meeting in allMeetings
                             const meetingToUpdate = this.allMeetings.find(m => m.schedule_id === scheduleId);
                             if (meetingToUpdate) {
@@ -489,7 +497,7 @@ export default {
                 this.toggleActivities.activate = [];
                 this.toggleActivities.deactivate = [];
                 await this.handle_on_reload();
-                
+
                 this.isloading = false;
             } catch (error) {
                 console.log('Error saving sessions:', error);
@@ -515,17 +523,20 @@ export default {
             }
         },
 
-        handle_toogle_block(id, start_session, end_session) {
+        handle_toogle_block(id, start_session, end_session, dipesan) {
             const meeting = this.allMeetings.find(m => m.id === id);
             if (!meeting) { return };
+
+            // Check if meeting is already occupied and availability is 0
+            if (meeting.occupied && meeting.availability === 0) {
+                return; // Prevent toggling if meeting is already occupied and fully booked
+            }
 
             if (!meeting.occupied) {
                 const date = meeting.date;
                 const occupiedSessionsForDay = this.allMeetings.filter(m =>
                     m.date === date && m.occupied
                 ).length;
-
-                // console.log("Start : " + start_session + "\nEnd : " + end_session);
 
                 if (occupiedSessionsForDay >= 10) {
                     this.mencapai_maksimum_sesi = true;
@@ -535,8 +546,6 @@ export default {
                     }, 4000);
                     return;
                 }
-            } else {
-                // console.log(`Meeting canceled time start: ${start_session} time end: ${end_session}`);
             }
 
             meeting.occupied = !meeting.occupied;
@@ -544,23 +553,16 @@ export default {
             // Create activity object
             const activity = {
                 server_id: meeting.schedule_id || null,
-                // date: meeting.date,
                 start: start_session,
                 end: end_session,
-                // timestamp: new Date().toISOString()
             };
 
             // Push to appropriate array based on action
             if (meeting.occupied) {
-
                 this.toggleActivities.activate.push(activity);
-                // console.log(activity)
             } else {
                 this.toggleActivities.deactivate.push(activity);
             }
-
-            // console.log('Activated sessions:', this.toggleActivities.activate);
-            // console.log('Deactivated sessions:', this.toggleActivities.deactivate);
         },
 
         generateCalendarDays(year, month) {
@@ -794,6 +796,12 @@ section.all {
     #all_meeting_scroll {
         max-height: 35rem;
     }
+}
+
+.x_flex_x{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 div.split_1 div.input_price input#price {
