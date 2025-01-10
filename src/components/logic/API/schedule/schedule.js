@@ -77,9 +77,7 @@ async function check_schedule_availability(scheduleId) {
         data: data
     };
 
-    const res =  JSON.parse(await makeRequest(config)); 
-    console.log(res);
-
+    const res =  JSON.parse(await makeRequest(config));  
     return res.schedules[0].availability;
 } 
 
@@ -108,7 +106,7 @@ async function block_by_schedule_id(scheduleId) {
 
     let data = JSON.stringify({
         "scheduleId": scheduleId,
-        "availability": 0
+        "availability": "0"
     });
 
     let config = {

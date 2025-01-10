@@ -52,7 +52,8 @@
                             <tidak_ada_acara></tidak_ada_acara>
                         </li>
                         <li v-for="meeting in selectedDayMeetings" :key="meeting.id">
-                            <div class="group flex items-center space-x-4 rounded-xl px-4 py-2 focus-within:bg-gray-100 hover:bg-red-100 cursor-pointer" v-if="meeting.start < meeting.current">
+                            <!-- <p>{{ meeting.avail }}</p> -->
+                            <div class="group flex items-center space-x-4 rounded-xl px-4 py-2 focus-within:bg-gray-100 hover:bg-red-100 cursor-pointer" v-if="meeting.start < meeting.current  || meeting.avail === 0 ">
                                 <!-- <img :src="meeting.imageUrl" alt="" /> -->
                                 <ion-icon name="close-circle" class="h-10 w-10 flex-none rounded-full fill-red-600"></ion-icon>
                                 <div class="flex-auto">
@@ -351,7 +352,7 @@ export default {
                             endDatetime: schedule.dateEnd,
                             rate: schedule.rate,
                             status: schedule.status,
-                            // avail:schedule.availability
+                            avail:schedule.availability
                         }));
                     });
                     this.data_is_loaded = true;
@@ -407,7 +408,7 @@ export default {
             if (checkDate >= today) {
                 return this.allMeetings.some(meeting => 
                     meeting.date === date && 
-                    meeting.avail === "true"
+                    meeting.avail === 1
                 );
             }
             return false;
