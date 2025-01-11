@@ -533,7 +533,7 @@ export default {
             }
 
             if (!meeting.occupied) {
-                const date = meeting.date;
+                const date = meeting.date; 
                 const occupiedSessionsForDay = this.allMeetings.filter(m =>
                     m.date === date && m.occupied
                 ).length;

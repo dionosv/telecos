@@ -45,55 +45,6 @@
     <div id="all" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <Spinner v-if="final_validasi === null"></Spinner>
         <div class="wrapper_pesanan_baru" v-if="final_validasi === true">
-            <!-- <div class="set_middle">
-                <div class="top_image">
-                    <img :src=data_ahli.imageName alt="Gambar Ahli" class="w-40 h-40 rounded-full mx-auto">
-                </div>
-
-                <div class="bottom_description" v-if="final_data">
-                    <p class="text-center text-3xl font-bold text-gray-900">{{ data_ahli.name }}</p>
-                    <p class="text-center sm:text-s lg:text-sm text-gray-500 pb-3">{{ data_ahli.description }}</p>
-
-                     
-
-                    <div class="menu_list">
-                        <ion-icon name="bag-remove"></ion-icon>
-                        <div class="detail_ahli">
-                            <p id="atas">Pengalaman</p>
-                            <p id="bawah">{{ new Date().getFullYear() - new Date(data_ahli.firstJob).getFullYear()
-                                }}
-                                tahun</p>
-                        </div>
-                    </div>
-
-                    <div class="menu_list">
-                        <img src="/src/assets/ahli_icon/garuda.png" alt="logo garuda" id="garuda">
-                        <div class="detail_ahli">
-                            <p id="atas">Nomor STR</p>
-                            <p id="bawah">{{ data_ahli.strNum }}</p>
-
-                        </div>
-                    </div>
-
-                    <div class="menu_list">
-                        <ion-icon name="school"></ion-icon>
-                        <div class="detail_ahli">
-                            <p id="atas">Almamater</p>
-                            <p id="bawah">{{ data_ahli.almamater }}</p>
-                        </div>
-                    </div>
-
-                    <div class="menu_list">
-                        <ion-icon name="location"></ion-icon>
-                        <div class="detail_ahli">
-                            <p id="atas">Lokasi Praktik</p>
-                            <p id="bawah">{{ kota }}, {{ provinsi }}</p>
-                        </div>
-                    </div>
-                </div>
-
-
-            </div> -->
             <div class="left_side">
                 <Logo_aja></Logo_aja>
                 <div class="wrap_left_side">
@@ -226,12 +177,13 @@ import { get_experts_byID } from '@/components/logic/API/experts';
 import { check_fav_by_userId_and_expertId } from '@/components/logic/API/favourite';
 import { expert_profile_picture } from '@/components/logic/API/image_processor';
 import { usetelecos_session_detailsStore } from '@/components/logic/API/save_session';
-import provinsiData from '@/components/data_lokasi/provinsi.json';
 import Logo_aja from '@/components/logo/logo_aja.vue';
 import { get_user_data } from '@/components/logic/API/user';
 import { block_by_schedule_id, check_schedule_availability, get_schedule_by_schedule_id } from '@/components/logic/API/schedule/schedule';
 import Spinner from '@/components/spinner/spinner.vue';
 import { kurangi_saldo } from '@/components/logic/API/saldo/saldo';
+import { new_transaction_user_konsultasi_mulai } from '@/components/logic/API/transaction/transaction';
+import { create_new_session } from '@/components/logic/API/session/session';
 
 export default {
     components: {
@@ -244,6 +196,12 @@ export default {
             deep: true,
             handler(newVal) {
                 this.validateAllData();
+            }
+        },
+        new_session_id: {
+            // deep: true,
+            handler(newVal) { 
+                console.log("new session id : "+newVal)
             }
         }
 
@@ -267,6 +225,8 @@ export default {
                 startHour: '',
                 endDate: '',
                 endHour: '',
+                tz_start:"",
+                tz_end:"",
                 price: ''
             },
 
@@ -295,6 +255,8 @@ export default {
                 currentWorkspace: '',
                 almamater: ''
             },
+
+            new_session_id : "",
 
             final_validasi: null,
             validasi_loading_data: {
@@ -334,10 +296,7 @@ export default {
                         const data_user = await get_user_data(this.userId);
                         this.user.name = data_user.user.name;
                         this.user.wallet = data_user.user.wallet;
-                        this.validasi_loading_data.user_api = true;
-                        // console.log(data_user);
-
-                        // console.log("wallet : "+this.user.wallet)
+                        this.validasi_loading_data.user_api = true; 
                     }
                 }
             } catch (error) {
@@ -370,7 +329,7 @@ export default {
                     };
 
                     this.final_data = true;
-                    this.decode_kode_lokasi();
+                    // this.decode_kode_lokasi();
                     this.validasi_loading_data.expert_api = true;
                 }
             } catch (error) {
@@ -385,6 +344,28 @@ export default {
                 if (cek_jadwal.status === 1) {
                     let startTime = new Date(cek_jadwal.schedules[0].dateStart);
                     let endTime = new Date(cek_jadwal.schedules[0].dateEnd);
+                    // console.log(startTime)
+                    const formattedStartTime = startTime.toISOString().slice(0, 10);
+                    const formattedEndTime = endTime.toISOString().slice(0, 10);
+
+                    const format_start_time = startTime.toLocaleTimeString('id-ID', {
+                        hour: '2-digit',
+                        minute: '2-digit', 
+                        second: '2-digit',
+                        hour12: false
+                    }).replace(/\./g, ':');
+
+                    const format_end_time = endTime.toLocaleTimeString('id-ID', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit', 
+                        hour12: false
+                    }).replace(/\./g, ':');
+
+                    this.meeting.tz_start = `${formattedStartTime} ${format_start_time}`;
+                    this.meeting.tz_end = `${formattedEndTime} ${format_end_time}`;
+                    // console.log(this.meeting.tz_start)
+                    // console.log(this.meeting.tz_end)
                     this.meeting.price = cek_jadwal.schedules[0].rate;
                     this.meeting.startHour = startTime.toLocaleTimeString('id-ID', {
                         hour: '2-digit',
@@ -402,7 +383,7 @@ export default {
                     const dayName = dayNames[startTime.getDay()];
                     const formattedDate = startTime.toLocaleDateString('id-ID', options);
                     this.meeting.meetingDate = `${dayName}, ${formattedDate}`;
-                    this.validasi_loading_data.schedule_api = true;
+                    this.validasi_loading_data.schedule_api = true; 
                     // console.log(this.meeting)
                 }
                 // console.log(cek_jadwal)
@@ -410,41 +391,6 @@ export default {
                 console.error('Failed to load schedule details:', error);
                 this.validasi_loading_data.schedule_api = false;
             }
-        },
-
-
-        async decode_kode_lokasi() {
-            const kode_lokasi = this.data_ahli.currentWorkspace.split('.');
-            const provinsi = kode_lokasi[0];
-            await this.get_nama_provinsi(provinsi);
-            await this.get_data_kota(provinsi, this.data_ahli.currentWorkspace);
-        },
-
-        async get_data_kota(provinsi_code, full_code) {
-            try {
-                const cityModule = await import(`@/components/data_lokasi/lokasi/${provinsi_code}.json`);
-                const all_kota = cityModule.data;
-                this.get_nama_kota(all_kota, full_code);
-            } catch (error) {
-                console.error('Error loading city data:', error);
-                this.kota = 'Data tidak tersedia';
-            }
-        },
-
-        async get_nama_provinsi(kode_provinsi) {
-            try {
-                const all_provinsi = provinsiData.data;
-                const provinsi = all_provinsi.find(p => p.code === kode_provinsi);
-                this.provinsi = provinsi ? provinsi.name : 'Provinsi tidak ditemukan';
-            } catch (error) {
-                console.error('Error getting province name:', error);
-                this.provinsi = 'Data tidak tersedia';
-            }
-        },
-
-        get_nama_kota(data, full_code) {
-            const kota = data.find(k => k.code === full_code);
-            this.kota = kota ? kota.name : 'Kota tidak ditemukan';
         },
 
         async check_fav_or_not() {
@@ -464,28 +410,47 @@ export default {
 
 
         async check_saldo() {
-            if (this.user.wallet < this.meeting.price) {
-                // console.log("Saldo anda tidak mencukupi")
+            if (this.user.wallet < this.meeting.price) { 
                 return false;
             }
-            else {
-                // console.log("Saldo mencukupi")
+            else { 
                 return true
             }
         },
 
         async proses_kurangi_saldo() {
-            await console.log(kurangi_saldo(this.userId, this.meeting.price));
+            console.log(await kurangi_saldo(this.userId, this.meeting.price));
         },
 
-         
+        async proses_bikin_transaksi(sessionId, 
+                senderId, 
+                amount,){
+            console.log(await new_transaction_user_konsultasi_mulai(
+                sessionId, 
+                senderId, 
+                amount,
+                    ));
+        },
+
+        async proses_buat_session(){
+            const x_sessionName = `Sesi Konsultasi dengan ${this.data_ahli.name}`;
+            const res = (await create_new_session(this.expertId, this.userId, x_sessionName, this.meeting.price , this.meeting.tz_start, this.meeting.tz_end));
+            return res.sessionId;
+        },
 
         async handle_button_konfirmasi() {
             if (await this.check_saldo()) {
                 if (await check_schedule_availability(this.scheduleId) === 1){
                     await block_by_schedule_id(this.scheduleId);
-                    
-                    console.log("ada")
+                    await this.proses_kurangi_saldo();
+                    let ses_id = await this.proses_buat_session();
+                    await this.proses_bikin_transaksi(ses_id,
+                        this.userId, 
+                        this.meeting.price
+                    );
+                    this.new_session_id = ses_id;
+                    this.slide = 2;
+                    // console.log("ada jadwal")
                 } 
                 else{
                     console.log("tidak ada jadwal")

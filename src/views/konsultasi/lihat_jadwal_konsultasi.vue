@@ -42,6 +42,7 @@ export default {
                         this.userId = sessionDetails.userid;
                         console.log("user id : "+this.userId);
                         await this.wrapper_get_session_by_user_Id();
+                        await this.get_session_by_id();
 
                         // const data_user = await get_user_data(this.userId);
                         // this.user.name = data_user.user.name;
@@ -60,6 +61,10 @@ export default {
 
         async wrapper_get_session_by_user_Id(){
             this.session = await get_session_by_user_Id(this.userId);
+        },
+
+        async get_session_by_id(){
+            console.log(await get_session_by_user_Id(this.userId));
         }
         
     },
