@@ -1,34 +1,85 @@
 <template>
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <!-- <Kalender_2></Kalender_2> -->
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" v-if="loaded">
 
-        <!-- <kalender></kalender> -->
+        <!-- {{ all_session }} -->
+        <ul role="list" class="divide-y divide-gray-100">
+            <li v-for="session in sortedSessions" :key="session.sessionId">
+
+                <router-link :to="{ name: 'single_jadwal_konsultasi', params: { session_id: session.sessionId } }" class="relative flex justify-between gap-x-6 px-4 py-5 hover:bg-gray-50 sm:px-6 lg:px-8">
+                <div class="flex shrink-0 items-center gap-x-4">
+                    <div class="hidden sm:flex sm:flex-col sm:items-start">
+                        <p class="text-sm leading-6 text-gray-900">{{ session.sessionName }}</p>
+                        <p class="mt-1 text-xs leading-5 text-gray-500">
+                            {{ formatDateTime(session.date, session.endDate) }}
+                        </p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-x-4">
+                    <div class="min-w-0 flex-auto text-right">
+                        <p class="text-sm font-semibold leading-6 text-gray-900">
+                            <a href="#">
+                                <span class="absolute inset-x-0 -top-px bottom-0" />
+                                {{ expertDetails[session.expertId]?.name || 'Loading...' }}
+                            </a>
+                        </p>
+                        <p class="mt-1 text-xs leading-5 text-gray-500">
+                            <span class="relative truncate">{{ expertDetails[session.expertId]?.description || 'Expert' }}</span>
+                        </p>
+                    </div>
+                    <img class="h-12 w-12 flex-none rounded-full bg-gray-50"
+                        :src="getExpertImage(session.expertId)" alt="" />
+                    <ion-icon name="chevron-forward-outline"></ion-icon>
+                </div>
+            </router-link>
+
+            </li>
+        </ul>
 
 
-        {{userId}}
+        <!-- <div class="no_found">
+            anda tidak memiliki jadwal konsultasi
+        </div> -->
 
-        {{ all_session }}
     </div>
+
+    <Spinner v-if="!loaded"></Spinner>
 </template>
-<script>
-import kalender from '@/components/kalender/kalender.vue'; 
+<script> 
+import { get_experts_byID } from '@/components/logic/API/experts';
 import { usetelecos_session_detailsStore } from '@/components/logic/API/save_session';
 import { get_session_by_user_Id } from '@/components/logic/API/session/session';
 import { always_scroll_on_top } from '@/components/logic/tools/handle_always_scroll_on_top';
+import Spinner from '@/components/spinner/spinner.vue';
 
 export default {
-    mounted() { 
+    mounted() {
         always_scroll_on_top();
         this.try_get_session();
     },
-    components: {
-        kalender, 
+    components: { 
+        Spinner
     },
     data() {
         return {
             userId: '',
             session: {},
             all_session: {},
+            loaded : false,
+            expertDetails: {} // Add this line
+        }
+    },
+    computed: {
+        sortedSessions() {
+            if (!this.all_session.session) return [];
+
+            return [...this.all_session.session]
+                .filter(session => session.status === "pending") // Only show pending sessions
+                .sort((a, b) => {
+                    const dateA = new Date(a.date);
+                    const dateB = new Date(b.date);
+                    return dateA - dateB;
+                });
+            
         }
     },
     methods: {
@@ -43,33 +94,97 @@ export default {
                 } else {
                     if (sessionDetails.phase == 1) {
                         this.userId = sessionDetails.userid;
-                        console.log("user id : "+this.userId);
+                        console.log("user id : " + this.userId);
                         await this.wrapper_get_session_by_user_Id();
-                        await this.get_session_by_id();
-
-                        // const data_user = await get_user_data(this.userId);
-                        // this.user.name = data_user.user.name;
-                        // this.user.wallet = data_user.user.wallet;
-                        // this.validasi_loading_data.user_api = true;
-                        // console.log(data_user);
-                        // console.log("wallet : "+this.user.wallet)
+                        await this.get_session_by_id(); 
                     }
                 }
             } catch (error) {
-                console.error('Failed to load session details:', error); 
+                console.error('Failed to load session details:', error);
             } finally {
                 this.isLoading = false;
             }
-        }, 
+        },
 
-        async wrapper_get_session_by_user_Id(){
+        async wrapper_get_session_by_user_Id() {
             this.session = await get_session_by_user_Id(this.userId);
         },
 
-        async get_session_by_id(){
+        async get_session_by_id() {
             this.all_session = await get_session_by_user_Id(this.userId);
+            // After getting sessions, fetch expert details for each session
+            if (this.all_session.status === 1) {
+                const expertIds = new Set(this.all_session.session.map(s => s.expertId));
+                await Promise.all(
+                    Array.from(expertIds).map(id => this.fetchExpertDetails(id))
+                );
+            }
+            else {
+                console.log("no session");
+            }
+            this.loaded = true;
+        },
+
+        async fetchExpertDetails(expertId) {
+            try {
+                const expertData = await get_experts_byID(expertId);
+                if (expertData.status === 1) {
+                    this.expertDetails = {
+                        ...this.expertDetails,
+                        [expertId]: expertData.user
+                    };
+                }
+            } catch (error) {
+                console.error('Failed to fetch expert details:', error);
+            }
+        },
+
+        getExpertImage(expertId) {
+            const expert = this.expertDetails[expertId];
+            if (expert?.imageName) {
+                return `https://claudio.codes/telecos-be/image-rs/expert/${expert.imageName}`;
+            }
+            return 'default-image-url';
+        },
+
+        async wrapper_get_detail_ahli_by_id(expert_id){
+            console.log (await get_experts_byID(expert_id));
+        },
+
+        formatDateTime(startTime, endTime) {
+            const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+            const months = [
+                'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+                'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+            ];
+
+            const date = new Date(startTime);
+            const day = days[date.getDay()];
+            const dateNum = String(date.getDate()).padStart(2, '0');
+            const month = months[date.getMonth()];
+            const year = date.getFullYear();
+
+            // Convert UTC to WIB (UTC+7)
+            const startDate = new Date(startTime);
+            const endDate = new Date(endTime);
+
+            const startHour = startDate.toLocaleTimeString('id-ID', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false,
+                timeZone: 'Asia/Jakarta'
+            });
+
+            const endHour = endDate.toLocaleTimeString('id-ID', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false,
+                timeZone: 'Asia/Jakarta'
+            });
+
+            return `${day}, ${dateNum} ${month} ${year} ${startHour} - ${endHour} WIB`;
         }
-        
+
     },
 
 

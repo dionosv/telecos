@@ -7,20 +7,23 @@
 
         single lihat jadwal konsultasi
 
+        {{session_id}}
 
-        {{userId}}
+        <!-- {{userId}} -->
     </div>
 </template>
 <script>
 import kalender from '@/components/kalender/kalender.vue'; 
 import { usetelecos_session_detailsStore } from '@/components/logic/API/save_session';
-import { get_session_by_user_Id } from '@/components/logic/API/session/session';
+import { get_session_by_session_Id, get_session_by_user_Id } from '@/components/logic/API/session/session';
+import { get_user_data } from '@/components/logic/API/user';
 import { always_scroll_on_top } from '@/components/logic/tools/handle_always_scroll_on_top';
 
 export default {
     mounted() { 
         always_scroll_on_top();
         this.try_get_session();
+        this.get_session_by_id();
     },
     components: {
         kalender, 
@@ -29,6 +32,11 @@ export default {
         return {
             userId: '',
             session: {},
+            session_id: this.$route.params.session_id,
+
+            userdata:{
+                name :''
+            }
         }
     },
     methods: {
@@ -43,8 +51,9 @@ export default {
                 } else {
                     if (sessionDetails.phase == 1) {
                         this.userId = sessionDetails.userid;
-                        console.log("user id : "+this.userId);
-                        await this.wrapper_get_session_by_user_Id();
+
+                        console.log(await get_user_data(this.userId)); 
+
                         await this.get_session_by_id();
 
                         // const data_user = await get_user_data(this.userId);
@@ -61,13 +70,8 @@ export default {
                 this.isLoading = false;
             }
         }, 
-
-        async wrapper_get_session_by_user_Id(){
-            this.session = await get_session_by_user_Id(this.userId);
-        },
-
         async get_session_by_id(){
-            console.log(await get_session_by_user_Id(this.userId));
+            console.log(await get_session_by_session_Id(this.session_id));
         }
         
     },
