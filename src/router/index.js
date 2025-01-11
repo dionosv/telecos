@@ -140,7 +140,7 @@ const router = createRouter({
         },
 
         {
-          path: 'konsultasi/jadwal-konsultasi/:session_id?',
+          path: 'konsultasi/konsultasi/:session_id?',
           name: 'single_jadwal_konsultasi',
           component: () => import('../views/konsultasi/single_lihat_jadwal_konsultasi/single_lihat_jadwal_konsultasi.vue'),
         },

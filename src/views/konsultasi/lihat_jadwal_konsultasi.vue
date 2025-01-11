@@ -6,6 +6,8 @@
 
 
         {{userId}}
+
+        {{ all_session }}
     </div>
 </template>
 <script>
@@ -26,6 +28,7 @@ export default {
         return {
             userId: '',
             session: {},
+            all_session: {},
         }
     },
     methods: {
@@ -64,7 +67,7 @@ export default {
         },
 
         async get_session_by_id(){
-            console.log(await get_session_by_user_Id(this.userId));
+            this.all_session = await get_session_by_user_Id(this.userId);
         }
         
     },
