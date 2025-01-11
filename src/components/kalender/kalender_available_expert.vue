@@ -377,12 +377,12 @@ export default {
             try {
                 const response = await get_schedule_by_expert_id(this.expertId);
                 if (response.status === 1) {
-                    this.syncSchedulesToMeetings(response.schedules);
-                    // console.log('Schedules loaded:', response.schedules);
-                    this.all_loaded = true;
-                    // console.log(this.allMeetings);
-                    // console.log(response.schedules);
+                    this.syncSchedulesToMeetings(response.schedules); 
                 }
+                else {
+                    console.log('No schedules found for expert:', response);
+                }
+                this.all_loaded = true;
             } catch (error) {
                 console.log('No meetings found for expert:', error);
             }
