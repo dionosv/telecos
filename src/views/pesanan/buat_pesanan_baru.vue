@@ -146,8 +146,17 @@
                     <p>Transaksi Berhasil</p>
                     <p>Transaksi ini diterbitkan atas nama {{ user.name }}</p>
 
-                </div>
 
+                </div>
+ 
+
+                <div class="wrapper_button_lihat_jadwal">
+                    <router-link :to="{ name: 'single_jadwal_konsultasi', params : { session_id : this.new_session_id } }" 
+                        class="inline-flex items-center gap-x-1.5 rounded-md bg-lime-400 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-lime-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-600">
+                        <ion-icon name="calendar"></ion-icon>
+                        Jadwal Konsultasi Saya
+                    </router-link> 
+                </div>
 
 
             </div>
@@ -256,7 +265,7 @@ export default {
                 almamater: ''
             },
 
-            new_session_id : "",
+            new_session_id : "aaa",
 
             final_validasi: null,
             validasi_loading_data: {
@@ -729,13 +738,22 @@ div.set_middle div.bottom_description div.menu_list div.detail_ahli p#bawah {
     font-style: italic;
 }
 
+.wrapper_button_lihat_jadwal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+    /* width: 300px; */
+}
+
 .action_buttons {
     display: flex;
     justify-content: center;
+    align-items: center;
     gap: 10px;
     margin-top: 20px;
-    width: 300px;
-    font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    /* width: 300px; */
 }
 
 @media (max-width: 768px) {

@@ -138,6 +138,13 @@ const router = createRouter({
           name: 'jadwal_konsultasi',
           component: () => import('../views/konsultasi/lihat_jadwal_konsultasi.vue'),
         },
+
+        {
+          path: 'konsultasi/jadwal-konsultasi/:session_id?',
+          name: 'single_jadwal_konsultasi',
+          component: () => import('../views/konsultasi/single_lihat_jadwal_konsultasi/single_lihat_jadwal_konsultasi.vue'),
+        },
+
         {
           path: 'konsultasi/daftar-ahli-konsultasi',
           name: 'daftar_ahli_konsultasi',
