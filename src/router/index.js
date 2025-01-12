@@ -140,9 +140,9 @@ const router = createRouter({
         },
 
         {
-          path: 'konsultasi/sesi-konsultasi/:session_id?',
+          path: 'konsultasi/live-konsultasi/:session_id?',
           name: 'single_jadwal_konsultasi',
-          component: () => import('../views/konsultasi/single_lihat_jadwal_konsultasi/single_lihat_jadwal_konsultasi.vue'),
+          component: () => import('../views/konsultasi/live_konsultasi/live_konsultasi.vue'),
         },
 
         {
@@ -155,21 +155,7 @@ const router = createRouter({
           name: 'detail_expert_id',
           component: () => import('../views/konsultasi/single_page_detail_ahli/detail_ahli.vue'),
           
-        },
-
-        {
-          path: 'call/user',
-          name: 'call_user',
-          component: () => import('../views/konsultasi/single_lihat_jadwal_konsultasi/call_user.vue'),
-          
-        },
-
-        {
-          path: 'call/expert',
-          name: 'call_expert',
-          component: () => import('../views/konsultasi/single_lihat_jadwal_konsultasi/call_expert.vue'),
-          
-        },
+        }, 
 
         {
           path: "artikel",
