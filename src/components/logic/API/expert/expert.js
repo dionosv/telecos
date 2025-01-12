@@ -132,9 +132,6 @@ async function send_otp(email){
   // console.log(JSON.parse(await makeRequest(config)));  
 } 
 
-
-
-
 async function verify_otp(email,code){
   let data = JSON.stringify({
     "email": email,
@@ -170,8 +167,7 @@ async function forget_password_otp(email){
     data : data
   };
 
-  return JSON.parse(await makeRequest(config));  
-  // console.log(JSON.parse(await makeRequest(config)));  
+  return JSON.parse(await makeRequest(config));    
 } 
 
 async function reset_password(email){
@@ -189,8 +185,7 @@ async function reset_password(email){
     data : data
   };
 
-  return JSON.parse(await makeRequest(config));  
-  // console.log(JSON.parse(await makeRequest(config)));  
+  return JSON.parse(await makeRequest(config));   
 } 
 
 async function change_user_profile(expertId,name,description,phoneNum,gender,dateOfBirth, first_job, strNum, currentWorkspace, almamater){

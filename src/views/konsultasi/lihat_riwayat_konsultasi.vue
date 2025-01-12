@@ -6,7 +6,7 @@
         <ul role="list" class="divide-y divide-gray-100" v-if="all_session.status === 1">
             <li v-for="session in sortedSessions" :key="session.sessionId">
 
-                <router-link :to="{ name: 'single_jadwal_konsultasi', params: { session_id: session.sessionId } }"
+                <router-link :to="{ name: 'rating_sesi', params: { session_id: session.sessionId } }"
                     class="relative flex justify-between gap-x-6 px-4 py-5 hover:bg-gray-50 sm:px-6 lg:px-8">
                     <div class="flex items-center gap-x-4">
                         <div class=" sm:flex sm:flex-col sm:items-start">

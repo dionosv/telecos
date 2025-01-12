@@ -95,7 +95,7 @@ import { usetelecos_session_detailsStore } from '@/components/logic/API/save_ses
 import { get_session_by_session_Id } from '@/components/logic/API/session/session';
 import { get_experts_byID } from '@/components/logic/API/experts';
 import { always_scroll_on_top } from '@/components/logic/tools/handle_always_scroll_on_top';
-import { get_user_data } from '@/components/logic/API/user';
+import { get_user_data } from '@/components/logic/API/expert/expert';
 import Spinner from '@/components/spinner/spinner.vue';
 import { expert_profile_picture } from '@/components/logic/API/image_processor';
 import Spinner_no_full_screen from '@/components/spinner/spinner_no_full_screen.vue';
@@ -128,7 +128,9 @@ export default {
                 camera: false,
                 mic: true
             },
+
             is_session: null,
+
             human: {
                 user: '',
                 user_id: "",
@@ -137,6 +139,7 @@ export default {
                 expert_id: "",
                 expert_image_url: ""
             }
+
         }
     },
     methods: {
@@ -147,7 +150,7 @@ export default {
                 const sessionDetails = await sessionStore.loadtelecos_session_details();
 
                 if (sessionDetails === false) {
-                    this.$router.push({ name: 'akun' });
+                    this.$router.push({ name: 'akun_expert' });
                 } else {
                     if (sessionDetails.phase == 1) {
                         this.userId = sessionDetails.userid;
@@ -177,7 +180,7 @@ export default {
                 this.human.expert_id = ses_id.session[0].expertId
                 this.session_start = ses_id.session[0].date
                 this.session_end = ses_id.session[0].endDate
-                this.human.user_id = ses_id.session[0].userId
+                // this.human.user_id = ses_id.session[0].userId
                 this.session_status = ses_id.session[0].status
                 // this.is_session = true;
                 return true
@@ -204,7 +207,7 @@ export default {
             // cek kalo session ada ??
             if (session_id_status) {
                 if (this.session_status === "pending") {
-                    if (this.userId === this.human.user_id) {
+                    if (this.userId === this.human.expert_id) {
                         return true
                     }
                     else {

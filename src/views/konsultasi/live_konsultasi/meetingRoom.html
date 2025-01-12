@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>WebRTC Video Call Room</title>
+  <style>
+    .video-container {
+      position: relative;
+      display: inline-block;
+      margin: 10px;
+    }
+
+    .username {
+      position: absolute;
+      bottom: 5px;
+      left: 5px;
+      background-color: rgba(0, 0, 0, 0.5);
+      color: white;
+      padding: 2px 5px;
+      border-radius: 3px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="controls">
+    <select id="videoSource"></select>
+    <select id="audioSource"></select>
+    <button id="switchCamera">Switch Camera</button>
+    <button id="muteButton">Mute</button>
+  </div>
+  <div id="localVideoContainer" class="video-container">
+    <video id="localVideo" autoplay muted playsinline></video>
+    <div id="localUsername" class="username"></div>
+  </div>
+  <div id="remoteVideoContainer" class="video-container">
+    <video id="remoteVideo" autoplay playsinline></video>
+    <div id="remoteUsername" class="username"></div>
+  </div>
+  <script src="https://claudio.codes/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io("https://claudio.codes", {
+      transports: ["websocket"], // Forces WebSocket transport
+      withCredentials: true, // If sending cookies
+    });
+    const localVideo = document.getElementById('localVideo');
+    const remoteVideo = document.getElementById('remoteVideo');
+    const videoSourceSelect = document.getElementById('videoSource');
+    const audioSourceSelect = document.getElementById('audioSource');
+    const switchCameraButton = document.getElementById('switchCamera');
+    const muteButton = document.getElementById('muteButton');
+    let remoteConnected = false;
+
+    let localStream = null;
+    let peerConnection = null;
+    let remoteUserId = null;
+    let currentVideoDeviceId = null;
+    let currentAudioDeviceId = null;
+    let isMuted = false;
+    let username = null;
+    let localName = null;
+
+    let offerSent = false; // Flag to track if the offer has been sent
+    let offerTimer;
+
+    // Prompt for username
+    var sessionId = window.location.pathname.split('/')[3];
+    var userId = window.location.pathname.split('/')[4];
+
+    socket.on('user-detail', (data) => {
+      sessionId = data.sessionId;
+      userId = data.userId;
+      username = data.username;
+
+      document.getElementById('localUsername').textContent = `${username}`;
+    });
+
+    // Initialize media and join room
+    async function initMedia(videoDeviceId, audioDeviceId) {
+      const constraints = {
+        video: { deviceId: { exact: videoDeviceId } },
+        audio: { deviceId: { exact: audioDeviceId } }
+      };
+
+      // Stop the previous stream if it exists
+      if (localStream) {
+        localStream.getTracks().forEach(track => track.stop());
+      }
+
+      try {
+        // Try to get the media stream
+        localStream = await navigator.mediaDevices.getUserMedia(constraints);
+        localVideo.srcObject = localStream;
+
+        // Replace video and audio tracks in the peer connection if it exists
+        if (peerConnection) {
+          const videoTrack = localStream.getVideoTracks()[0];
+          const audioTrack = localStream.getAudioTracks()[0];
+
+          const videoSender = peerConnection.getSenders().find(s => s.track && s.track.kind === 'video');
+          if (videoSender) videoSender.replaceTrack(videoTrack);
+
+          const audioSender = peerConnection.getSenders().find(s => s.track && s.track.kind === 'audio');
+          if (audioSender) audioSender.replaceTrack(audioTrack);
+        }
+      } catch (error) {
+        // Handle OverconstrainedError (if no suitable device was found)
+        if (error.name === 'OverconstrainedError') {
+          console.error('OverconstrainedError: The selected device constraints are not satisfiable.');
+
+          // Try again with default devices
+          console.log('Attempting to use default devices...');
+          const defaultVideoDeviceId = videoSourceSelect.value;  // Get default video device if set
+          const defaultAudioDeviceId = audioSourceSelect.value;  // Get default audio device if set
+
+          // Try to reinitialize media with more flexible constraints
+          await initMedia(defaultVideoDeviceId, defaultAudioDeviceId);
+        } else {
+          console.error("Error initializing media:", error);
+        }
+      }
+    }
+
+    // Populate video and audio sources in dropdowns
+    async function getMediaSources() {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      videoSourceSelect.innerHTML = ''; // Clear existing options
+      audioSourceSelect.innerHTML = ''; // Clear existing options
+
+      devices.forEach(device => {
+        if (device.kind === 'videoinput') {
+          const option = document.createElement('option');
+          option.value = device.deviceId;
+          option.text = device.label || `Camera ${videoSourceSelect.length + 1}`;
+          videoSourceSelect.appendChild(option);
+        } else if (device.kind === 'audioinput') {
+          const option = document.createElement('option');
+          option.value = device.deviceId;
+          option.text = device.label || `Mic ${audioSourceSelect.length + 1}`;
+          audioSourceSelect.appendChild(option);
+        }
+      });
+    }
+
+    // Switch camera when the button is clicked
+    switchCameraButton.addEventListener('click', () => {
+      const selectedVideoDeviceId = videoSourceSelect.value;
+      const selectedAudioDeviceId = audioSourceSelect.value;
+      if (selectedVideoDeviceId !== currentVideoDeviceId || selectedAudioDeviceId !== currentAudioDeviceId) {
+        currentVideoDeviceId = selectedVideoDeviceId;
+        currentAudioDeviceId = selectedAudioDeviceId;
+        initMedia(currentVideoDeviceId, currentAudioDeviceId);
+      }
+    });
+
+    // Mute/unmute the audio
+    muteButton.addEventListener('click', () => {
+      isMuted = !isMuted;
+      localStream.getAudioTracks()[0].enabled = !isMuted;
+      muteButton.textContent = isMuted ? 'Unmute' : 'Mute';
+    });
+
+    // Set up the peer connection and add local tracks
+    function setupPeerConnection() {
+      peerConnection = new RTCPeerConnection();
+
+      // Add the local stream tracks to the peer connection
+      localStream.getTracks().forEach(track => {
+        peerConnection.addTrack(track, localStream);
+      });
+
+      peerConnection.ontrack = (event) => {
+        if (event.streams && event.streams[0]) {
+          remoteVideo.srcObject = event.streams[0];
+        }
+      };
+
+      peerConnection.onicecandidate = (event) => {
+        if (event.candidate && remoteUserId) {
+          socket.emit('signal', { target: remoteUserId, description: event.candidate });
+        }
+      };
+    }
+
+    // Listen for list of existing users
+    socket.on('existing-users', (users) => {
+      console.log('Existing-user:', users, remoteConnected);
+      if (Object.keys(users).length > 1) {
+        // If there are already users connected
+        remoteConnected = true; // Set flag to true since there's a remote user
+
+        const firstUserId = Object.keys(users)[0];
+        const secondUserId = Object.keys(users)[1];
+        remoteUserId = firstUserId;
+
+        if (localName === null) {
+          if (username === users[firstUserId]) {
+            localName = users[secondUserId];
+          } else {
+            localName = users[firstUserId];
+          }
+        }
+
+        document.getElementById('remoteUsername').textContent = localName;
+
+        initMedia(currentVideoDeviceId, currentAudioDeviceId)
+          .then(() => {
+            setupPeerConnection(); // Set up peer connection after media is initialized
+
+            // Listen for incoming signals
+            // Simplified Signal Listener
+            peerConnection.createOffer().then((offer) => {
+              return peerConnection.setLocalDescription(offer);
+            }).then(() => {
+              socket.emit('signal', { target: remoteUserId, description: peerConnection.localDescription });
+            }).catch(error => console.error('Failed to create an offer:', error));
+          })
+          .catch((error) => {
+            console.error("Error initializing media:", error);
+          });
+      }
+    });
+
+
+    socket.on('session-ended', () => {
+      alert("The session has ended. You will be disconnected.");
+
+      // Close the connection and clean up
+      if (peerConnection) {
+        peerConnection.close();
+        peerConnection = null;
+      }
+
+      // Clear local and remote video elements
+      localVideo.srcObject = null;
+      remoteVideo.srcObject = null;
+
+      // Leave the room
+      socket.emit('leave-room');
+
+      // Optionally redirect the user to another page
+      window.location.href = '/home'; // Redirect to the home page or another location
+    });
+
+    socket.on('error', (message) => {
+      alert(message);
+      // window.location.href = '/home'; // Change to home?
+    });
+
+    // Listen for other users joining the room
+    socket.on('user-connected', async (data) => {
+      console.log(data);
+      console.log(remoteConnected);
+
+      if (!remoteConnected) {
+        // No remote user connected yet, so send offer
+        remoteUserId = data.userId;
+        // document.getElementById('remoteUsername').textContent = data.username;
+
+        initMedia(currentVideoDeviceId, currentAudioDeviceId)
+          .then(() => {
+            setupPeerConnection();  // Set up peer connection after media is initialized
+
+            peerConnection.createOffer().then((offer) => {
+              return peerConnection.setLocalDescription(offer);
+            }).then(() => {
+              socket.emit('signal', { target: remoteUserId, description: peerConnection.localDescription });
+            }).catch(error => console.error('Failed to create an offer:', error));
+          })
+          .catch((error) => {
+            console.error("Error initializing media:", error);
+          });
+      }
+    });
+
+
+    // Handle incoming signals (offer, answer, ICE candidates)
+    socket.on('signal', async (data) => {
+      console.log();
+
+      if (!peerConnection) setupPeerConnection();
+
+      // await waitForStableState();
+      console.log(peerConnection.signalingState);
+      // if (!remoteConnected && peerConnection.signalingState === 'stable') {
+      //   setupPeerConnection();
+      // }
+
+      try {
+        if (data.description.type === 'offer') {
+          remoteUserId = data.sender;
+          await peerConnection.setRemoteDescription(new RTCSessionDescription(data.description));
+
+          const answer = await peerConnection.createAnswer();
+          await peerConnection.setLocalDescription(answer);
+          socket.emit('signal', { target: data.sender, description: answer });
+
+        } else if (data.description.type === 'answer') {
+          clearInterval(offerTimer);
+          offerSent = false;
+          await peerConnection.setRemoteDescription(new RTCSessionDescription(data.description));
+
+        } else if (data.description.candidate) {
+          await peerConnection.addIceCandidate(new RTCIceCandidate(data.description));
+        }
+      } catch (error) {
+        console.error('Error handling signaling message:', error);
+        try {
+          setupPeerConnection();
+
+          if (data.description.type === 'offer') {
+            remoteUserId = data.sender;
+            await peerConnection.setRemoteDescription(new RTCSessionDescription(data.description));
+
+            const answer = await peerConnection.createAnswer();
+            await peerConnection.setLocalDescription(answer);
+            socket.emit('signal', { target: data.sender, description: answer });
+
+          } else if (data.description.type === 'answer') {
+            clearInterval(offerTimer);
+            offerSent = false;
+            await peerConnection.setRemoteDescription(new RTCSessionDescription(data.description));
+
+          } else if (data.description.candidate) {
+            await peerConnection.addIceCandidate(new RTCIceCandidate(data.description));
+          }
+        } catch (error) {
+          console.error('Error handling signaling message:', error);
+        }
+      }
+    });
+
+    window.addEventListener('beforeunload', (event) => {
+      sessionStorage.setItem('sessionId', sessionId);
+      sessionStorage.setItem('userId', userId);
+      sessionStorage.setItem('username', username);
+      sessionStorage.setItem('currentVideoDeviceId', currentVideoDeviceId);
+      sessionStorage.setItem('currentAudioDeviceId', currentAudioDeviceId);
+    });
+
+    // On page reload, check if data is available and restore it
+    window.addEventListener('load', () => {
+      if (sessionStorage.getItem('sessionId')) {
+        // Retrieve stored session data
+        sessionId = sessionStorage.getItem('sessionId');
+        userId = sessionStorage.getItem('userId');
+        username = sessionStorage.getItem('username');
+        currentVideoDeviceId = sessionStorage.getItem('currentVideoDeviceId');
+        currentAudioDeviceId = sessionStorage.getItem('currentAudioDeviceId');
+
+        // Update UI or state based on the session data
+        document.getElementById('localUsername').textContent = `${username}`;
+
+        // Reinitialize media or peer connection
+        initMedia(currentVideoDeviceId, currentAudioDeviceId);
+      }
+    });
+
+    function waitForStableState() {
+      return new Promise((resolve) => {
+        const checkState = () => {
+          if (peerConnection.signalingState !== 'stable') {
+            // Check again after a short delay if the state is not stable
+            setTimeout(checkState, 100);
+          } else {
+            // Proceed when signaling state is stable
+            resolve();
+          }
+        };
+        checkState();
+      });
+    }
+
+    // Handle user disconnection
+    socket.on('user-disconnected', (id) => {
+      if (id === remoteUserId && peerConnection) {
+        peerConnection.close();
+        peerConnection = null;
+        remoteUserId = null;
+        remoteConnected = false;
+        remoteVideo.srcObject = null; // Clear remote video
+        document.getElementById('remoteUsername').textContent = ''; // Clear remote username
+      }
+    });
+
+    // Join the room and initialize media sources
+    getMediaSources().then(() => {
+      const defaultVideoDeviceId = videoSourceSelect.value;
+      const defaultAudioDeviceId = audioSourceSelect.value;
+      initMedia(defaultVideoDeviceId, defaultAudioDeviceId);
+      socket.emit('join-room', { sessionId: window.location.pathname.split('/')[3], userId: window.location.pathname.split('/')[4] });
+    });
+  </script>
+</body>
+
+</html>

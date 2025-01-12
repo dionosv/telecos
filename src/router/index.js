@@ -86,13 +86,7 @@ const router = createRouter({
           path: 'pusat-bantuan',
           name: 'pusat_bantuan',
           component: () => import('../views/settings/pusat_bantuan.vue'),
-        },
-
-        {
-          path: 'kebijakan-privasi',
-          name: 'kebijakan_privasi',
-          component: () => import('../views/settings/kebijakan_privasi.vue'),
-        },
+        }, 
 
         {
           path: 'pertanyaan-yang-sering-ditanyakan',
@@ -143,6 +137,11 @@ const router = createRouter({
           path: 'konsultasi/live-konsultasi/:session_id?',
           name: 'single_jadwal_konsultasi',
           component: () => import('../views/konsultasi/live_konsultasi/live_konsultasi.vue'),
+        },
+        {
+          path: 'konsultasi/rating-sesi-konsultasi/:session_id?',
+          name: 'rating_sesi',
+          component: () => import('../views/konsultasi/rating_konsultasi/rating_single.vue'),
         },
 
         {
