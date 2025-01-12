@@ -114,8 +114,11 @@ export default {
 @media screen and (max-width: 768px) {
   .split_2 {
     flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
     flex-wrap: nowrap;
-    height: 1000px;
+    height: 600px;
+    gap: 20px;
     width: 100%;
   }
 

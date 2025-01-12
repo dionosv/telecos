@@ -1,26 +1,22 @@
 <template>
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" v-if="loaded">
-
-        <!-- {{ all_session }} -->
-        <ul role="list" class="divide-y divide-gray-100">
+        <ul role="list" class="divide-y divide-gray-100" v-if="all_session.status === 1">
             <li v-for="session in sortedSessions" :key="session.sessionId">
 
                 <router-link :to="{ name: 'single_jadwal_konsultasi', params: { session_id: session.sessionId } }" class="relative flex justify-between gap-x-6 px-4 py-5 hover:bg-gray-50 sm:px-6 lg:px-8">
-                <div class="flex shrink-0 items-center gap-x-4">
-                    <div class="hidden sm:flex sm:flex-col sm:items-start">
+                <div class="flex items-center gap-x-4">
+                    <div class=" sm:flex sm:flex-col sm:items-start">
                         <p class="text-sm leading-6 text-gray-900">{{ session.sessionName }}</p>
                         <p class="mt-1 text-xs leading-5 text-gray-500">
                             {{ formatDateTime(session.date, session.endDate) }}
                         </p>
                     </div>
                 </div>
-                <div class="flex items-center gap-x-4">
+                <div class="flex items-center gap-x-4 right-section">
                     <div class="min-w-0 flex-auto text-right">
                         <p class="text-sm font-semibold leading-6 text-gray-900">
-                            <a href="#">
-                                <span class="absolute inset-x-0 -top-px bottom-0" />
+                                <span class="inset-x-0 -top-px bottom-0"/>
                                 {{ expertDetails[session.expertId]?.name || 'Loading...' }}
-                            </a>
                         </p>
                         <p class="mt-1 text-xs leading-5 text-gray-500">
                             <span class="relative truncate">{{ expertDetails[session.expertId]?.description || 'Expert' }}</span>
@@ -28,18 +24,18 @@
                     </div>
                     <img class="h-12 w-12 flex-none rounded-full bg-gray-50"
                         :src="getExpertImage(session.expertId)" alt="" />
-                    <ion-icon name="chevron-forward-outline"></ion-icon>
+                    <ion-icon name="chevron-forward-outline" id="chevron_icon"></ion-icon>
                 </div>
             </router-link>
 
             </li>
         </ul>
-
-
-        <!-- <div class="no_found">
-            anda tidak memiliki jadwal konsultasi
-        </div> -->
-
+        <div  class="not_found" v-if="all_session.status === 0">
+                    <ion-icon name="alert-circle"></ion-icon>
+                    <p class="s_query">Tidak ada jadwal konsultasi</p> 
+                    <router-link :to="{name: 'daftar_ahli_konsultasi'}" class="rounded-md bg-lime-400 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-lime-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-600">Buat Sesi Konsultasi</router-link>
+                    
+                </div>
     </div>
 
     <Spinner v-if="!loaded"></Spinner>
@@ -190,4 +186,74 @@ export default {
 
 }
 </script>
-<style></style>
+<style>
+ 
+@media (max-width: 639px) {
+    #chevron_icon {
+        display: none;
+    }
+    .right-section {
+        flex-direction: column;
+        align-items: flex-end;
+    }
+    .right-section img {
+        margin-top: 4px;
+    }
+}
+
+.not_found {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    min-height: 200px;
+    gap: 1rem;
+    padding: 1rem;
+    text-align: center;
+}
+
+.not_found ion-icon {
+    font-size: 3rem;
+    color: #666;
+}
+
+.not_found .s_query {
+    font-size: 1.25rem;
+    color: #666;
+    max-width: 100%;
+    word-wrap: break-word;
+}
+
+@media screen and (max-width: 768px) {
+    .not_found {
+        min-height: 150px;
+        padding: 1.5rem;
+    }
+
+    .not_found ion-icon {
+        font-size: 2.5rem;
+    }
+
+    .not_found .s_query {
+        font-size: 1rem;
+        padding: 0 1rem;
+        line-height: 1.5;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .not_found {
+        min-height: 120px;
+        padding: 1rem;
+    }
+
+    .not_found ion-icon {
+        font-size: 2rem;
+    }
+
+    .not_found .s_query {
+        font-size: 0.875rem;
+    }
+}
+
+</style>

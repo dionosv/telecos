@@ -146,7 +146,7 @@ const router = createRouter({
         },
 
         {
-          path: 'konsultasi/daftar-ahli-konsultasi',
+          path: 'konsultasi/buat-konsultasi',
           name: 'daftar_ahli_konsultasi',
           component: () => import('../views/konsultasi/lihat_daftar_ahli.vue'),
         },
