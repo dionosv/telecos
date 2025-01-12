@@ -128,7 +128,7 @@ export default {
             remoteConnected: false,
             human: {
                 user: '', 
-                user_id:"4a7ccf17-b833-11ef-a1f6-00505656def3",
+                user_id:"09b6a658-ce99-11ef-8c34-00505656def3",
                 expert : "",
                 expert_id: "09b6a658-ce99-11ef-8c34-00505656def3",
                 jenis_expert: ""
@@ -196,6 +196,27 @@ export default {
                 withCredentials: true,
             });
 
+            // Add signal event handler
+            this.socket.on('signal', async (data) => {
+                if (!this.peerConnection) this.setupPeerConnection();
+
+                try {
+                    if (data.description.type === 'offer') {
+                        this.remoteUserId = data.sender;
+                        await this.peerConnection.setRemoteDescription(new RTCSessionDescription(data.description));
+                        const answer = await this.peerConnection.createAnswer();
+                        await this.peerConnection.setLocalDescription(answer);
+                        this.socket.emit('signal', { target: data.sender, description: answer });
+                    } else if (data.description.type === 'answer') {
+                        await this.peerConnection.setRemoteDescription(new RTCSessionDescription(data.description));
+                    } else if (data.description.candidate) {
+                        await this.peerConnection.addIceCandidate(new RTCIceCandidate(data.description));
+                    }
+                } catch (error) {
+                    console.error('Error handling signal:', error);
+                }
+            });
+
             // Initialize media elements
             const localVideo = document.getElementById('localVideo');
             const remoteVideo = document.getElementById('remoteVideo');
@@ -240,9 +261,11 @@ export default {
                 const defaultVideoDeviceId = videoSourceSelect.value;
                 const defaultAudioDeviceId = audioSourceSelect.value;
                 this.initMedia(defaultVideoDeviceId, defaultAudioDeviceId);
+                
+                // Join with fixed session and expert IDs
                 this.socket.emit('join-room', { 
-                    sessionId: this.session_id, 
-                    userId: this.userId 
+                    sessionId: this.session_id,
+                    userId: this.human.user_id
                 });
             });
         },
