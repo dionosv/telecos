@@ -43,7 +43,7 @@
 
 
     <div class="text_heading">
-      <p>Solusi konsultasi kecantikan terdepan</p>
+      <p>Solusi konsultasi terdepan</p>
     </div>
 
     <div class="split_2">
