@@ -330,7 +330,43 @@ const router = createRouter({
           path: '',
           name: 'admin_home',
           component: () => import('../views/all_admin/akses_admin/telecos_care_admin.vue'),
-        }]
+        }, 
+        {
+          path: 'akun',
+          name: 'akun',
+          component: () => import('../views/all_admin/akun_admin/akun.vue'),
+        },
+        {
+          path: 'acc-ahli',
+          name: 'admin_acc_ahli',
+          component: () => import('../views/all_admin/akses_admin/acc_ahli.vue'),
+        },
+        {
+          path: 'acc-artikel',
+          name: 'admin_acc_artikel',
+          component: () => import('../views/all_admin/akses_admin/acc_artikel.vue'),
+        },
+        {
+          path: 'saldo',
+          name: 'admin_lihat_saldo',
+          component: () => import('../views/all_admin/akses_admin/lihat_saldo.vue'),
+        },
+        {
+          path: 'daftar-ahli',
+          name: 'admin_lihat_ahli',
+          component: () => import('../views/all_admin/akses_admin/lihat_semua_ahli.vue'),
+        },
+        {
+          path: 'sesi',
+          name: 'admin_lihat_sesi',
+          component: () => import('../views/all_admin/akses_admin/lihat_sesi.vue'),
+        },
+        {
+          path: 'transaksi',
+          name: 'admin_lihat_transaksi',
+          component: () => import('../views/all_admin/akses_admin/lihat_transaksi.vue'),
+        },
+      ]
     }
 
     // {
