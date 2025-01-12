@@ -158,6 +158,20 @@ const router = createRouter({
         },
 
         {
+          path: 'call/user',
+          name: 'call_user',
+          component: () => import('../views/konsultasi/single_lihat_jadwal_konsultasi/call_user.vue'),
+          
+        },
+
+        {
+          path: 'call/expert',
+          name: 'call_expert',
+          component: () => import('../views/konsultasi/single_lihat_jadwal_konsultasi/call_expert.vue'),
+          
+        },
+
+        {
           path: "artikel",
           children: [
             {

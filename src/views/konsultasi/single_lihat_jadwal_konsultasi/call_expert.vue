@@ -16,8 +16,18 @@
 
 
                     <div class="video">
-
-
+                        <div id="controls">
+                            <select id="videoSource"></select>
+                            <select id="audioSource"></select>
+                        </div>
+                        <div id="localVideoContainer" class="video-container">
+                            <video id="localVideo" autoplay muted playsinline></video>
+                            <div id="localUsername" class="username"></div>
+                        </div>
+                        <div id="remoteVideoContainer" class="video-container">
+                            <video id="remoteVideo" autoplay playsinline></video>
+                            <div id="remoteUsername" class="username"></div>
+                        </div>
                     </div>
 
                      
@@ -79,6 +89,7 @@
     </div>
 </template>
 <script>
+import { io } from 'socket.io-client';
 import kalender from '@/components/kalender/kalender.vue';
 import { usetelecos_session_detailsStore } from '@/components/logic/API/save_session';
 import { get_session_by_session_Id, get_session_by_user_Id } from '@/components/logic/API/session/session';
@@ -91,6 +102,7 @@ export default {
         always_scroll_on_top();
         this.try_get_session();
         this.get_session_by_id();
+        this.initializeWebRTC();
     },
     components: {
         kalender,
@@ -104,10 +116,19 @@ export default {
                 camera:false,
                 mic:true
             },
-
+            socket: null,
+            localStream: null,
+            peerConnection: null,
+            remoteUserId: null,
+            currentVideoDeviceId: null,
+            currentAudioDeviceId: null,
+            isMuted: false,
+            username: null,
+            localName: null,
+            remoteConnected: false,
             human: {
-                user: '',
-                user_id:"",
+                user: '', 
+                user_id:"4a7ccf17-b833-11ef-a1f6-00505656def3",
                 expert : "",
                 expert_id: "09b6a658-ce99-11ef-8c34-00505656def3",
                 jenis_expert: ""
@@ -154,10 +175,134 @@ export default {
         },
         handle_toogle_camera(){
             this.toogle.camera = !this.toogle.camera;
+            if (this.localStream) {
+                this.localStream.getVideoTracks().forEach(track => {
+                    track.enabled = this.toogle.camera;
+                });
+            }
         },
 
         handle_toogle_mic(){
             this.toogle.mic = !this.toogle.mic;
+            if (this.localStream) {
+                this.localStream.getAudioTracks().forEach(track => {
+                    track.enabled = this.toogle.mic;
+                });
+            }
+        },
+        initializeWebRTC() {
+            this.socket = io("https://claudio.codes", {
+                transports: ["websocket"],
+                withCredentials: true,
+            });
+
+            // Initialize media elements
+            const localVideo = document.getElementById('localVideo');
+            const remoteVideo = document.getElementById('remoteVideo');
+            const videoSourceSelect = document.getElementById('videoSource');
+            const audioSourceSelect = document.getElementById('audioSource');
+
+            // Socket event handlers
+            this.socket.on('user-detail', (data) => {
+                this.sessionId = data.sessionId;
+                this.userId = data.userId;
+                this.username = data.username;
+                document.getElementById('localUsername').textContent = this.username;
+            });
+
+            this.socket.on('existing-users', async (users) => {
+                if (Object.keys(users).length > 1) {
+                    this.remoteConnected = true;
+                    const firstUserId = Object.keys(users)[0];
+                    const secondUserId = Object.keys(users)[1];
+                    this.remoteUserId = firstUserId;
+
+                    if (this.localName === null) {
+                        this.localName = this.username === users[firstUserId] ? 
+                            users[secondUserId] : users[firstUserId];
+                    }
+
+                    document.getElementById('remoteUsername').textContent = this.localName;
+                    await this.initMedia();
+                    this.setupPeerConnection();
+                    
+                    const offer = await this.peerConnection.createOffer();
+                    await this.peerConnection.setLocalDescription(offer);
+                    this.socket.emit('signal', { 
+                        target: this.remoteUserId, 
+                        description: this.peerConnection.localDescription 
+                    });
+                }
+            });
+
+            // Initialize media devices
+            this.getMediaSources().then(() => {
+                const defaultVideoDeviceId = videoSourceSelect.value;
+                const defaultAudioDeviceId = audioSourceSelect.value;
+                this.initMedia(defaultVideoDeviceId, defaultAudioDeviceId);
+                this.socket.emit('join-room', { 
+                    sessionId: this.session_id, 
+                    userId: this.userId 
+                });
+            });
+        },
+
+        async getMediaSources() {
+            const devices = await navigator.mediaDevices.enumerateDevices();
+            const videoSourceSelect = document.getElementById('videoSource');
+            const audioSourceSelect = document.getElementById('audioSource');
+            
+            videoSourceSelect.innerHTML = '';
+            audioSourceSelect.innerHTML = '';
+
+            devices.forEach(device => {
+                const option = document.createElement('option');
+                option.value = device.deviceId;
+                option.text = device.label || `Device ${device.kind}`;
+                
+                if (device.kind === 'videoinput') {
+                    videoSourceSelect.appendChild(option);
+                } else if (device.kind === 'audioinput') {
+                    audioSourceSelect.appendChild(option);
+                }
+            });
+        },
+
+        async initMedia(videoDeviceId, audioDeviceId) {
+            const constraints = {
+                video: videoDeviceId ? { deviceId: { exact: videoDeviceId } } : true,
+                audio: audioDeviceId ? { deviceId: { exact: audioDeviceId } } : true
+            };
+
+            if (this.localStream) {
+                this.localStream.getTracks().forEach(track => track.stop());
+            }
+
+            this.localStream = await navigator.mediaDevices.getUserMedia(constraints);
+            document.getElementById('localVideo').srcObject = this.localStream;
+        },
+
+        setupPeerConnection() {
+            this.peerConnection = new RTCPeerConnection();
+
+            this.localStream.getTracks().forEach(track => {
+                this.peerConnection.addTrack(track, this.localStream);
+            });
+
+            this.peerConnection.ontrack = (event) => {
+                if (event.streams && event.streams[0]) {
+                    document.getElementById('remoteVideo').srcObject = event.streams[0];
+                }
+            };
+
+            this.peerConnection.onicecandidate = (event) => {
+                if (event.candidate && this.remoteUserId) {
+                    this.socket.emit('signal', { 
+                        target: this.remoteUserId, 
+                        description: event.candidate 
+                    });
+                }
+            };
         }
 
     },
@@ -282,5 +427,30 @@ export default {
     padding-bottom: 1rem;
     display: flex;
     justify-content: space-evenly;
+}
+
+.video-container {
+    position: relative;
+    display: inline-block;
+    margin: 10px;
+    width: 100%;
+    height: 100%;
+}
+
+.username {
+    position: absolute;
+    bottom: 5px;
+    left: 5px;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    padding: 2px 5px;
+    border-radius: 3px;
+}
+
+#localVideo, #remoteVideo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 0.5rem;
 }
 </style>
