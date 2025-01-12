@@ -312,7 +312,7 @@ const router = createRouter({
           children:[
             {
               path:'',
-              name:'sesi_aktif',
+              name:'sesi_aktif_expert',
               component:()=>import('../views/expert/sesi_aktif/sesi_aktif_expert.vue')
             },
              

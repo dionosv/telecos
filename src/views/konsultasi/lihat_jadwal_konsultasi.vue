@@ -1,46 +1,52 @@
 <template>
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" v-if="loaded">
+        <div class="jadwal">
+            <h1>Jadwal Konsultasi Anda</h1>
+        </div>
         <ul role="list" class="divide-y divide-gray-100" v-if="all_session.status === 1">
             <li v-for="session in sortedSessions" :key="session.sessionId">
 
-                <router-link :to="{ name: 'single_jadwal_konsultasi', params: { session_id: session.sessionId } }" class="relative flex justify-between gap-x-6 px-4 py-5 hover:bg-gray-50 sm:px-6 lg:px-8">
-                <div class="flex items-center gap-x-4">
-                    <div class=" sm:flex sm:flex-col sm:items-start">
-                        <p class="text-sm leading-6 text-gray-900">{{ session.sessionName }}</p>
-                        <p class="mt-1 text-xs leading-5 text-gray-500">
-                            {{ formatDateTime(session.date, session.endDate) }}
-                        </p>
+                <router-link :to="{ name: 'single_jadwal_konsultasi', params: { session_id: session.sessionId } }"
+                    class="relative flex justify-between gap-x-6 px-4 py-5 hover:bg-gray-50 sm:px-6 lg:px-8">
+                    <div class="flex items-center gap-x-4">
+                        <div class=" sm:flex sm:flex-col sm:items-start">
+                            <p class="text-sm leading-6 text-gray-900">{{ session.sessionName }}</p>
+                            <p class="mt-1 text-xs leading-5 text-gray-500">
+                                {{ formatDateTime(session.date, session.endDate) }}
+                            </p>
+                        </div>
                     </div>
-                </div>
-                <div class="flex items-center gap-x-4 right-section">
-                    <div class="min-w-0 flex-auto text-right">
-                        <p class="text-sm font-semibold leading-6 text-gray-900">
-                                <span class="inset-x-0 -top-px bottom-0"/>
+                    <div class="flex items-center gap-x-4 right-section">
+                        <div class="min-w-0 flex-auto text-right">
+                            <p class="text-sm font-semibold leading-6 text-gray-900">
+                                <span class="inset-x-0 -top-px bottom-0" />
                                 {{ expertDetails[session.expertId]?.name || 'Loading...' }}
-                        </p>
-                        <p class="mt-1 text-xs leading-5 text-gray-500">
-                            <span class="relative truncate">{{ expertDetails[session.expertId]?.description || 'Expert' }}</span>
-                        </p>
+                            </p>
+                            <p class="mt-1 text-xs leading-5 text-gray-500">
+                                <span class="relative truncate">{{ expertDetails[session.expertId]?.description ||
+                                    'Expert' }}</span>
+                            </p>
+                        </div>
+                        <img class="h-12 w-12 flex-none rounded-full bg-gray-50" :src="getExpertImage(session.expertId)"
+                            alt="" />
+                        <ion-icon name="chevron-forward-outline" id="chevron_icon"></ion-icon>
                     </div>
-                    <img class="h-12 w-12 flex-none rounded-full bg-gray-50"
-                        :src="getExpertImage(session.expertId)" alt="" />
-                    <ion-icon name="chevron-forward-outline" id="chevron_icon"></ion-icon>
-                </div>
-            </router-link>
+                </router-link>
 
             </li>
         </ul>
-        <div  class="not_found" v-if="all_session.status === 0">
-                    <ion-icon name="alert-circle"></ion-icon>
-                    <p class="s_query">Tidak ada jadwal konsultasi</p> 
-                    <router-link :to="{name: 'daftar_ahli_konsultasi'}" class="rounded-md bg-lime-400 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-lime-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-600">Buat Sesi Konsultasi</router-link>
-                    
-                </div>
+        <div class="not_found" v-if="all_session.status === 0">
+            <ion-icon name="alert-circle"></ion-icon>
+            <p class="s_query">Tidak ada jadwal konsultasi</p>
+            <router-link :to="{ name: 'daftar_ahli_konsultasi' }"
+                class="rounded-md bg-lime-400 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-lime-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-600">Buat
+                Sesi Konsultasi</router-link>
+        </div>
     </div>
 
     <Spinner v-if="!loaded"></Spinner>
 </template>
-<script> 
+<script>
 import { get_experts_byID } from '@/components/logic/API/experts';
 import { usetelecos_session_detailsStore } from '@/components/logic/API/save_session';
 import { get_session_by_user_Id } from '@/components/logic/API/session/session';
@@ -52,7 +58,7 @@ export default {
         always_scroll_on_top();
         this.try_get_session();
     },
-    components: { 
+    components: {
         Spinner
     },
     data() {
@@ -60,7 +66,7 @@ export default {
             userId: '',
             session: {},
             all_session: {},
-            loaded : false,
+            loaded: false,
             expertDetails: {} // Add this line
         }
     },
@@ -75,7 +81,7 @@ export default {
                     const dateB = new Date(b.date);
                     return dateA - dateB;
                 });
-            
+
         }
     },
     methods: {
@@ -92,7 +98,7 @@ export default {
                         this.userId = sessionDetails.userid;
                         console.log("user id : " + this.userId);
                         await this.wrapper_get_session_by_user_Id();
-                        await this.get_session_by_id(); 
+                        await this.get_session_by_id();
                     }
                 }
             } catch (error) {
@@ -143,8 +149,8 @@ export default {
             return 'default-image-url';
         },
 
-        async wrapper_get_detail_ahli_by_id(expert_id){
-            console.log (await get_experts_byID(expert_id));
+        async wrapper_get_detail_ahli_by_id(expert_id) {
+            console.log(await get_experts_byID(expert_id));
         },
 
         formatDateTime(startTime, endTime) {
@@ -182,23 +188,37 @@ export default {
         }
 
     },
-
-
 }
 </script>
 <style>
- 
 @media (max-width: 639px) {
     #chevron_icon {
         display: none;
     }
+
     .right-section {
         flex-direction: column;
         align-items: flex-end;
     }
+
     .right-section img {
         margin-top: 4px;
     }
+}
+
+.jadwal{
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.jadwal h1{
+    
+    margin-left: 10px;
+    font-size: 25px;
+    font-weight: 600;
+
 }
 
 .not_found {
@@ -255,5 +275,4 @@ export default {
         font-size: 0.875rem;
     }
 }
-
 </style>
