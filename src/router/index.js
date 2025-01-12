@@ -321,6 +321,18 @@ const router = createRouter({
       ]
     },
 
+    {
+      path: '/admin',
+      name: 'main_admin',
+      component: () => import('../App_admin.vue'),
+      children: [
+        {
+          path: '',
+          name: 'admin_home',
+          component: () => import('../views/all_admin/akses_admin/telecos_care_admin.vue'),
+        }]
+    }
+
     // {
     //   path: '/:catchAll(.*)',
     //   redirect: { name: 'home' }
