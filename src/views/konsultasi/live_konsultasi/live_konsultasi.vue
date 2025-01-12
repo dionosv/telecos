@@ -96,7 +96,7 @@ import { get_session_by_session_Id } from '@/components/logic/API/session/sessio
 import { get_experts_byID } from '@/components/logic/API/experts';
 import { always_scroll_on_top } from '@/components/logic/tools/handle_always_scroll_on_top';
 import { get_user_data } from '@/components/logic/API/user';
-// import Spinner from '@/components/spinner/spinner.vue';
+import Spinner from '@/components/spinner/spinner.vue';
 import { expert_profile_picture } from '@/components/logic/API/image_processor';
 import Spinner_no_full_screen from '@/components/spinner/spinner_no_full_screen.vue';
 
@@ -107,6 +107,7 @@ export default {
         // this.get_session_by_id();
     },
     components: {
+        Spinner,
         Spinner_no_full_screen
     },
     data() {
