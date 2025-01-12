@@ -111,7 +111,7 @@ export default {
         return {
             userId: '',
             session: {},
-            session_id: this.$route.params.session_id,
+            session_id: "3",
             toogle:{
                 camera:false,
                 mic:true
