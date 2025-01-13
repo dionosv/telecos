@@ -328,42 +328,42 @@ const router = createRouter({
       children: [
         {
           path: '',
-          name: 'admin_home',
-          component: () => import('../views/all_admin/akses_admin/telecos_care_admin.vue'),
+          name: 'home_admin',
+          component: () => import('../views/all_admin/home_admin.vue'),
         }, 
         {
           path: 'akun',
-          name: 'akun',
-          component: () => import('../views/all_admin/akun_admin/akun.vue'),
+          name: 'akun_admin',
+          component: () => import('../views/all_admin/akun_admin/akun_admin.vue'),
         },
         {
           path: 'acc-ahli',
-          name: 'admin_acc_ahli',
+          name: 'admin_acc_ahli_admin',
           component: () => import('../views/all_admin/akses_admin/acc_ahli.vue'),
         },
         {
           path: 'acc-artikel',
-          name: 'admin_acc_artikel',
+          name: 'acc_artikel_admin',
           component: () => import('../views/all_admin/akses_admin/acc_artikel.vue'),
         },
         {
           path: 'saldo',
-          name: 'admin_lihat_saldo',
+          name: 'lihat_saldo_admin',
           component: () => import('../views/all_admin/akses_admin/lihat_saldo.vue'),
         },
         {
           path: 'daftar-ahli',
-          name: 'admin_lihat_ahli',
+          name: 'lihat_ahli_admin',
           component: () => import('../views/all_admin/akses_admin/lihat_semua_ahli.vue'),
         },
         {
           path: 'sesi',
-          name: 'admin_lihat_sesi',
+          name: 'lihat_sesi_admin',
           component: () => import('../views/all_admin/akses_admin/lihat_sesi.vue'),
         },
         {
           path: 'transaksi',
-          name: 'admin_lihat_transaksi',
+          name: 'lihat_transaksi_admin',
           component: () => import('../views/all_admin/akses_admin/lihat_transaksi.vue'),
         },
       ]

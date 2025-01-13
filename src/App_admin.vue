@@ -3,7 +3,8 @@
 
   <div v-cloak>
     <!-- <Header/> -->
-    <RouterView/>
+     <Header_admin></Header_admin>
+    <RouterView class="mx-auto max-w-7xl items-center p-3 sm:p-6 lg:px-8"/>
     <!-- <Footer/> -->
   </div>
 
@@ -17,13 +18,15 @@ import { RouterLink,RouterView } from 'vue-router';
 import Footer from './components/footer/footer_user.vue';
 import Header from './components/header/header_user.vue';
 import { always_scroll_on_top } from './components/logic/tools/handle_always_scroll_on_top';
+import Header_admin from './components/header/header_admin.vue';
 
 export default {
   components: {
     RouterLink,
     RouterView,
     Footer,
-    Header
+    Header,
+    Header_admin
   },
   mounted(){
     always_scroll_on_top();
