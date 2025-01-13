@@ -170,7 +170,7 @@ export default {
         },
 
         formatting_link(){
-            this.formattedLink = `https://claudio.codes/telecos-be/room/${this.session_id}/exp=${this.userId}`;
+            this.formattedLink = `https://claudio.codes/telecos-be/room/${this.session_id}/exp=${this.human.expert_id}`;
         },
 
         async get_expert_details() {
