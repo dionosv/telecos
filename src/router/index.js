@@ -342,15 +342,11 @@ const router = createRouter({
           component: () => import('../views/all_admin/akses_admin/acc_ahli.vue'),
         },
         {
-          path: 'acc-artikel',
-          name: 'acc_artikel_admin',
-          component: () => import('../views/all_admin/akses_admin/acc_artikel.vue'),
+          path: 'artikel',
+          name: 'artikel_admin',
+          component: () => import('../views/all_admin/akses_admin/artikel_ahli.vue'),
         },
-        {
-          path: 'saldo',
-          name: 'lihat_saldo_admin',
-          component: () => import('../views/all_admin/akses_admin/lihat_saldo.vue'),
-        },
+        
         {
           path: 'daftar-ahli',
           name: 'lihat_ahli_admin',

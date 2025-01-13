@@ -11,8 +11,14 @@
         </button>
       </div>
       <div class="hidden lg:flex lg:gap-x-12">
-        <a v-for="item in navigation" :key="item.name" :href="item.href" class="text-sm leading-10 font-semibold">{{
-          item.name }}</a>
+        <router-link 
+          v-for="item in navigation" 
+          :key="item.name" 
+          :to="{ name: item.route }" 
+          class="text-sm leading-10 font-semibold"
+        >
+          {{ item.name }}
+        </router-link>
 
         <router-link :to="{ name: 'akun_expert' }" type="button"
           class="inline-flex items-center gap-x-1.5 rounded-md  bg-orange-400 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-800">
@@ -39,9 +45,15 @@
         <div class="mt-6 flow-root">
           <div class="-my-6 divide-y divide-gray-500/10">
             <div class="space-y-2 py-6">
-              <a v-for="item in navigation" :key="item.name" :href="item.href"
+              <router-link 
+                v-for="item in navigation" 
+                :key="item.name" 
+                :to="{ name: item.route }"
                 class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
-                @click="closeMobileMenu">{{ item.name }}</a>
+                @click="closeMobileMenu"
+              >
+                {{ item.name }}
+              </router-link>
             </div>
             <div class="py-6">
               <router-link :to="{ name: 'akun_expert' }"
@@ -55,26 +67,28 @@
   </header>
 </template>
 
-<script setup>
-import { ref } from 'vue'
+<script>
 import Logo_divisi_footer from '../logo/logo_divisi_footer_expert.vue';
-//   import { Dialog, DialogPanel } from '@headlessui/vue'
-//   import { Bars3Icon, XMarkIcon } from '@heroicons/vue/24/outline'
 
-const navigation = [
-  { name: 'Konsultasi', href: '/konsultasi/buat-konsultasi' },
-  { name: 'Bookings', href: '#' },
-  { name: 'Riwayat', href: '#' },
-  { name: 'Dompet', href: '#' },
-  { name: 'Berita', href: '#' },
-]
-
-const toogle_mobile = ref(false);
-
-function closeMobileMenu() {
-  toogle_mobile.value = false;
+export default {
+  name: 'HeaderExpert',
+  components: {
+    Logo_divisi_footer
+  },
+  data() {
+    return {
+      navigation: [
+        { name: 'Menu', route: 'home_expert' }, 
+      ],
+      toogle_mobile: false
+    }
+  },
+  methods: {
+    closeMobileMenu() {
+      this.toogle_mobile = false;
+    }
+  }
 }
-
 </script>
 
 <style scoped>

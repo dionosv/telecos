@@ -1,231 +1,328 @@
 <template>
-    <div id="ada_sesi_aktif" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div>
-            <h2 class="text-base font-semibold leading-6 text-gray-900">Sesi Aktif</h2>
-            <p class="mt-1 text-sm text-gray-500">Anda memiliki sesi aktif, silahkan segera terhubung dengan pengguna
-            </p>
-            <ul role="list" class="divide-y divide-gray-100">
-                <li v-for="person in people" :key="person.email" class="flex justify-between gap-x-6 py-5">
-                    <div class="flex min-w-0 gap-x-4">
-                        <img class="h-12 w-12 flex-none rounded-full bg-gray-50" :src="person.imageUrl" alt="" />
-                        <div class="min-w-0 flex-auto">
-                            <p class="text-sm font-semibold leading-6 text-gray-900">
-                                <a :href="person.href" class="hover:underline">{{ person.name }}</a>
-                            </p>
-                            <p class="mt-1 flex text-xs leading-5 text-gray-500">
-                                <a :href="`mailto:${person.email}`" class="truncate hover:underline">{{ person.email
-                                    }}</a>
-                            </p>
-                        </div>
-                    </div>
-                    <div class="flex shrink-0 items-center gap-x-6">
-                        <div class="hidden sm:flex sm:flex-col sm:items-end">
-                            <p class="text-sm leading-6 text-gray-900">{{ person.role }}</p>
-                            <p v-if="person.lastSeen" class="mt-1 text-xs leading-5 text-gray-500">
-                                Last seen <time :datetime="person.lastSeenDateTime">{{ person.lastSeen }}</time>
-                            </p>
-                            <div v-else class="mt-1 flex items-center gap-x-1.5">
-                                <div class="flex-none rounded-full bg-emerald-500/20 p-1">
-                                    <div class="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                                </div>
-                                <p class="text-xs leading-5 text-gray-500">Online</p>
-                            </div>
-                        </div>
-                    </div>
-                </li>
-            </ul>
-
-
-            <ul role="list" class="mt-6 grid grid-cols-1 gap-6 border-b border-t border-gray-200 py-6 sm:grid-cols-2">
-                <li class="flow-root">
-                    <div
-                        class="relative -m-2 flex items-center space-x-4 rounded-xl p-2 focus-within:ring-2 focus-within:ring-indigo-500 hover:bg-gray-50">
-                        <div class="bg-pink-500 flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-lg">
-                            <ion-icon name="list-outline" class="h-6 w-6 text-white"></ion-icon>
-                        </div>
-                        <div>
-                            <h3 class="text-sm font-medium text-gray-900">
-                                <a href="#" class="focus:outline-none">
-                                    <span class="absolute inset-0" aria-hidden="true" />
-                                    <span>Create a List</span>
-                                    <span aria-hidden="true"> &rarr;</span>
-                                </a>
-                            </h3>
-                            <p class="mt-1 text-sm text-gray-500">Another to-do system you'll try but eventually give up
-                                on.</p>
-                        </div>
-                    </div>
-                </li>
-                <li class="flow-root">
-                    <div
-                        class="relative -m-2 flex items-center space-x-4 rounded-xl p-2 focus-within:ring-2 focus-within:ring-indigo-500 hover:bg-gray-50">
-                        <div class="bg-yellow-500 flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-lg">
-                            <ion-icon name="calendar-outline" class="h-6 w-6 text-white"></ion-icon>
-                        </div>
-                        <div>
-                            <h3 class="text-sm font-medium text-gray-900">
-                                <a href="#" class="focus:outline-none">
-                                    <span class="absolute inset-0" aria-hidden="true" />
-                                    <span>Create a Calendar</span>
-                                    <span aria-hidden="true"> &rarr;</span>
-                                </a>
-                            </h3>
-                            <p class="mt-1 text-sm text-gray-500">Stay on top of your deadlines, or don’t — it’s up to
-                                you.</p>
-                        </div>
-                    </div>
-                </li>
-                <li class="flow-root">
-                    <div
-                        class="relative -m-2 flex items-center space-x-4 rounded-xl p-2 focus-within:ring-2 focus-within:ring-indigo-500 hover:bg-gray-50">
-                        <div class="bg-green-500 flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-lg">
-                            <ion-icon name="images-outline" class="h-6 w-6 text-white"></ion-icon>
-                        </div>
-                        <div>
-                            <h3 class="text-sm font-medium text-gray-900">
-                                <a href="#" class="focus:outline-none">
-                                    <span class="absolute inset-0" aria-hidden="true" />
-                                    <span>Create a Gallery</span>
-                                    <span aria-hidden="true"> &rarr;</span>
-                                </a>
-                            </h3>
-                            <p class="mt-1 text-sm text-gray-500">Great for mood boards and inspiration.</p>
-                        </div>
-                    </div>
-                </li>
-                <li class="flow-root">
-                    <div
-                        class="relative -m-2 flex items-center space-x-4 rounded-xl p-2 focus-within:ring-2 focus-within:ring-indigo-500 hover:bg-gray-50">
-                        <div class="bg-blue-500 flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-lg">
-                            <ion-icon name="grid-outline" class="h-6 w-6 text-white"></ion-icon>
-                        </div>
-                        <div>
-                            <h3 class="text-sm font-medium text-gray-900">
-                                <a href="#" class="focus:outline-none">
-                                    <span class="absolute inset-0" aria-hidden="true" />
-                                    <span>Create a Board</span>
-                                    <span aria-hidden="true"> &rarr;</span>
-                                </a>
-                            </h3>
-                            <p class="mt-1 text-sm text-gray-500">Track tasks in different stages of your project.</p>
-                        </div>
-                    </div>
-                </li>
-                <li class="flow-root">
-                    <div
-                        class="relative -m-2 flex items-center space-x-4 rounded-xl p-2 focus-within:ring-2 focus-within:ring-indigo-500 hover:bg-gray-50">
-                        <div class="bg-indigo-500 flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-lg">
-                            <ion-icon name="spreadsheet-outline" class="h-6 w-6 text-white"></ion-icon>
-                        </div>
-                        <div>
-                            <h3 class="text-sm font-medium text-gray-900">
-                                <a href="#" class="focus:outline-none">
-                                    <span class="absolute inset-0" aria-hidden="true" />
-                                    <span>Create a Spreadsheet</span>
-                                    <span aria-hidden="true"> &rarr;</span>
-                                </a>
-                            </h3>
-                            <p class="mt-1 text-sm text-gray-500">Lots of numbers and things — good for nerds.</p>
-                        </div>
-                    </div>
-                </li>
-                <li class="flow-root">
-                    <div
-                        class="relative -m-2 flex items-center space-x-4 rounded-xl p-2 focus-within:ring-2 focus-within:ring-indigo-500 hover:bg-gray-50">
-                        <div class="bg-purple-500 flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-lg">
-                            <ion-icon name="time-outline" class="h-6 w-6 text-white"></ion-icon>
-                        </div>
-                        <div>
-                            <h3 class="text-sm font-medium text-gray-900">
-                                <a href="#" class="focus:outline-none">
-                                    <span class="absolute inset-0" aria-hidden="true" />
-                                    <span>Create a Timeline</span>
-                                    <span aria-hidden="true"> &rarr;</span>
-                                </a>
-                            </h3>
-                            <p class="mt-1 text-sm text-gray-500">Get a birds-eye-view of your procrastination.</p>
-                        </div>
-                    </div>
-                </li>
-            </ul>
-            <div class="mt-4 flex">
-                <a href="#" class="text-sm font-medium text-indigo-600 hover:text-indigo-500">
-                    Or start from an empty project
-                    <span aria-hidden="true"> &rarr;</span>
-                </a>
-            </div>
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" v-if="loaded">
+        <div class="jadwal">
+            <h1>Sesi Aktif Anda</h1>
         </div>
+        <ul role="list" class="divide-y divide-gray-100" v-if="all_session.status === 1">
+            <li v-for="session in sortedSessions" :key="session.sessionId">
 
+                <router-link :to="{ name: 'single_jadwal_konsultasi', params: { session_id: session.sessionId } }"
+                    class="relative flex justify-between gap-x-6 px-4 py-5 hover:bg-gray-50 sm:px-6 lg:px-8">
+                    <div class="flex items-center gap-x-4">
+                        <div class=" sm:flex sm:flex-col sm:items-start">
+                            <div class="split_x">
+                                <p class="text-sm leading-6 text-gray-900">{{ session.sessionName }}</p>
+                                <span class="relative flex h-3 w-3">
+                                    <span
+                                        class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                                </span>
+
+                                <!-- <span class="animate-ping inline-flex items-center rounded-md bg-green-100 px-2 py-1 text-xs font-medium text-green-700">Selesai</span> -->
+                            </div>
+                            <p class="mt-1 text-xs leading-5 text-gray-500">
+                                {{ formatDateTime(session.date, session.endDate) }}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-x-4 right-section">
+                        <div class="min-w-0 flex-auto text-right">
+                            <p class="text-sm font-semibold leading-6 text-gray-900">
+                                <span class="inset-x-0 -top-px bottom-0" />
+                                {{ expertDetails[session.expertId]?.name || 'Loading...' }}
+                            </p>
+                            <p class="mt-1 text-xs leading-5 text-gray-500">
+                                <span class="relative truncate">{{ expertDetails[session.expertId]?.description ||
+                                    'Expert' }}</span>
+                            </p>
+                        </div>
+                        <img class="h-12 w-12 flex-none rounded-full bg-gray-50" :src="getExpertImage(session.expertId)"
+                            alt="" />
+                        <ion-icon name="chevron-forward-outline" id="chevron_icon"></ion-icon>
+                    </div>
+                </router-link>
+            </li>
+        </ul>
+
+        <div class="xx_note" v-if="all_session.status === 1">
+                <p class="text-red-400">
+                    Silahkan klik sesi konsultasi anda untuk masuk ke ruang konsultasi virtual
+                </p>
+            </div>
+
+        <div class="not_found" v-if="all_session.status === 0">
+            <ion-icon name="alert-circle"></ion-icon>
+            <p class="s_query">Tidak ada riwayat konsultasi</p>
+            <router-link :to="{ name: 'daftar_ahli_konsultasi' }"
+                class="rounded-md bg-lime-400 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-lime-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-600">Buat
+                Sesi Konsultasi</router-link>
+        </div>
     </div>
 
+    <Spinner v-if="!loaded"></Spinner>
 </template>
+<script>
+import { get_experts_byID } from '@/components/logic/API/experts';
+import { usetelecos_session_detailsStore } from '@/components/logic/API/save_session';
+import { get_session_by_user_Id } from '@/components/logic/API/session/session';
+import { always_scroll_on_top } from '@/components/logic/tools/handle_always_scroll_on_top';
+import Spinner from '@/components/spinner/spinner.vue';
 
-<script> 
-
-export default { 
+export default {
+    mounted() {
+        always_scroll_on_top();
+        this.try_get_session();
+    },
+    components: {
+        Spinner
+    },
     data() {
         return {
-            people: [
-                {
-                    name: 'Leslie Alexander',
-                    email: 'leslie.alexander@example.com',
-                    role: 'Co-Founder / CEO',
-                    imageUrl:
-                        'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-                    href: '#',
-                    lastSeen: '3h ago',
-                    lastSeenDateTime: '2023-01-23T13:23Z',
-                },
-                {
-                    name: 'Michael Foster',
-                    email: 'michael.foster@example.com',
-                    role: 'Co-Founder / CTO',
-                    imageUrl:
-                        'https://images.unsplash.com/photo-1519244703995-f4e0f30006d5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-                    href: '#',
-                    lastSeen: '3h ago',
-                    lastSeenDateTime: '2023-01-23T13:23Z',
-                },
-                {
-                    name: 'Dries Vincent',
-                    email: 'dries.vincent@example.com',
-                    role: 'Business Relations',
-                    imageUrl:
-                        'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-                    href: '#',
-                    lastSeen: null,
-                },
-                {
-                    name: 'Lindsay Walton',
-                    email: 'lindsay.walton@example.com',
-                    role: 'Front-end Developer',
-                    imageUrl:
-                        'https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-                    href: '#',
-                    lastSeen: '3h ago',
-                    lastSeenDateTime: '2023-01-23T13:23Z',
-                },
-                {
-                    name: 'Courtney Henry',
-                    email: 'courtney.henry@example.com',
-                    role: 'Designer',
-                    imageUrl:
-                        'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-                    href: '#',
-                    lastSeen: '3h ago',
-                    lastSeenDateTime: '2023-01-23T13:23Z',
-                },
-                {
-                    name: 'Tom Cook',
-                    email: 'tom.cook@example.com',
-                    role: 'Director of Product',
-                    imageUrl:
-                        'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-                    href: '#',
-                    lastSeen: null,
-                },
-            ]
+            userId: '',
+            session: {},
+            all_session: {},
+            loaded: false,
+            expertDetails: {} // Add this line
         }
-    }
+    },
+    computed: {
+        sortedSessions() {
+            if (!this.all_session.session) return [];
+
+            return [...this.all_session.session]
+                .filter(session => session.status === "pending") // Only show pending sessions
+                .sort((a, b) => {
+                    const dateA = new Date(a.date);
+                    const dateB = new Date(b.date);
+                    return dateA - dateB;
+                });
+
+        }
+    },
+    methods: {
+
+        async try_get_session() {
+            try {
+                const sessionStore = usetelecos_session_detailsStore();
+                const sessionDetails = await sessionStore.loadtelecos_session_details();
+
+                if (sessionDetails === false) {
+                    this.$router.push({ name: 'akun' });
+                } else {
+                    if (sessionDetails.phase == 1) {
+                        this.userId = sessionDetails.userid;
+                        console.log("user id : " + this.userId);
+                        await this.wrapper_get_session_by_user_Id();
+                        await this.get_session_by_id();
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to load session details:', error);
+            } finally {
+                this.isLoading = false;
+            }
+        },
+
+        async wrapper_get_session_by_user_Id() {
+            this.session = await get_session_by_user_Id(this.userId);
+        },
+
+        async get_session_by_id() {
+            this.all_session = await get_session_by_user_Id(this.userId);
+            // After getting sessions, fetch expert details for each session
+            if (this.all_session.status === 1) {
+                const expertIds = new Set(this.all_session.session.map(s => s.expertId));
+                await Promise.all(
+                    Array.from(expertIds).map(id => this.fetchExpertDetails(id))
+                );
+            }
+            else {
+                console.log("no session");
+            }
+            this.loaded = true;
+        },
+
+        async fetchExpertDetails(expertId) {
+            try {
+                const expertData = await get_experts_byID(expertId);
+                if (expertData.status === 1) {
+                    this.expertDetails = {
+                        ...this.expertDetails,
+                        [expertId]: expertData.user
+                    };
+                }
+            } catch (error) {
+                console.error('Failed to fetch expert details:', error);
+            }
+        },
+
+        getExpertImage(expertId) {
+            const expert = this.expertDetails[expertId];
+            if (expert?.imageName) {
+                return `https://claudio.codes/telecos-be/image-rs/expert/${expert.imageName}`;
+            }
+            return 'default-image-url';
+        },
+
+        async wrapper_get_detail_ahli_by_id(expert_id) {
+            console.log(await get_experts_byID(expert_id));
+        },
+
+        formatDateTime(startTime, endTime) {
+            const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+            const months = [
+                'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+                'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+            ];
+
+            const date = new Date(startTime);
+            const day = days[date.getDay()];
+            const dateNum = String(date.getDate()).padStart(2, '0');
+            const month = months[date.getMonth()];
+            const year = date.getFullYear();
+
+            // Convert UTC to WIB (UTC+7)
+            const startDate = new Date(startTime);
+            const endDate = new Date(endTime);
+
+            const startHour = startDate.toLocaleTimeString('id-ID', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false,
+                timeZone: 'Asia/Jakarta'
+            });
+
+            const endHour = endDate.toLocaleTimeString('id-ID', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false,
+                timeZone: 'Asia/Jakarta'
+            });
+
+            return `${day}, ${dateNum} ${month} ${year} ${startHour} - ${endHour} WIB`;
+        }
+
+    },
 }
 </script>
+<style scoped>
+@media (max-width: 639px) {
+    #chevron_icon {
+        display: none;
+    }
+
+    .right-section {
+        flex-direction: column;
+        align-items: flex-end;
+    }
+
+    .right-section img {
+        margin-top: 4px;
+    }
+}
+
+.jadwal {
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.jadwal h1 {
+
+    margin-left: 10px;
+    font-size: 25px;
+    font-weight: 600;
+
+}
+
+.not_found {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    min-height: 200px;
+    gap: 1rem;
+    padding: 1rem;
+    text-align: center;
+}
+
+.split_x {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 7px;
+}
+
+.split_x span {
+    flex-shrink: 0;
+    /* Ensure the badge does not take full width */
+}
+
+.xx_note{
+    margin : 20px; 
+    text-align: center;
+}
+
+.xx_note p{
+    font-size: 11px;
+    font-weight: 600; 
+}
+
+.not_found ion-icon {
+    font-size: 3rem;
+    color: #666;
+}
+
+.not_found .s_query {
+    font-size: 1.25rem;
+    color: #666;
+    max-width: 100%;
+    word-wrap: break-word;
+}
+
+@media screen and (max-width: 768px) {
+    .not_found {
+        min-height: 150px;
+        padding: 1.5rem;
+    }
+
+    .not_found ion-icon {
+        font-size: 2.5rem;
+    }
+
+    .not_found .s_query {
+        font-size: 1rem;
+        padding: 0 1rem;
+        line-height: 1.5;
+    }
+
+    .split_x {
+        display: flex;
+        flex-direction: column;
+        gap: 0px;
+    }
+
+    .split_x span {
+        margin-top: 5px;
+        margin-bottom: 5px;
+        align-self: flex-start;
+        /* Align badge to the start */
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .not_found {
+        min-height: 120px;
+        padding: 1rem;
+    }
+
+    .not_found ion-icon {
+        font-size: 2rem;
+    }
+
+    .not_found .s_query {
+        font-size: 0.875rem;
+    }
+}
+</style>

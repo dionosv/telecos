@@ -11,11 +11,7 @@
             <router-link :to="{ name: 'pertanyaan_yang_sering_ditanyakan' }"
                 class="text-gray-700 hover:bg-lime-50 hover:text-lime-500 group flex gap-x-3 rounded-md p-2 pl-3 text-sm font-semibold leading-6">Pertanyaan yang sering ditanyakan</router-link>
         </li>
-
-        <li>
-            <router-link :to="{ name: 'kebijakan_privasi' }"
-                class="text-gray-700 hover:bg-lime-50 hover:text-lime-500 group flex gap-x-3 rounded-md p-2 pl-3 text-sm font-semibold leading-6">Kebijakan privasi</router-link>
-        </li>
+ 
         <li>
             <router-link :to="{ name: 'telecos_care' }"
                 class="text-gray-700 hover:bg-lime-50 hover:text-lime-500 group flex gap-x-3 rounded-md p-2 pl-3 text-sm font-semibold leading-6">Telecos Care</router-link>
