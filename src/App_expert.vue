@@ -37,5 +37,6 @@ export default {
 
 .main-content {
   flex: 1;
+  margin-bottom: 3rem;
 }
 </style>

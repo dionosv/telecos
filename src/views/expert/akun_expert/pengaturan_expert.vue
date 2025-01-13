@@ -25,8 +25,8 @@
                         class="text-gray-700 hover:bg-orange-50 hover:text-orange-500 group flex gap-x-3 rounded-md p-2 pl-3 text-sm font-semibold leading-6">Saldo</router-link>
                 </li>
                 <li>
-                    <router-link :to="{ name: 'pusat_bantuan' }"
-                        class="text-gray-700 hover:bg-orange-50 hover:text-orange-500 group flex gap-x-3 rounded-md p-2 pl-3 text-sm font-semibold leading-6">Pusat Bantuan</router-link>
+                    <router-link :to="{ name: 'telecos_care_expert' }"
+                        class="text-gray-700 hover:bg-orange-50 hover:text-orange-500 group flex gap-x-3 rounded-md p-2 pl-3 text-sm font-semibold leading-6">Telecos Care</router-link>
                 </li>
  
                 <li>

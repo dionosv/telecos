@@ -24,7 +24,7 @@
             </div>
 
             <div class="menu-container">
-                <router-link :to="{ name: 'jadwal_konsultasi' }">
+                <router-link :to="{ name: 'jadwal_konsultasi_expert' }">
 
                     <div class="single_menu">
                         <ion-icon name="calendar-outline"></ion-icon>
@@ -36,7 +36,7 @@
             </div>
 
             <div class="menu-container">
-                <router-link :to="{ name: 'riwayat_konsultasi' }">
+                <router-link :to="{ name: 'riwayat_konsultasi_expert' }">
 
                     <div class="single_menu">
                         <ion-icon name="reader-outline"></ion-icon>

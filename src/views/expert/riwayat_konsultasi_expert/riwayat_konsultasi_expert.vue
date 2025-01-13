@@ -1,24 +1,18 @@
 <template>
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" v-if="loaded">
         <div class="jadwal">
-            <h1>Sesi Aktif Anda</h1>
+            <h1>Riwayat Konsultasi Anda</h1>
         </div>
         <ul role="list" class="divide-y divide-gray-100" v-if="all_session.status === 1">
             <li v-for="session in sortedSessions" :key="session.sessionId">
 
-                <router-link :to="{ name: 'single_jadwal_konsultasi', params: { session_id: session.sessionId } }"
+                <router-link :to="{ name: 'rating_sesi', params: { session_id: session.sessionId } }"
                     class="relative flex justify-between gap-x-6 px-4 py-5 hover:bg-gray-50 sm:px-6 lg:px-8">
                     <div class="flex items-center gap-x-4">
                         <div class=" sm:flex sm:flex-col sm:items-start">
                             <div class="split_x">
                                 <p class="text-sm leading-6 text-gray-900">{{ session.sessionName }}</p>
-                                <span class="relative flex h-3 w-3">
-                                    <span
-                                        class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                                    <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
-                                </span>
-
-                                <!-- <span class="animate-ping inline-flex items-center rounded-md bg-green-100 px-2 py-1 text-xs font-medium text-green-700">Selesai</span> -->
+                                <span class="inline-flex items-center rounded-md bg-green-100 px-2 py-1 text-xs font-medium text-green-700">Selesai</span>
                             </div>
                             <p class="mt-1 text-xs leading-5 text-gray-500">
                                 {{ formatDateTime(session.date, session.endDate) }}
@@ -35,25 +29,19 @@
                                 <span class="relative truncate">Pengguna Telecos</span>
                             </p>
                         </div>
-                        <!-- <img class="h-12 w-12 flex-none rounded-full bg-gray-50" :src="getExpertImage(session.expertId)"
-                            alt="" /> -->
+                        <img class="h-12 w-12 flex-none rounded-full bg-gray-50" :src="getExpertImage(session.expertId)"
+                            alt="" />
                         <ion-icon name="chevron-forward-outline" id="chevron_icon"></ion-icon>
                     </div>
                 </router-link>
+
             </li>
         </ul>
-
-        <div class="xx_note" v-if="all_session.status === 1">
-                <p class="text-red-400">
-                    Silahkan klik sesi konsultasi anda untuk masuk ke ruang konsultasi virtual
-                </p>
-            </div>
-
         <div class="not_found" v-if="all_session.status === 0">
             <ion-icon name="alert-circle"></ion-icon>
             <p class="s_query">Tidak ada riwayat konsultasi</p>
             <router-link :to="{ name: 'daftar_ahli_konsultasi' }"
-                class="rounded-md bg-lime-400 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-lime-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-600">Buat
+                class="rounded-md bg-orange-400 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600">Buat
                 Sesi Konsultasi</router-link>
         </div>
     </div>
@@ -220,15 +208,15 @@ export default {
     }
 }
 
-.jadwal {
+.jadwal{
     display: flex;
     align-items: center;
     margin-top: 20px;
     margin-bottom: 20px;
 }
 
-.jadwal h1 {
-
+.jadwal h1{
+    
     margin-left: 10px;
     font-size: 25px;
     font-weight: 600;
@@ -246,26 +234,14 @@ export default {
     text-align: center;
 }
 
-.split_x {
+.split_x{
     display: flex;
     flex-direction: row;
-    align-items: center;
-    gap: 7px;
+    gap: 15px;
 }
 
 .split_x span {
-    flex-shrink: 0;
-    /* Ensure the badge does not take full width */
-}
-
-.xx_note{
-    margin : 20px; 
-    text-align: center;
-}
-
-.xx_note p{
-    font-size: 11px;
-    font-weight: 600; 
+    flex-shrink: 0; /* Ensure the badge does not take full width */
 }
 
 .not_found ion-icon {
@@ -295,18 +271,16 @@ export default {
         padding: 0 1rem;
         line-height: 1.5;
     }
-
-    .split_x {
-        display: flex;
-        flex-direction: column;
-        gap: 0px;
-    }
+    .split_x{
+    display: flex;
+    flex-direction: column;
+    gap:0px;
+}
 
     .split_x span {
         margin-top: 5px;
         margin-bottom: 5px;
-        align-self: flex-start;
-        /* Align badge to the start */
+        align-self: flex-start; /* Align badge to the start */
     }
 }
 

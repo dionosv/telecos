@@ -113,7 +113,6 @@ const router = createRouter({
           path: 'telecos-care/:laporan_id',
           name: 'detail_laporan_telecos_care',
           component: () => import('../views/settings/single_laporan_telecos_care.vue'),
-          
         },
 
         {
@@ -176,24 +175,11 @@ const router = createRouter({
 
         {
           path: "pesanan",
-          children: [
-            {
-              path: "",
-              name: "pesanan_aktif",
-              component: () => import('../views/pesanan/pesanan_saya_aktif.vue'),
-
-              // butuh shield
-            },
-            {
-              path: 'riwayat-pesanan',
-              name: 'riwayat_pesanan',
-              component: () => import('../views/pesanan/riwayat_pesanan.vue'),
-              //butuh shield
-            },
+          children: [ 
             {
               path:'baru/:schedule_id?/:expert_id?',
               name:'pesanan_baru',
-              component: () => import('../views/pesanan/buat_pesanan_baru.vue'),
+              component: () => import('../views/konsultasi/buat_pesanan_baru.vue'),
               //butuh shield
             }
 
@@ -254,42 +240,35 @@ const router = createRouter({
 
 
         {
-          path: "artikel",
-          children: [
-            {
-              path: "",
-              name: "landing_page_artikel_expert",
-              component: () => import('../views/article/landing_page_article_expert.vue'),
-            },
-            {
-              path: 'baca/:articleId',
-              name: 'single_page_article_expert',
-              component: () => import('../views/article/single_article/single_page_article_expert.vue'),
-              
-            },
-            {
-              path: 'buat-artikel-baru',
-              name: 'buat_artikel_expert',
-              component: () => import('../views/article/create_article.vue'),
-            },
-            {
-              path: 'lihat-artikel-saya/',
-              name: 'lihat_artikel_saya_expert',
-              component: () => import('../views/article/lihat_artikel_saya.vue'),
-            },
-            {
-              path: 'edit-artikel/:articleId?',
-              name: 'edit_artikel_expert',
-              component: () => import('../views/article/edit_article.vue'),
-            },
-            {
-              path: 'berhasil-buat-artikel-baru',
-              name: 'berhasil_buat_artikel_expert',
-              component: () => import('../views/article/create_article_success.vue'),
-              
-            },
-          ]
+          path: "telecos-care-expert",
+          name: "telecos_care_expert",
+          component: () => import('../views/expert/settings_expert/telecos_care_expert.vue'),
         },
+
+        {
+          path: 'lapor-telecos-care',
+          name: 'lapor_telecos_care',
+          component: () => import('../views/expert/settings_expert/create_telecos_care_expert.vue'),
+        },
+        {
+          path: 'telecos-care-expert/:laporan_id',
+          name: 'detail_laporan_telecos_care_expert',
+          component: () => import('../views/expert/settings_expert/single_laporan_telecos_care_expert.vue'),
+        },
+
+
+        {
+          path: 'jadwal-konsultasi',
+          name: 'jadwal_konsultasi_expert',
+          component: () => import('../views/expert/jadwal_konsultasi_expert/jadwal_konsultasi_expert.vue'),
+        },
+
+        {
+          path: 'riwayat-konsultasi',
+          name: 'riwayat_konsultasi_expert',
+          component: () => import('../views/expert/riwayat_konsultasi_expert/riwayat_konsultasi_expert.vue'),
+        },
+        
         {
           path:'saldo',
           children:[
@@ -314,7 +293,6 @@ const router = createRouter({
               name:'sesi_aktif_expert',
               component:()=>import('../views/expert/sesi_aktif/sesi_aktif_expert.vue')
             },
-             
           ]
 
         },
@@ -361,6 +339,44 @@ const router = createRouter({
           path: 'transaksi',
           name: 'lihat_transaksi_admin',
           component: () => import('../views/all_admin/akses_admin/lihat_transaksi.vue'),
+        },
+
+        {
+          path: "artikel",
+          children: [
+            {
+              path: "",
+              name: "landing_page_artikel_admin",
+              component: () => import('../views/article/landing_page_article_expert.vue'),
+            },
+            {
+              path: 'baca/:articleId',
+              name: 'single_page_article_admin',
+              component: () => import('../views/article/single_article/single_page_article_expert.vue'),
+              
+            },
+            {
+              path: 'buat-artikel-baru',
+              name: 'buat_artikel_admin',
+              component: () => import('../views/article/create_article.vue'),
+            },
+            {
+              path: 'lihat-artikel-saya/',
+              name: 'lihat_artikel_saya_admin',
+              component: () => import('../views/article/lihat_artikel_saya.vue'),
+            },
+            {
+              path: 'edit-artikel/:articleId?',
+              name: 'edit_artikel_admin',
+              component: () => import('../views/article/edit_article.vue'),
+            },
+            {
+              path: 'berhasil-buat-artikel-baru',
+              name: 'berhasil_buat_artikel_admin',
+              component: () => import('../views/article/create_article_success.vue'),
+              
+            },
+          ]
         },
       ]
     }
