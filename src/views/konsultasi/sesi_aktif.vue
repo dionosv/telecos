@@ -6,9 +6,7 @@
         <ul role="list" class="divide-y divide-gray-100" v-if="all_session.status === 1">
             <li v-for="session in sortedSessions" :key="session.sessionId">
 
-                <!-- <router-link :to="{ name: 'single_jadwal_konsultasi', params: { session_id: session.sessionId } }" -->
-
-                <a :href="'https://claudio.codes/telecos-be/room/' + session.sessionId + '/exp=' + session.expertId" target="_blank"
+                <router-link :to="{ name: 'single_jadwal_konsultasi', params: { session_id: session.sessionId } }"
 
                     class="relative flex justify-between gap-x-6 px-4 py-5 hover:bg-gray-50 sm:px-6 lg:px-8">
                     <div class="flex items-center gap-x-4">
@@ -40,9 +38,8 @@
                         <img class="h-12 w-12 flex-none rounded-full bg-gray-50" :src="getExpertImage(session.expertId)"
                             alt="" />
                         <ion-icon name="chevron-forward-outline" id="chevron_icon"></ion-icon>
-                    </div>
-                </a>
-                <!-- </router-link> -->
+                    </div> 
+                </router-link>
             </li>
         </ul>
 

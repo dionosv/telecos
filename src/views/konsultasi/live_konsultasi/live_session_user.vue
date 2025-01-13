@@ -1,17 +1,23 @@
 <template>
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="all_view_session" v-if="is_session === true">
+        <div class="all_view_session" >
             <div class="session" id="left">
 
                 <div class="video_on_connected">
 
 
                     <div class="video">
-                    <Spinner_no_full_screen></Spinner_no_full_screen>
-
-                        <!-- <div class="not_connected">
-                            anda tidak terkoneksi
-                        </div> -->
+                        <template v-if="permissionGranted">
+                            <iframe 
+                                src="https://claudio.codes/telecos-be/room/3/usr=4a7ccf17-b833-11ef-a1f6-00505656def3"
+                                allow="camera *; microphone *; display-capture *; autoplay *; clipboard-read *; clipboard-write *; fullscreen *"
+                                style="width: 100%; height: 100%; border: none;"
+                                allowfullscreen
+                            ></iframe>
+                        </template>
+                        <div v-else class="permission-message">
+                            <p>Please allow camera and microphone access</p>
+                        </div>
                     </div>
                 </div>
 
@@ -72,7 +78,7 @@
 
         <Spinner v-if="is_session === null"></Spinner>
 
-        <div class="not_found" v-if="is_session === false">
+        <!-- <div class="not_found" v-if="is_session === false">
             <ion-icon name="alert-circle"></ion-icon>
             <p class="s_query">Sesi tidak valid</p>
 
@@ -84,7 +90,7 @@
                     class="rounded-md bg-gray-950 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm  focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-600">
                     Telecos Care</router-link>
             </div>
-        </div>
+        </div> -->
 
 
         <!-- {{userId}} -->
@@ -103,18 +109,16 @@ import Spinner_no_full_screen from '@/components/spinner/spinner_no_full_screen.
 export default {
     mounted() {
         always_scroll_on_top();
+        this.requestCameraPermission();
         this.try_get_session();
-        // this.get_session_by_id();
     },
     components: {
         Spinner,
         Spinner_no_full_screen
-    },
+    }, 
     data() {
         return {
             userId: '',
-
-
             session_name: "",
             session_status: "",
 
@@ -136,11 +140,27 @@ export default {
                 expert_type: "",
                 expert_id: "",
                 expert_image_url: ""
-            }
+            },
+            permissionGranted: false
         }
     },
     methods: {
-
+        async requestCameraPermission() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: true,
+                    audio: true 
+                });
+                this.permissionGranted = true;
+                // Stop the stream immediately after getting permission
+                stream.getTracks().forEach(track => track.stop());
+                console.log('Camera and microphone permission granted');
+            } catch (err) {
+                this.permissionGranted = false;
+                console.error('Error accessing camera and microphone:', err);
+                alert('Please allow camera and microphone access to use this feature');
+            }
+        },
         async try_get_session() {
             try {
                 const sessionStore = usetelecos_session_detailsStore();
@@ -264,7 +284,7 @@ export default {
 .video {
     width: 100%;
     height: 33.75rem; /* 16:9 aspect ratio based on a width of 60rem */
-    background-color:black;
+    background-color:white;
     border-radius: 0.5rem;
 }
 
@@ -604,5 +624,19 @@ div.video_desc div.atas div.dokter_detail p#jenis_ahli {
     .video_desc .atas {
         padding: 0.75rem;
     }
+}
+
+.permission-message {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    background-color: #f3f4f6;
+    border-radius: 0.5rem;
+}
+
+.permission-message p {
+    color: #374151;
+    font-size: 1.125rem;
 }
 </style>

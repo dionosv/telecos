@@ -98,9 +98,16 @@ const router = createRouter({
           path: 'lapor-telecos-care',
           name: 'lapor_telecos_care',
           component: () => import('../views/settings/create_telecos_care.vue'),
-          
-
         },
+
+{
+        path: 'iframe',
+        name: 'iframe',
+        component: () => import('../views/konsultasi/live_konsultasi/live_session_user.vue'),
+      },
+
+
+       
 
         {
           path: 'telecos-care',
@@ -135,7 +142,7 @@ const router = createRouter({
         {
           path: 'konsultasi/live-konsultasi/:session_id?',
           name: 'single_jadwal_konsultasi',
-          component: () => import('../views/konsultasi/live_konsultasi/live_konsultasi.vue'),
+          component: () => import('../views/konsultasi/live_konsultasi/user_live_konsultasi.vue'),
         },
         {
           path: 'konsultasi/rating-sesi-konsultasi/:session_id?',
@@ -286,12 +293,17 @@ const router = createRouter({
           ]
         },
         {
-          path:'sesi',
+          path:'konsultasi',
           children:[
             {
               path:'',
               name:'sesi_aktif_expert',
               component:()=>import('../views/expert/sesi_aktif/sesi_aktif_expert.vue')
+            },
+            {
+              path: 'live-konsultasi/:session_id?',
+              name: 'expert_single_jadwal_konsultasi',
+              component: () => import('../views/expert/live_konsultasi/expert_live_konsultasi.vue'),
             },
           ]
 

@@ -6,7 +6,7 @@
         <ul role="list" class="divide-y divide-gray-100" v-if="all_session.status === 1">
             <li v-for="session in sortedSessions" :key="session.sessionId">
 
-                <a :href="'https://claudio.codes/telecos-be/room/' + session.sessionId + '/usr=' + this.userId" target="_blank"
+                <router-link :to="{ name: 'single_jadwal_konsultasi', params: { session_id: session.sessionId } }"
                     class="relative flex justify-between gap-x-6 px-4 py-5 hover:bg-gray-50 sm:px-6 lg:px-8">
                     <div class="flex items-center gap-x-4">
                         <div class=" sm:flex sm:flex-col sm:items-start">
@@ -31,7 +31,7 @@
                             alt="" />
                         <ion-icon name="chevron-forward-outline" id="chevron_icon"></ion-icon>
                     </div>
-                </a>
+                </router-link>
 
             </li>
         </ul>
@@ -96,7 +96,7 @@ export default {
                 } else {
                     if (sessionDetails.phase == 1) {
                         this.userId = sessionDetails.userid;
-                        // console.log("user id : " + this.userId);all
+                        console.log("user id : " + this.userId);
                         await this.wrapper_get_session_by_user_Id();
                         await this.get_session_by_id();
                     }
