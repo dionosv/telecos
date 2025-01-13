@@ -10,11 +10,11 @@
             </div>
             <div>
               <h3 class="text-sm font-medium text-gray-900">
-                <a href="#" class="focus:outline-none">
+                <router-link :to="{ name: '' }" class="focus:outline-none">
                   <span class="absolute inset-0" aria-hidden="true" />
                   <span>Akun</span>
                   <span aria-hidden="true"> &rarr;</span>
-                </a>
+                </router-link>
               </h3>
               <p class="mt-1 text-sm text-gray-500">Pengaturan Akun</p>
             </div>
@@ -28,11 +28,11 @@
             </div>
             <div>
               <h3 class="text-sm font-medium text-gray-900">
-                <a href="#" class="focus:outline-none">
+                <router-link :to="{ name: 'lihat_ahli_admin' }" class="focus:outline-none">
                   <span class="absolute inset-0" aria-hidden="true" />
                   <span>Ahli</span>
                   <span aria-hidden="true"> &rarr;</span>
-                </a>
+                </router-link>
               </h3>
               <p class="mt-1 text-sm text-gray-500">Manajemen ahli</p>
             </div>
@@ -46,11 +46,11 @@
             </div>
             <div>
               <h3 class="text-sm font-medium text-gray-900">
-                <a href="#" class="focus:outline-none">
+                <router-link :to="{ name: 'landing_page_artikel_admin' }" class="focus:outline-none">
                   <span class="absolute inset-0" aria-hidden="true" />
                   <span>Artikel</span>
                   <span aria-hidden="true"> &rarr;</span>
-                </a>
+                </router-link>
               </h3>
               <p class="mt-1 text-sm text-gray-500">Manajemen artikel</p>
             </div>
@@ -64,11 +64,11 @@
             </div>
             <div>
               <h3 class="text-sm font-medium text-gray-900">
-                <a href="#" class="focus:outline-none">
+                <router-link :to="{ name: 'lihat_sesi_admin' }" class="focus:outline-none">
                   <span class="absolute inset-0" aria-hidden="true" />
                   <span>Sesi</span>
                   <span aria-hidden="true"> &rarr;</span>
-                </a>
+                </router-link>
               </h3>
               <p class="mt-1 text-sm text-gray-500">Manajemen sesi</p>
             </div>
@@ -82,11 +82,11 @@
             </div>
             <div>
               <h3 class="text-sm font-medium text-gray-900">
-                <a href="#" class="focus:outline-none">
+                <router-link :to="{ name: 'lihat_transaksi_admin' }" class="focus:outline-none">
                   <span class="absolute inset-0" aria-hidden="true" />
                   <span>Transaksi</span>
                   <span aria-hidden="true"> &rarr;</span>
-                </a>
+                </router-link>
               </h3>
               <p class="mt-1 text-sm text-gray-500">Manajemen Transaksi</p>
             </div>
@@ -100,11 +100,11 @@
             </div>
             <div>
               <h3 class="text-sm font-medium text-gray-900">
-                <a href="#" class="focus:outline-none">
+                <router-link :to="{ name: 'telecos_care_admin' }" class="focus:outline-none">
                   <span class="absolute inset-0" aria-hidden="true" />
                   <span>Telecos Care</span>
                   <span aria-hidden="true"> &rarr;</span>
-                </a>
+                </router-link>
               </h3>
               <p class="mt-1 text-sm text-gray-500">Lihat Laporan Telecos Care</p>
             </div>

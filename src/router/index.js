@@ -336,6 +336,11 @@ const router = createRouter({
           component: () => import('../views/all_admin/akses_admin/lihat_sesi.vue'),
         },
         {
+          path: 'telecos-care-admin',
+          name: 'telecos_care_admin',
+          component: () => import('../views/all_admin/akses_admin/telecos_care_admin.vue'),
+        },
+        {
           path: 'transaksi',
           name: 'lihat_transaksi_admin',
           component: () => import('../views/all_admin/akses_admin/lihat_transaksi.vue'),

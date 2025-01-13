@@ -6,7 +6,10 @@
         <ul role="list" class="divide-y divide-gray-100" v-if="all_session.status === 1">
             <li v-for="session in sortedSessions" :key="session.sessionId">
 
-                <router-link :to="{ name: 'single_jadwal_konsultasi', params: { session_id: session.sessionId } }"
+                <!-- <router-link :to="{ name: 'single_jadwal_konsultasi', params: { session_id: session.sessionId } }" -->
+
+                <a :href="'https://claudio.codes/telecos-be/room/' + session.sessionId + '/exp=' + session.expertId" target="_blank"
+
                     class="relative flex justify-between gap-x-6 px-4 py-5 hover:bg-gray-50 sm:px-6 lg:px-8">
                     <div class="flex items-center gap-x-4">
                         <div class=" sm:flex sm:flex-col sm:items-start">
@@ -17,8 +20,6 @@
                                         class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
                                     <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
                                 </span>
-
-                                <!-- <span class="animate-ping inline-flex items-center rounded-md bg-green-100 px-2 py-1 text-xs font-medium text-green-700">Selesai</span> -->
                             </div>
                             <p class="mt-1 text-xs leading-5 text-gray-500">
                                 {{ formatDateTime(session.date, session.endDate) }}
@@ -40,7 +41,8 @@
                             alt="" />
                         <ion-icon name="chevron-forward-outline" id="chevron_icon"></ion-icon>
                     </div>
-                </router-link>
+                </a>
+                <!-- </router-link> -->
             </li>
         </ul>
 

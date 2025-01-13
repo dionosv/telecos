@@ -1,6 +1,6 @@
 <template>
     <div>
-        lihat transaksi
+        lihat transaksi admin
     </div>
 </template>
 <script>
