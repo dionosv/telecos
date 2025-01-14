@@ -181,17 +181,14 @@ async function change_transaction_status(
     return JSON.parse(await makeRequest(config));
 }
  
-async function get_all_transaction(
-    transactionId, status
+async function get_all_transaction( 
 ) {
 
-    let data = JSON.stringify({
-    "transactionId" : transactionId,
-    "status" : status
+    let data = JSON.stringify({ 
     });
 
     let config = {
-        method: 'get',
+        method: 'post',
         maxBodyLength: Infinity,
         url: x_api_endpoint + '/transactions/getAll',
         headers: {

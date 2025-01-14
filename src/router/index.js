@@ -331,11 +331,7 @@ const router = createRouter({
           name: 'admin_acc_ahli_admin',
           component: () => import('../views/all_admin/akses_admin/acc_ahli.vue'),
         },
-        {
-          path: 'artikel',
-          name: 'artikel_admin',
-          component: () => import('../views/all_admin/akses_admin/artikel_ahli.vue'),
-        },
+        
         
         {
           path: 'daftar-ahli',
@@ -353,6 +349,11 @@ const router = createRouter({
           component: () => import('../views/all_admin/akses_admin/telecos_care_admin.vue'),
         },
         {
+          path: 'lihat-tc/:laporan_id?',
+          name: 'single_telecos_care_admin',
+          component: () => import('../views/all_admin/akses_admin/single_telecos_care_admin.vue'),
+        },
+        {
           path: 'transaksi',
           name: 'lihat_transaksi_admin',
           component: () => import('../views/all_admin/akses_admin/lihat_transaksi.vue'),
@@ -362,10 +363,10 @@ const router = createRouter({
           path: "artikel",
           children: [
             {
-              path: "",
-              name: "landing_page_artikel_admin",
-              component: () => import('../views/article/landing_page_article_expert.vue'),
-            },
+              path: '',
+              name: 'artikel_admin',
+              component: () => import('../views/all_admin/akses_admin/artikel_ahli.vue'),
+            }, 
             {
               path: 'baca/:articleId',
               name: 'single_page_article_admin',

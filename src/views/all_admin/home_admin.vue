@@ -46,7 +46,7 @@
             </div>
             <div>
               <h3 class="text-sm font-medium text-gray-900">
-                <router-link :to="{ name: 'landing_page_artikel_admin' }" class="focus:outline-none">
+                <router-link :to="{ name: 'artikel_admin' }" class="focus:outline-none">
                   <span class="absolute inset-0" aria-hidden="true" />
                   <span>Artikel</span>
                   <span aria-hidden="true"> &rarr;</span>
