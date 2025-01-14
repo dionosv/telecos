@@ -8,10 +8,9 @@
     <div class="mx-auto mt-0 max-w-7xl px-4 sm:px-6 lg:px-8" id="all">
         <div class="top">
             <div class="sesi" v-if="is_session">
-                <!-- <iframe :src=formattedLink
+                <iframe :src=formattedLink
                     allow="camera *; microphone *; display-capture *; autoplay *; clipboard-read *; clipboard-write *; fullscreen *"
-                    style="width: 100%; height: 100%; border: none;" allowfullscreen></iframe> -->
-
+                    style="width: 100%; height: 100%; border: none;" allowfullscreen></iframe>
             </div>
             <Spinner_no_full_screen id="spin" v-else></Spinner_no_full_screen>
         </div>
@@ -30,8 +29,6 @@
             </div>
 
             <div class="video_control">
-
-
 
                 <span
                     class="time-display flex items-center gap-x-1.5 rounded-full px-2 py-1 text-xs font-medium text-gray-900 ring-1 ring-inset ring-gray-200">
