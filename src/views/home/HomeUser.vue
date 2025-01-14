@@ -1,6 +1,6 @@
 <template>
 
-      <banner></banner>
+      <!-- <banner></banner> -->
 
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 fade-in">
     <div class="bg-white">
@@ -14,16 +14,14 @@
         <div class="pt-24 sm:pt-32 lg:pb-20">
           <div class="mx-auto max-w-7xl px-6 lg:px-8">
             <div class="mx-auto max-w-2xl text-center">
-              <h1 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">Data to enrich your
-                online business</h1>
-              <p class="mt-6 text-lg leading-8 text-gray-600">Anim aute id magna aliqua ad ad non deserunt
-                sunt. Qui irure qui lorem cupidatat commodo. Elit sunt amet fugiat veniam occaecat fugiat
-                aliqua.</p>
+              <h1 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">Selamat Datang di Super App Konsultasi Kecantikan</h1>
+                <p class="mt-6 text-lg leading-8 text-gray-600">Dapatkan solusi dan konsultasi kecantikan terpercaya dari para ahli profesional. Kami menyediakan layanan konsultasi online yang mudah dan nyaman untuk membantu Anda mencapai tujuan kecantikan Anda.</p>
               <div class="mt-10 flex items-center justify-center gap-x-6">
                 <a href="#"
-                  class="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Get
-                  started</a>
-                <a href="#" class="text-sm font-semibold leading-6 text-gray-900">Learn more <span
+                  class="rounded-md bg-lime-400 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-lime-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-600">
+                  Konsultasi
+                  </a>
+                <a href="#" class="text-sm font-semibold leading-6 text-gray-900">Daftar Akun <span
                     aria-hidden="true">→</span></a>
               </div>
             </div>

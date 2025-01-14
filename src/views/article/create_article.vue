@@ -206,7 +206,7 @@
 
             <div class="button_wrapper">
                 <button id="submit_button" @click.prevent="handle_article_submit"
-                    class="rounded-md bg-orange-400 px-3 py-1.5 text-sm font-semibold leading-6 text-white hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-gray-400">
+                    class="rounded-md bg-blue-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-gray-400">
                     Buat Artikel</button>
             </div>
 

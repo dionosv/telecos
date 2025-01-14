@@ -2,7 +2,7 @@
     <div class="container">
         <div class="all_artikel">
             <div class="lihat_artikel">
-                <router-link to="/admin/artikel/view" class="artikel-link">
+                <router-link :to="{name : 'lihat_artikel_saya_admin'}" class="artikel-link">
                     <div class="artikel-card">
                         <ion-icon name="list-outline" class="card-icon"></ion-icon>
                         <h2>Lihat Artikel</h2>
@@ -12,7 +12,7 @@
             </div>
 
             <div class="buat_artikel">
-                <router-link to="/admin/artikel/create" class="artikel-link">
+                <router-link :to="{name:'buat_artikel_admin'}" class="artikel-link">
                     <div class="artikel-card">
                         <ion-icon name="create-outline" class="card-icon"></ion-icon>
                         <h2>Buat Artikel Baru</h2>
