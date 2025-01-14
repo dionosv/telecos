@@ -428,17 +428,17 @@ export default {
         },
 
         async proses_kurangi_saldo() {
-            console.log(await kurangi_saldo(this.userId, this.meeting.price));
+            await kurangi_saldo(this.userId, this.meeting.price);
         },
 
         async proses_bikin_transaksi(sessionId, 
                 senderId, 
                 amount,){
-            console.log(await new_transaction_user_konsultasi_mulai(
+            await new_transaction_user_konsultasi_mulai(
                 sessionId, 
                 senderId, 
                 amount,
-                    ));
+                    );
         },
 
         async proses_buat_session(){

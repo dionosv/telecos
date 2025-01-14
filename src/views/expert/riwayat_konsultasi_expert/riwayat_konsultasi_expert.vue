@@ -71,11 +71,11 @@ export default {
         }
     },
     computed: {
-        sortedSessions() {
+        sortedSessions() { 
             if (!this.all_session.session) return [];
 
             return [...this.all_session.session]
-                .filter(session => session.status === "pending") // Only show pending sessions
+                .filter(session => session.status === "done") // Only show pending sessions
                 .sort((a, b) => {
                     const dateA = new Date(a.date);
                     const dateB = new Date(b.date);

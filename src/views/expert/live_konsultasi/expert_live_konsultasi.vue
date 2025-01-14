@@ -2,6 +2,8 @@
 <Selesaikan_sesi_expert 
     v-model="showModal"
     :session_id="session_id"
+    :expert_id = "human.expert_id"
+    :amount = "session_price"
 ></Selesaikan_sesi_expert>
     <div class="mx-auto mt-0 max-w-7xl px-4 sm:px-6 lg:px-8" id="all">
         <div class="top">
@@ -94,6 +96,7 @@ export default {
             session_status: "",
             session_start: "",
             session_end: "",
+            session_price:"",
             formattedLink: null,
             session_id: this.$route.params.session_id,
             seconds: 0,
@@ -119,6 +122,7 @@ export default {
                 this.session_end = ses_id.session[0].endDate
                 this.human.user_id = ses_id.session[0].userId
                 this.session_status = ses_id.session[0].status
+                this.session_price =  ses_id.session[0].rate
                 return true
             }
             else {

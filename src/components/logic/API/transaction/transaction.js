@@ -71,7 +71,7 @@ async function new_transaction_user_konsultasi_mulai(
         "Telecos",
         "User",
         senderId,
-        "User Konsultasi Mulai",
+        "Konsultasi Ahli",
         amount,
         "1");
 }
@@ -83,7 +83,7 @@ async function new_transaction_user_konsultasi_selesai(
     // senderType, 
     // senderId,
     // transactionType,
-    // amount, 
+    amount 
 ){
     return await create_new_transaction(
         sessionId,
@@ -91,8 +91,8 @@ async function new_transaction_user_konsultasi_selesai(
         receiverId,
         "Telecos",
         "Telecos",
-        "Expert Konsultasi Selesai",
-        amount,
+        "Konsultasi Ahli Selesai",
+        amount-5000,
         "1");
 }
 
