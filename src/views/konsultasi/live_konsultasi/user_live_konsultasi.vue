@@ -136,7 +136,8 @@ export default {
             } catch (err) {
                 this.permissionGranted = false;
                 console.error('Error accessing camera and microphone:', err);
-                alert('Please allow camera and microphone access to use this feature');
+                alert('Mohon izinkan akses kamera dan mikrofon untuk menggunakan fitur ini');
+                // alert('Please allow camera and microphone access to use this feature');
             }
         },
 

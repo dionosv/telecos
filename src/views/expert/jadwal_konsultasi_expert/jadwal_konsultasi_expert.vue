@@ -6,7 +6,7 @@
         <ul role="list" class="divide-y divide-gray-100" v-if="all_session.status === 1">
             <li v-for="session in sortedSessions" :key="session.sessionId">
 
-                <router-link :to="{ name: 'single_jadwal_konsultasi', params: { session_id: session.sessionId } }"
+                <div
                     class="relative flex justify-between gap-x-6 px-4 py-5 hover:bg-gray-50 sm:px-6 lg:px-8">
                     <div class="flex items-center gap-x-4">
                         <div class=" sm:flex sm:flex-col sm:items-start">
@@ -20,7 +20,7 @@
                         <div class="min-w-0 flex-auto text-right">
                             <p class="text-sm font-semibold leading-6 text-gray-900">
                                 <span class="inset-x-0 -top-px bottom-0" />
-                                {{ expertDetails[session.expertId]?.name || 'Loading...' }}
+                                {{ userDetails[session.userId] || 'Loading...' }}
                             </p>
                             <p class="mt-1 text-xs leading-5 text-gray-500">
                                 <span class="relative truncate">Pengguna Telecos</span>
@@ -28,9 +28,9 @@
                         </div>
                         <!-- <img class="h-12 w-12 flex-none rounded-full bg-gray-50" :src="getExpertImage(session.expertId)"
                             alt="" /> -->
-                        <ion-icon name="chevron-forward-outline" id="chevron_icon"></ion-icon>
+                        <!-- <ion-icon name="chevron-forward-outline" id="chevron_icon"></ion-icon> -->
                     </div>
-                </router-link>
+                </div>
 
             </li>
         </ul>
@@ -47,10 +47,11 @@
 </template>
 <script>
 import { get_experts_byID } from '@/components/logic/API/experts';
-import { usetelecos_session_detailsStore } from '@/components/logic/API/save_session';
-import { get_session_by_user_Id } from '@/components/logic/API/session/session';
+import { usetelecos_session_detailsStore } from '@/components/logic/API/expert/expert_save_session';
+import { get_session_by_expert_Id, get_session_by_user_Id } from '@/components/logic/API/session/session';
 import { always_scroll_on_top } from '@/components/logic/tools/handle_always_scroll_on_top';
 import Spinner from '@/components/spinner/spinner.vue';
+import { get_user_data } from '@/components/logic/API/user';
 
 export default {
     mounted() {
@@ -66,7 +67,7 @@ export default {
             session: {},
             all_session: {},
             loaded: false,
-            expertDetails: {} // Add this line
+            userDetails: {} // Add this line
         }
     },
     computed: {
@@ -96,7 +97,7 @@ export default {
                     if (sessionDetails.phase == 1) {
                         this.userId = sessionDetails.userid;
                         console.log("user id : " + this.userId);
-                        await this.wrapper_get_session_by_user_Id();
+                        // await this.wrapper_get_session_by_expert_Id();
                         await this.get_session_by_id();
                     }
                 }
@@ -105,19 +106,15 @@ export default {
             } finally {
                 this.isLoading = false;
             }
-        },
-
-        async wrapper_get_session_by_user_Id() {
-            this.session = await get_session_by_user_Id(this.userId);
-        },
-
+        }, 
         async get_session_by_id() {
-            this.all_session = await get_session_by_user_Id(this.userId);
+            this.all_session = await get_session_by_expert_Id(this.userId);
             // After getting sessions, fetch expert details for each session
+            // console.log(this.all_session);
             if (this.all_session.status === 1) {
-                const expertIds = new Set(this.all_session.session.map(s => s.expertId));
+                const userIds = new Set(this.all_session.session.map(s => s.userId));
                 await Promise.all(
-                    Array.from(expertIds).map(id => this.fetchExpertDetails(id))
+                    Array.from(userIds).map(id => this.fetchuserDetails(id))
                 );
             }
             else {
@@ -126,31 +123,21 @@ export default {
             this.loaded = true;
         },
 
-        async fetchExpertDetails(expertId) {
+        async fetchuserDetails(expertId) {
             try {
-                const expertData = await get_experts_byID(expertId);
-                if (expertData.status === 1) {
-                    this.expertDetails = {
-                        ...this.expertDetails,
-                        [expertId]: expertData.user
+                const response = await get_user_data(expertId);
+                if (response.status === 1) {
+                    this.userDetails = {
+                        ...this.userDetails,
+                        [expertId]: response.user.name
                     };
                 }
             } catch (error) {
                 console.error('Failed to fetch expert details:', error);
             }
-        },
+        }, 
 
-        getExpertImage(expertId) {
-            const expert = this.expertDetails[expertId];
-            if (expert?.imageName) {
-                return `https://claudio.codes/telecos-be/image-rs/expert/${expert.imageName}`;
-            }
-            return 'default-image-url';
-        },
-
-        async wrapper_get_detail_ahli_by_id(expert_id) {
-            console.log(await get_experts_byID(expert_id));
-        },
+       
 
         formatDateTime(startTime, endTime) {
             const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];

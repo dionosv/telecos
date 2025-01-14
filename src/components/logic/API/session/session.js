@@ -53,7 +53,7 @@ async function get_session_by_expert_Id(expertId) {
     let config = {
         method: 'post',
         maxBodyLength: Infinity,
-        url: x_api_endpoint + '/sessions/getSessionByUser',
+        url: x_api_endpoint + '/sessions/getSessionByExpert',
         headers: {
             'Content-Type': 'application/json'
         },

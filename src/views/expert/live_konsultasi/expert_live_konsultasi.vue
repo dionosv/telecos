@@ -1,14 +1,14 @@
 <template>
-
-    <div class="mx-auto mt-0 max-w-7xl px-4 sm:px-6 lg:px-8" id="all"> 
+<Selesaikan_sesi_expert 
+    v-model="showModal"
+    :session_id="session_id"
+></Selesaikan_sesi_expert>
+    <div class="mx-auto mt-0 max-w-7xl px-4 sm:px-6 lg:px-8" id="all">
         <div class="top">
             <div class="sesi" v-if="is_session">
-                <iframe 
-                                :src=formattedLink
-                                allow="camera *; microphone *; display-capture *; autoplay *; clipboard-read *; clipboard-write *; fullscreen *"
-                                style="width: 100%; height: 100%; border: none;"
-                                allowfullscreen
-                            ></iframe>
+                <!-- <iframe :src=formattedLink
+                    allow="camera *; microphone *; display-capture *; autoplay *; clipboard-read *; clipboard-write *; fullscreen *"
+                    style="width: 100%; height: 100%; border: none;" allowfullscreen></iframe> -->
 
             </div>
             <Spinner_no_full_screen id="spin" v-else></Spinner_no_full_screen>
@@ -16,10 +16,10 @@
 
         <div class="control">
 
-            <div class="vidcal_title"> 
+            <div class="vidcal_title">
                 <div class="split_user">
                     <div class="nama_user">
-                        <h1>{{this.human.user}}</h1>
+                        <h1>{{ this.human.user }}</h1>
                     </div>
                     <div class="tipe_user">
                         <h1>Pengguna Telecos</h1>
@@ -27,18 +27,24 @@
                 </div>
             </div>
 
-            <div class="video_control"> 
-
-                <span class="time-display flex items-center gap-x-1.5 rounded-full px-2 py-1 text-xs font-medium text-gray-900 ring-1 ring-inset ring-gray-200">
-                                <span class="relative flex h-3 w-3">
-                                    <span
-                                        class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                                    <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
-                                </span>
-                                {{ formattedTime }}
-                            </span>
+            <div class="video_control">
 
 
+
+                <span
+                    class="time-display flex items-center gap-x-1.5 rounded-full px-2 py-1 text-xs font-medium text-gray-900 ring-1 ring-inset ring-gray-200">
+                    <span class="relative flex h-3 w-3">
+                        <span
+                            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                    </span>
+                    {{ formattedTime }}
+                </span>
+                <div class="sesi_selesai" @click="toggleModal">
+                    <span
+                        class="inline-flex items-center rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-700">Selesaikan
+                        sesi</span>
+                </div>
                 <div class="end_call" @click="handle_disconnect">
                     <ion-icon name="call"></ion-icon>
                 </div>
@@ -51,23 +57,25 @@
     </div>
 </template>
 <script>
-import { get_experts_byID } from '@/components/logic/API/experts'; 
+import { get_experts_byID } from '@/components/logic/API/experts';
 import { usetelecos_session_detailsStore } from '@/components/logic/API/expert/expert_save_session';
 import { get_session_by_session_Id } from '@/components/logic/API/session/session';
 import { get_user_data } from '@/components/logic/API/user';
 import Spinner_no_full_screen from '@/components/spinner/spinner_no_full_screen.vue';
+import Selesaikan_sesi_expert from './selesaikan_sesi_expert.vue';
 
 export default {
     components: {
-        Spinner_no_full_screen
+        Spinner_no_full_screen,
+        Selesaikan_sesi_expert
     },
     mounted() {
         this.try_get_session();
-        this.startTimer(); 
+        this.startTimer();
     },
     data() {
         return {
-
+            showModal: false,
             is_session: false,
             toogle: {
                 mic: true,
@@ -110,7 +118,7 @@ export default {
                 this.session_start = ses_id.session[0].date
                 this.session_end = ses_id.session[0].endDate
                 this.human.user_id = ses_id.session[0].userId
-                this.session_status = ses_id.session[0].status 
+                this.session_status = ses_id.session[0].status
                 return true
             }
             else {
@@ -120,9 +128,9 @@ export default {
 
         async requestCameraPermission() {
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({ 
+                const stream = await navigator.mediaDevices.getUserMedia({
                     video: true,
-                    audio: true 
+                    audio: true
                 });
                 this.permissionGranted = true;
                 // Stop the stream immediately after getting permission
@@ -131,7 +139,7 @@ export default {
             } catch (err) {
                 this.permissionGranted = false;
                 console.error('Error accessing camera and microphone:', err);
-                alert('Please allow camera and microphone access to use this feature');
+                alert('Mohon izinkan akses kamera dan mikrofon untuk menggunakan fitur ini');
             }
         },
 
@@ -141,18 +149,12 @@ export default {
                 const sessionDetails = await sessionStore.loadtelecos_session_details();
 
                 if (sessionDetails === false) {
-                    this.$router.push({ name: 'akun' });
+                    this.$router.push({ name: 'akun_expert' });
                 } else {
                     if (sessionDetails.phase == 1) {
                         this.userId = sessionDetails.userid;
                         await this.get_session_by_id()
                         await this.handle_get_user_data();
-
-
-
-
-
-
                         // await this.get_expert_details();
 
                         // await this.handle_get_user_data();
@@ -169,7 +171,7 @@ export default {
 
         },
 
-        formatting_link(){
+        formatting_link() {
             this.formattedLink = `https://claudio.codes/telecos-be/room/${this.session_id}/exp=${this.human.expert_id}`;
         },
 
@@ -210,8 +212,11 @@ export default {
             this.toogle.mic = !this.toogle.mic;
         },
 
-        handle_disconnect(){
+        handle_disconnect() {
             this.$router.back();
+        },
+        toggleModal() {
+            this.showModal = !this.showModal;
         },
         startTimer() {
             this.timerInterval = setInterval(() => {
@@ -227,13 +232,13 @@ export default {
 }
 </script>
 <style>
-
 .status {
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    margin-bottom: 1rem; 
+    margin-bottom: 1rem;
 }
+
 #spin {
     background-color: black;
 }
@@ -324,13 +329,17 @@ export default {
     color: black;
 }
 
-.control{
+.control {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
     margin-left: 2rem;
     margin-right: 2rem;
+}
+
+.sesi_selesai{
+    cursor: pointer;
 }
 
 .video_control {
@@ -341,37 +350,37 @@ export default {
     align-items: center;
     gap: 1rem;
 }
- 
 
-.vidcal_title{
+
+.vidcal_title {
     display: flex;
     flex-direction: row;
     justify-content: center;
-    align-items: center; 
+    align-items: center;
     gap: 0.5rem;
 }
 
- div.vidcal_title div.split_user div.nama_user h1{
+div.vidcal_title div.split_user div.nama_user h1 {
     font-size: 1.1rem;
     font-weight: bold;
- }
- 
-div.control div.vidcal_title div.split_user div.tipe_user h1{
+}
+
+div.control div.vidcal_title div.split_user div.tipe_user h1 {
     font-size: 0.7rem;
 }
 
 .time-display {
-    height: 2rem; /* Adjust the height as needed */
+    height: 2rem;
+    /* Adjust the height as needed */
     display: flex;
     align-items: center;
 }
 
 @media screen and (max-width: 768px) {
 
-    .control{
+    .control {
         margin: 0px;
     }
 
 }
-
 </style>
