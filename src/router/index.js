@@ -209,6 +209,12 @@ const router = createRouter({
         },
 
         {
+          path: 'daftar',
+          name: 'daftar_kan_expert',
+          component: () => import('../views/expert/akun_expert/daftar_expert.vue'),
+        },
+
+        {
           path: 'akun',
           name: 'akun_expert',
           component: () => import('../views/expert/akun_expert/akun_expert.vue'),
@@ -237,6 +243,18 @@ const router = createRouter({
           path: "ganti-foto-profil",
           name: "ganti_foto_profil_expert",
           component: () => import('../views/expert/akun_expert/ganti_foto_profil.vue'),
+        },
+
+        {
+          path: 'daftar-sukses',
+          name: 'daftar_sukses_expert',
+          component: () => import('../views/expert/akun_expert/daftar_sukses_expert.vue'),
+        },
+
+        {
+          path: 'daftar-gagal',
+          name: 'daftar_gagal_expert',
+          component: () => import('../views/expert/akun_expert/daftar_gagal_expert.vue'),
         },
 
         {

@@ -85,7 +85,7 @@ function session_expirate(max_date=30) {
 }
 
 function set_otp_count(email,otp_send,otp_try){
-  Cookies.set('otp_telecos', JSON.stringify({
+  Cookies.set('otp_telecos_expert', JSON.stringify({
     email: email, //kalo phase 1 user udah login
     otp_send : otp_send,
     otp_try : otp_try ,
@@ -95,12 +95,12 @@ function set_otp_count(email,otp_send,otp_try){
 }
 
 function get_otp_count() {
-  const otp_telecos = JSON.parse(Cookies.get('otp_telecos')); 
-  if (otp_telecos) {  
+  const otp_telecos_expert = JSON.parse(Cookies.get('otp_telecos_expert')); 
+  if (otp_telecos_expert) {  
       return {
-        email: otp_telecos.email,
-        otp_send: otp_telecos.otp_send,
-        otp_try: otp_telecos.otp_try, 
+        email: otp_telecos_expert.email,
+        otp_send: otp_telecos_expert.otp_send,
+        otp_try: otp_telecos_expert.otp_try, 
       };
     }  
   else {
@@ -109,7 +109,7 @@ function get_otp_count() {
 }
 
 function clear_otp_count() {
-  Cookies.remove('otp_telecos');
+  Cookies.remove('otp_telecos_expert');
 }
 
 

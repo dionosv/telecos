@@ -49,6 +49,7 @@ export default {
                     }
                     else if (sessionDetails.phase == 2) {
                         this.user_have_account = false;
+                        this.$router.push({ name: 'otp_expert' });
                         this.onsession = false;
                     }
                     else if (sessionDetails.phase == 3) {

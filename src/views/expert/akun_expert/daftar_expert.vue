@@ -102,24 +102,44 @@
             <div>
               <label for="calendar" class="block text-sm font-medium leading-6 text-gray-900">Kategori Ahli</label>
               <div class="mt-2">
-                <New_jenis_ahli/>
+                <New_jenis_ahli 
+                  v-model:parent_component_jenis_ahli="jenis_ahli"
+                  @jenis_ahli_status="status => cek_validity('jenis_ahli', status)"
+                />
               </div>
             </div>
 
             <div>
-              <label for="calendar" class="block text-sm font-medium leading-6 text-gray-900">Nomor STR</label>
+              <label for="str" class="text-sm font-medium leading-6 text-gray-900">Nomor STR</label>
               <div class="mt-2">
-                <New_str_expert/>
+                <!-- {{ noSTR }} -->
+                <New_str_expert
+                  v-model="noSTR"
+                  @str_status="status => cek_validity('noSTR', status)"
+                />
               </div>
             </div>
 
             <div>
               <label for="calendar" class="block text-sm font-medium leading-6 text-gray-900">Lokasi Praktik</label>
               <div class="mt-2">
-                <New2_lokasi_praktek_expert/>
+                <!-- {{ lokasi_praktek }} -->
+                <New2_lokasi_praktek_expert
+                  v-model:parent_component_lokasi="lokasi_praktek"
+                  @lokasi_status="status => cek_validity('lokasi_praktek', status)"
+                />
               </div>
             </div>
 
+            <div>
+              <label for="str" class="text-sm font-medium leading-6 text-gray-900">Almamater</label>
+              <div class="mt-2"> 
+                <New_almamater_expert
+                  v-model:parent_component_nama="almamater"
+                  @nama_status="status => cek_validity('almamater', status)"
+                ></New_almamater_expert>
+              </div>
+            </div>
 
             <div>
               <label for="password" class="block text-sm font-medium leading-6 text-gray-900">Password</label>
@@ -171,14 +191,15 @@
   import New_telephone from '@/components/input/new_telephone.vue';
   import New_birthdate from '@/components/input/new_birthdate.vue';
   import New_nama from '@/components/input/new_nama.vue';
-  import { session_expirate, register, send_otp, set_otp_count } from '@/components/logic/API/user';
-  import { usetelecos_session_detailsStore } from '@/components/logic/API/save_session';
+  import { session_expirate, register, send_otp, set_otp_count } from '@/components/logic/API/expert/expert';
+  import { usetelecos_session_detailsStore } from '@/components/logic/API/expert/expert_save_session';
 import New_str_expert from '@/components/input/new_str_expert.vue';
 import New2_lokasi_praktek_expert from '@/components/input/new2_lokasi_praktek_expert.vue';
 import New_jenis_ahli from '@/components/input/new_jenis_ahli.vue';
+import New_almamater_expert from '@/components/input/new_almamater_expert.vue';
   
   export default {
-    components: { New_nama, New_birthdate, New_email, New_password, New_telephone , New_str_expert, New2_lokasi_praktek_expert, New_jenis_ahli},
+    components: { New_nama, New_birthdate, New_email, New_password, New_telephone , New_str_expert, New2_lokasi_praktek_expert, New_jenis_ahli, New_almamater_expert},
     data() {
       return {
         akun_nama: '',
@@ -188,6 +209,10 @@ import New_jenis_ahli from '@/components/input/new_jenis_ahli.vue';
         jenis_kelamin: '',
         birthdate: '',
         email_in_use: false,
+        noSTR: '',
+        lokasi_praktek: '',
+        almamater: '', // Add this line
+        jenis_ahli: '',
         allFieldsValid: false,
   
         status_daftar: 0,
@@ -198,7 +223,11 @@ import New_jenis_ahli from '@/components/input/new_jenis_ahli.vue';
           akun_telp: null,
           akun_sandi: null,
           jenis_kelamin: null,
-          birthdate: null
+          birthdate: null,
+          noSTR: null,
+          lokasi_praktek: null,
+          almamater: null,  // Add this line
+          jenis_ahli: null
         }
       }
     },
@@ -238,12 +267,17 @@ import New_jenis_ahli from '@/components/input/new_jenis_ahli.vue';
           sandi: this.akun_sandi,
           jenis_kelamin: this.jenis_kelamin,
           birthdate: this.birthdate,
+          jenis_ahli: this.jenis_ahli,
+          noSTR: this.noSTR,
+          almamater:this.almamater,
+          lokasi_praktek: this.lokasi_praktek,
+          jenis_ahli: this.jenis_ahli,
           expirate: session_expirate(1)
         });
   
         set_otp_count(this.akun_email,1,0);
         send_otp(this.akun_email);
-        this.$router.push({ name: 'otp' });
+        this.$router.push({ name: 'otp_expert' });
       },
   
       receive_password(password) {
@@ -258,4 +292,3 @@ import New_jenis_ahli from '@/components/input/new_jenis_ahli.vue';
   </script>
   
   <style></style>
-  

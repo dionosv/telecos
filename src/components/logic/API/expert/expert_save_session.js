@@ -13,8 +13,10 @@ export const usetelecos_session_detailsStore = defineStore('expert_telecos_sessi
     akun_telp: null,
     akun_sandi: null,
     jenis_kelamin: null,
+    jenis_ahli : null,
     birthdate: null,
     noSTR:null,
+    lokasi_praktek : null,
     almamater:null,
   }),
 
@@ -30,7 +32,7 @@ export const usetelecos_session_detailsStore = defineStore('expert_telecos_sessi
       }), { expires: new Date(expirate), secure: true, sameSite: 'None' });
     },
 
-    save_temporary_telecos_register({ phase ,nama, email, telp, sandi, jenis_kelamin, birthdate, noSTR,almamater, expirate }) {
+    save_temporary_telecos_register({ phase ,nama, email, telp, sandi, jenis_kelamin,jenis_ahli, birthdate, noSTR,lokasi_praktek,almamater, expirate }) {
       Cookies.set('expert_telecos_session_details', JSON.stringify({
         phase: phase, // phase 2 user udah daftar
         akun_nama: nama,
@@ -38,8 +40,10 @@ export const usetelecos_session_detailsStore = defineStore('expert_telecos_sessi
         akun_telp: telp,
         akun_sandi: sandi,
         jenis_kelamin: jenis_kelamin, 
+        jenis_ahli : jenis_ahli,
         birthdate: birthdate,
         noSTR:noSTR,
+        lokasi_praktek : lokasi_praktek,
         almamater:almamater,
       }), { expires: new Date(expirate), secure: true, sameSite: 'None' });
     },
@@ -66,10 +70,11 @@ export const usetelecos_session_detailsStore = defineStore('expert_telecos_sessi
               akun_telp: expert_telecos_session_details.akun_telp,
               akun_sandi: expert_telecos_session_details.akun_sandi,
               jenis_kelamin: expert_telecos_session_details.jenis_kelamin,
+              jenis_ahli : expert_telecos_session_details.jenis_ahli,
               birthdate: expert_telecos_session_details.birthdate, 
               expirate: expert_telecos_session_details.expirate,
               noSTR:expert_telecos_session_details.noSTR,
-              almamater:expert_telecos_session_details.almamater,
+              almamater:expert_telecos_session_details.almamater
             };
           }
           else if (expert_telecos_session_details.phase == 3) {
@@ -80,10 +85,11 @@ export const usetelecos_session_detailsStore = defineStore('expert_telecos_sessi
               akun_telp: expert_telecos_session_details.akun_telp,
               akun_sandi: expert_telecos_session_details.akun_sandi,
               jenis_kelamin: expert_telecos_session_details.jenis_kelamin,
+              jenis_ahli : expert_telecos_session_details.jenis_ahli,
               birthdate: expert_telecos_session_details.birthdate, 
               expirate: expert_telecos_session_details.expirate,
               noSTR:expert_telecos_session_details.noSTR,
-              almamater:expert_telecos_session_details.almamater,
+              almamater:expert_telecos_session_details.almamater
             };
           }
         }
