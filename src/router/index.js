@@ -96,7 +96,7 @@ const router = createRouter({
 
         {
           path: 'lapor-telecos-care',
-          name: 'lapor_telecos_care',
+          name: 'lapor_telecos_care_user',
           component: () => import('../views/settings/create_telecos_care.vue'),
         },
 

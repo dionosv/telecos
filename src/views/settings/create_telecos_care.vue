@@ -75,6 +75,46 @@
                             <p class="text-sm text-end" :class="{ 'text-red-600': masalah.length > 5000 }">Karakter {{ masalah.length }} / 5000</p>
                         </div>
 
+
+                        <div class="col-span-full">
+                            <label for="additional_image" class="block text-sm font-medium leading-6 text-gray-900">
+                                Tambah Foto (Opsional)
+                            </label>
+                            <div class="drop-zone additional_drop" @dragover.prevent @drop.prevent="onDropSecond"
+                                @click="triggerSecondFileInput">
+                                <div class="fileinputan" v-if="additionalImages.length === 0">
+                                    <ion-icon name="images"></ion-icon>
+                                    <p id="additional_drag_text" class="file_drag_text">
+                                        Drag & Drop maksimal 5 foto untuk lampiran
+                                    </p>
+                                    <p class="file_drag_text">
+                                        Foto yang diterima dengan format jpg, jpeg, png dengan ukuran maksimal 5 mb
+                                    </p>
+                                </div>
+                                <div v-else class="additional-images-container">
+                                    <div v-if="additionalImages.length < 5" class="add-more-images">
+                                        <ion-icon name="add-circle"></ion-icon>
+                                        <p>Tambah Foto Lainnya</p>
+                                        <p class="text-sm text-gray-500 mt-2">{{ additionalImages.length }}/5 foto telah dipilih</p>
+                                    </div>
+
+                                    <div v-for="(image, index) in additionalImages" :key="index" class="additional-image-item">
+                                        <img :src="image.preview" :alt="'Additional Image ' + (index + 1)"
+                                            class="additional-image-preview" />
+                                        <p class="image-file-name">{{ image.file.name }}</p>
+                                        <button @click.stop="removeAdditionalImage(index)" type="button"
+                                            class="mt-3 inline-flex items-center gap-x-1.5 rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2">
+                                            <ion-icon name="trash"></ion-icon>
+                                            Hapus Foto
+                                        </button>
+                                    </div>
+                                </div>
+                                <input type="file" ref="secondFileInput" @change="onSecondFileChange"
+                                    accept="image/jpeg, image/png" multiple hidden>
+                            </div>
+                            <p v-if="secondErrorMessage" class="text-red-500 text-sm mt-2">{{ secondErrorMessage }}</p>
+                        </div>
+
                         <!-- <div class="col-span-full">
                             <label for="cover-photo" class="block text-sm font-medium leading-6 text-gray-900">Lampiran</label>
                             <div
@@ -205,7 +245,11 @@ export default {
             judul_laporan: "",
             masalah: "", 
             userId: "",
-            laporan_success: false
+            laporan_success: false,
+            secondFileInput: null,
+            secondErrorMessage: '',
+            additionalImages: [],
+            maxAdditionalImages: 5,
         }
     },
     mounted() { 
@@ -237,10 +281,179 @@ export default {
                 }, 3000);
             }
 
-        }
+        },
+        validateFile(file, type) {
+            const maxSize = 5 * 1024 * 1024;
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
 
-    },
+            if (!allowedTypes.includes(file.type)) {
+                const message = 'Format file harus jpg, jpeg, atau png';
+                if (type === 'additional') {
+                    this.secondErrorMessage = message;
+                }
+                return false;
+            }
+
+            if (file.size > maxSize) {
+                const message = 'Ukuran file tidak boleh lebih dari 5MB';
+                if (type === 'additional') {
+                    this.secondErrorMessage = message;
+                }
+                return false;
+            }
+
+            if (type === 'additional') {
+                this.secondErrorMessage = '';
+            }
+            return true;
+        },
+
+        triggerSecondFileInput() {
+            this.$refs.secondFileInput.click();
+        },
+
+        onSecondFileChange(event) {
+            const files = Array.from(event.target.files);
+            this.handleMultipleFiles(files);
+            event.target.value = '';
+        },
+
+        onDropSecond(event) {
+            const files = Array.from(event.dataTransfer.files);
+            this.handleMultipleFiles(files);
+        },
+
+        handleMultipleFiles(files) {
+            const remainingSlots = this.maxAdditionalImages - this.additionalImages.length;
+            if (remainingSlots <= 0) {
+                this.secondErrorMessage = 'Maksimal 5 foto yang dapat diunggah';
+                return;
+            }
+
+            const validFiles = files.slice(0, remainingSlots).filter(file =>
+                this.validateFile(file, 'additional')
+            );
+
+            validFiles.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    this.additionalImages.push({
+                        file: file,
+                        preview: e.target.result
+                    });
+                };
+                reader.readAsDataURL(file);
+            });
+        },
+
+        removeAdditionalImage(index) {
+            this.additionalImages.splice(index, 1);
+        },
+    }
 }
 </script>
 
-<style></style>
+<style>
+/* ...existing styles... */
+
+.drop-zone {
+    width: 100%; /* Add this line */
+    border: 2px dashed #ccc;
+    padding: 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    min-height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.drop-zone p {
+    margin: 0;
+    color: #999;
+}
+
+.additional-images-container {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    min-height: 220px;
+}
+
+.additional-images-container::-webkit-scrollbar {
+    height: 8px;
+}
+
+.additional-images-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.additional-images-container::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.additional-image-item {
+    flex: 0 0 auto;
+    width: 150px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.additional-image-preview {
+    height: 120px;
+}
+
+.add-more-images {
+    flex: 0 0 auto;
+    width: 150px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 150px;
+    border: 2px dashed #ccc;
+    border-radius: 0.375rem;
+    cursor: pointer;
+}
+
+.add-more-images ion-icon {
+    font-size: 2rem;
+    color: #ccc;
+}
+
+.add-more-images p {
+    color: #666;
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+}
+
+.file_drag_text {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    font-size: 13px;
+}
+
+div.drop-zone div.fileinputan ion-icon {
+    font-size: 80px;
+    color: #ccc;
+    margin-top: 25px;
+    margin-bottom: 25px;
+}
+
+.fileinputan {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+</style>

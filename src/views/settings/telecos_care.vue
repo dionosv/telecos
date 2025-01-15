@@ -12,7 +12,7 @@
                             Telecos Care</h2>
                     </div>
                     <div class="mt-4 flex md:ml-4 md:mt-0">
-                        <RouterLink :to="{ name: 'lapor_telecos_care' }"
+                        <RouterLink :to="{ name: 'lapor_telecos_care_user' }"
                             class="inline-flex items-center gap-x-1.5 rounded-md bg-lime-400 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-lime-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
                             <ion-icon name="add-circle" class="text-xl"></ion-icon>
                             Buat Laporan

@@ -1,27 +1,31 @@
 <template>
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" v-if="loaded">
+    <div class="" v-if="loaded"> 
         <div class="jadwal">
-            <h1>Riwayat Konsultasi Anda</h1>
+            <ion-icon name="calendar-outline" size="large"></ion-icon>
+            <h1 class="text-sm">Jadwal Konsultasi Anda</h1>
         </div>
-        <ul role="list" class="divide-y divide-gray-100" v-if="all_session.status === 1">
-            <router-link :to="{name:'rating_sesi', params:{session_id : session.id}}"   v-for="session in sortedSessions" :key="session.sessionId">
+        <ul role="list" class="divide-y divide-gray-100" v-if="all_session.status === 1" id="widget_upcoming_events">
+            <li v-for="session in sortedSessions" :key="session.sessionId">
 
+                <router-link :to="{ name: 'single_jadwal_konsultasi', params: { session_id: session.sessionId } }"
 
-
-                <div
                     class="relative flex justify-between gap-x-6 px-4 py-5 hover:bg-gray-50 sm:px-6 lg:px-8">
                     <div class="flex items-center gap-x-4">
                         <div class=" sm:flex sm:flex-col sm:items-start">
                             <div class="split_x">
-                                <p class="text-sm leading-6 text-gray-900">{{ session.sessionName }}</p>
-                                <span class="inline-flex items-center rounded-md bg-green-100 px-2 py-1 text-xs font-medium text-green-700">Selesai</span>
+                                <p class="text-sm leading-6 text-gray-000">{{ session.sessionName }}</p>
+                                <!-- <span class="relative flex h-3 w-3">
+                                    <span
+                                        class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                                </span> -->
                             </div>
                             <p class="mt-1 text-xs leading-5 text-gray-500">
                                 {{ formatDateTime(session.date, session.endDate) }}
                             </p>
                         </div>
                     </div>
-                    <div class="flex items-center gap-x-4 right-section">
+                    <!-- <div class="flex items-center gap-x-4 right-section">
                         <div class="min-w-0 flex-auto text-right">
                             <p class="text-sm font-semibold leading-6 text-gray-900">
                                 <span class="inset-x-0 -top-px bottom-0" />
@@ -34,18 +38,11 @@
                         </div>
                         <img class="h-12 w-12 flex-none rounded-full bg-gray-50" :src="getExpertImage(session.expertId)"
                             alt="" />
-                        <!-- <ion-icon name="chevron-forward-outline" id="chevron_icon"></ion-icon> -->
-                    </div>
-                </div>
-            </router-link>
-        </ul>
-        <div class="not_found" v-if="all_session.status === 0">
-            <ion-icon name="alert-circle"></ion-icon>
-            <p class="s_query">Tidak ada riwayat konsultasi</p>
-            <router-link :to="{ name: 'daftar_ahli_konsultasi' }"
-                class="rounded-md bg-lime-400 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-lime-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime-600">Buat
-                Sesi Konsultasi</router-link>
-        </div>
+                        <ion-icon name="chevron-forward-outline" id="chevron_icon"></ion-icon>
+                    </div>  -->
+                </router-link>
+            </li>
+        </ul> 
     </div>
 
     <Spinner v-if="!loaded"></Spinner>
@@ -195,6 +192,14 @@ export default {
 }
 </script>
 <style scoped>
+
+#widget_upcoming_events{
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: 280px;
+    max-height: calc(100vh - 200px);
+    padding: 0.5rem;
+}
 @media (max-width: 639px) {
     #chevron_icon {
         display: none;
@@ -210,17 +215,17 @@ export default {
     }
 }
 
-.jadwal{
+.jadwal {
     display: flex;
-    align-items: center;
-    margin-top: 20px;
-    margin-bottom: 20px;
+    align-items: center; 
+    padding: 1rem;
+    margin-bottom: 0.5rem;
 }
 
-.jadwal h1{
-    
+.jadwal h1 {
+
     margin-left: 10px;
-    font-size: 25px;
+    font-size: clamp(14px, 4vw, 18px);
     font-weight: 600;
 
 }
@@ -236,14 +241,27 @@ export default {
     text-align: center;
 }
 
-.split_x{
+.split_x {
     display: flex;
     flex-direction: row;
-    gap: 15px;
+    align-items: center;
+    gap: 7px;
+    flex-wrap: wrap;
 }
 
 .split_x span {
-    flex-shrink: 0; /* Ensure the badge does not take full width */
+    flex-shrink: 0;
+    /* Ensure the badge does not take full width */
+}
+
+.xx_note{
+    margin : 20px; 
+    text-align: center;
+}
+
+.xx_note p{
+    font-size: 11px;
+    font-weight: 600; 
 }
 
 .not_found ion-icon {
@@ -273,16 +291,35 @@ export default {
         padding: 0 1rem;
         line-height: 1.5;
     }
-    .split_x{
-    display: flex;
-    flex-direction: column;
-    gap:0px;
-}
+
+    .split_x {
+        display: flex;
+        flex-direction: column;
+        gap: 0px;
+    }
 
     .split_x span {
         margin-top: 5px;
         margin-bottom: 5px;
-        align-self: flex-start; /* Align badge to the start */
+        align-self: flex-start;
+        /* Align badge to the start */
+    }
+
+    #widget_upcoming_events {
+        height: auto;
+        max-height: 400px;
+    }
+
+    .jadwal {
+        padding: 0.75rem;
+    }
+
+    .jadwal ion-icon {
+        font-size: 24px;
+    }
+
+    .split_x {
+        gap: 5px;
     }
 }
 
@@ -299,5 +336,71 @@ export default {
     .not_found .s_query {
         font-size: 0.875rem;
     }
+
+    #widget_upcoming_events {
+        max-height: 350px;
+    }
+
+    .jadwal {
+        padding: 0.5rem;
+    }
+
+    .jadwal h1 {
+        font-size: 16px;
+    }
+
+    .text-sm {
+        font-size: 14px;
+    }
+
+    .text-xs {
+        font-size: 12px;
+    }
+
+    li {
+        padding: 0.75rem 0.5rem;
+    }
+
+    .split_x {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .split_x span {
+        margin-top: 3px;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .hover\:bg-gray-50:hover {
+        background-color: rgba(75, 85, 99, 0.1);
+    }
+
+    .text-gray-900 {
+        color: #e5e7eb;
+    }
+
+    .text-gray-500 {
+        color: #9ca3af;
+    }
+}
+
+/* Custom scrollbar */
+#widget_upcoming_events::-webkit-scrollbar {
+    width: 6px;
+}
+
+#widget_upcoming_events::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+#widget_upcoming_events::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 3px;
+}
+
+#widget_upcoming_events::-webkit-scrollbar-thumb:hover {
+    background: #555;
 }
 </style>
