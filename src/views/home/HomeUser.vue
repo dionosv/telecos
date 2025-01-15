@@ -121,6 +121,7 @@ export default {
         const sessionDetails = await sessionStore.loadtelecos_session_details();
         if (sessionDetails === false) {
           this.login = true
+          console.log("not login")
         } else {
           this.login = false
           const hasil = await get_user_data(sessionDetails.userid)
