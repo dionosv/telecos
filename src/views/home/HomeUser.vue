@@ -4,7 +4,7 @@
 
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 fade-in">
 
-    <div class="not_login" v-if="login">
+    <div class="not_login" v-if="!login">
 
 
       <div class="bg-white">
@@ -60,7 +60,7 @@
 
     </div>
 
-    <div class="login" v-else>
+    <div class="login" v-if="login">
 
 
       <div class="split_2" id="already_login">
@@ -120,10 +120,10 @@ export default {
         const sessionStore = usetelecos_session_detailsStore();
         const sessionDetails = await sessionStore.loadtelecos_session_details();
         if (sessionDetails === false) {
-          this.login = true
+          this.login = false  // Changed from true to false
           console.log("not login")
         } else {
-          this.login = false
+          this.login = true   // Changed from false to true
           const hasil = await get_user_data(sessionDetails.userid)
           this.nama = hasil.user.name
         }
