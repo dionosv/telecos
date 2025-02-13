@@ -99,7 +99,7 @@
         <p class="text-center text-sm leading-6 text-gray-500">
           Tidak menemukan akun anda ? Hubungi kami di
           {{ ' ' }}
-          <router-link :to="{ name: 'telecos_care' }" class="font-semibold text-orange-600 hover:text-orange-800">Telecos
+          <router-link :to="{ name: 'telecos_care_expert' }" class="font-semibold text-orange-600 hover:text-orange-800">Telecos
             Care</router-link>
         </p>
       </div>

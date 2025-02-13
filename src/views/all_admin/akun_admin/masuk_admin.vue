@@ -53,7 +53,7 @@
           <div class="pointer-events-none absolute inset-0 z-10 rounded-md ring-1 ring-inset ring-gray-300" />
           <div>
             <label for="email-address" class="sr-only">Alamat Email</label>
-            <input id="email-address" name="email" type="email" autocomplete="email" v-model="akun_email"
+            <input id="email-address" name="email" type="text" autocomplete="email" v-model="akun_email"
               class="relative block w-full rounded-t-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-100 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
               placeholder="Alamat Email" />
           </div>
@@ -84,8 +84,9 @@
 <script>
 import { session_expirate, login } from '@/components/logic/API/user';
 import Logo from '@/components/logo/logo_divisi_akun.vue';
-import { usetelecos_session_detailsStore } from '@/components/logic/API/save_session';
+import { usetelecos_session_detailsStore } from '@/components/logic/API/admin/admin_save_session';
 import { handle_url_page_title, url_preprocess } from '@/components/logic/user_url_preprocess/user_preprocess';
+import { login_admin } from '@/components/logic/API/admin/admin';
 
 export default {
   components: { Logo },
@@ -98,8 +99,8 @@ export default {
   },
   data() {
     return {
-      akun_email: 'dion.hananto14@gmail.com',
-      akun_sandi: 'Solo2121!',
+      akun_email: 'admin',
+      akun_sandi: 'admin',
       login_failed: false,
       login_success: false,
       redirection_page_name: "Home"
@@ -116,12 +117,13 @@ export default {
   methods: {
     async try_login() {
       const sessionStore = usetelecos_session_detailsStore();
-      let user_masuk = await login(this.akun_email, this.akun_sandi);
+      let user_masuk = await login_admin(this.akun_email, this.akun_sandi);
+
+      console.log(user_masuk);
       if (user_masuk["status"] == 1) {
         sessionStore.savetelecos_session_details(user_masuk.user["userId"], user_masuk.user["userRole"], session_expirate());
         this.login_failed = false;
-        this.redirection_page_name = handle_url_page_title(this.additional_param);
-        // console.log(this.redirection_page_name);
+        this.redirection_page_name = handle_url_page_title(this.additional_param); 
         this.login_success = true;
         await this.handle_add_param();
       } else {
@@ -140,8 +142,8 @@ export default {
           this.$router.push({ name: "home" });
         }
       } else {
-        this.redirection_page_name = "Home";
-        this.$router.push({ name: "home" });
+        this.redirection_page_name = "Home Admin";
+        this.$router.push({ name: "home_admin" });
       }
     }
   },

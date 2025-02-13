@@ -310,6 +310,7 @@ const router = createRouter({
             },
           ]
         },
+        
         {
           path:'konsultasi',
           children:[
@@ -343,7 +344,7 @@ const router = createRouter({
           path: 'akun',
           name: 'akun_admin',
           component: () => import('../views/all_admin/akun_admin/akun_admin.vue'),
-        },
+        },   
         {
           path: 'acc-ahli',
           name: 'admin_acc_ahli_admin',

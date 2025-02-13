@@ -126,7 +126,22 @@
 </template>
 
 <script>
+import { usetelecos_session_detailsStore } from '@/components/logic/API/admin/admin_save_session';
+
 export default {
-  name: 'HomeAdmin'
+  name: 'HomeAdmin',
+
+  mounted() {
+    this.cek_login_admin();
+  },
+  methods : {
+    cek_login_admin(){
+      const x = usetelecos_session_detailsStore();
+      if(!x.load_admin_telecos()){
+        // console.log('Anda belum login');
+        this.$router.push({ name: 'akun_admin' });
+      }
+    }
+  }
 }
 </script>

@@ -37,14 +37,19 @@ async function login(email, password) {
 }
 
 
-async function register(name,email,telpon,gender,dob,password){
+async function register(name,email,telpon,gender,dob,password,jenis_ahli,firstJob,noSTR,workspace,almamater) {
   let data = JSON.stringify({
-    "name":name,
+    "name": name,
     "email": email,
     "password": password,
+    "description": jenis_ahli,
     "phoneNum": telpon,
     "gender": gender,
-    "dateOfBirth": dob
+    "dateOfBirth": dob,
+    "firstJob": firstJob,
+    "strNum": noSTR,
+    "currentWorkspace": workspace,
+    "almamater":almamater
   });
   
   let config = {

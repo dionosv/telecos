@@ -32,7 +32,7 @@ export const usetelecos_session_detailsStore = defineStore('expert_telecos_sessi
       }), { expires: new Date(expirate), secure: true, sameSite: 'None' });
     },
 
-    save_temporary_telecos_register({ phase ,nama, email, telp, sandi, jenis_kelamin,jenis_ahli, birthdate, noSTR,lokasi_praktek,almamater, expirate }) {
+    save_temporary_telecos_register({ phase ,nama, email, telp, sandi, jenis_kelamin,jenis_ahli, birthdate, noSTR,lokasi_praktek, firstJob,almamater, expirate }) {
       Cookies.set('expert_telecos_session_details', JSON.stringify({
         phase: phase, // phase 2 user udah daftar
         akun_nama: nama,
@@ -44,6 +44,7 @@ export const usetelecos_session_detailsStore = defineStore('expert_telecos_sessi
         birthdate: birthdate,
         noSTR:noSTR,
         lokasi_praktek : lokasi_praktek,
+        firstJob:firstJob,
         almamater:almamater,
       }), { expires: new Date(expirate), secure: true, sameSite: 'None' });
     },
@@ -74,6 +75,7 @@ export const usetelecos_session_detailsStore = defineStore('expert_telecos_sessi
               birthdate: expert_telecos_session_details.birthdate, 
               expirate: expert_telecos_session_details.expirate,
               noSTR:expert_telecos_session_details.noSTR,
+              firstJob:expert_telecos_session_details.firstJob,
               almamater:expert_telecos_session_details.almamater
             };
           }
@@ -89,6 +91,7 @@ export const usetelecos_session_detailsStore = defineStore('expert_telecos_sessi
               birthdate: expert_telecos_session_details.birthdate, 
               expirate: expert_telecos_session_details.expirate,
               noSTR:expert_telecos_session_details.noSTR,
+              firstJob:expert_telecos_session_details.firstJob,
               almamater:expert_telecos_session_details.almamater
             };
           }

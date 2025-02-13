@@ -70,7 +70,7 @@ import Spinner from '@/components/spinner/spinner.vue';
 export default {
     mounted() {
         always_scroll_on_top();
-        this.try_get_session();
+        // this.try_get_session();
     },
     components: {
         Spinner

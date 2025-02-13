@@ -132,6 +132,16 @@
             </div>
 
             <div>
+              <label for="calendar" class="block text-sm font-medium leading-6 text-gray-900">Tanggal Awal Praktik</label>
+              <div class="mt-2"> 
+                <New_first_job_expert
+                  v-model:parent_component_first_job="first_job"
+                  @first_job_status="status => cek_validity('first_job', status)"
+                ></New_first_job_expert>
+              </div>
+            </div>
+
+            <div>
               <label for="str" class="text-sm font-medium leading-6 text-gray-900">Almamater</label>
               <div class="mt-2"> 
                 <New_almamater_expert
@@ -174,6 +184,9 @@
         </p>
       </div>
     </div>
+
+
+    <!-- {{ validity_state }} -->
   
     <!-- <div class="validity">
       <p>nama : {{ validity_state.akun_nama }} {{ this.akun_nama }}</p>
@@ -197,9 +210,10 @@ import New_str_expert from '@/components/input/new_str_expert.vue';
 import New2_lokasi_praktek_expert from '@/components/input/new2_lokasi_praktek_expert.vue';
 import New_jenis_ahli from '@/components/input/new_jenis_ahli.vue';
 import New_almamater_expert from '@/components/input/new_almamater_expert.vue';
+import New_first_job_expert from '@/components/input/new_first_job_expert.vue';
   
   export default {
-    components: { New_nama, New_birthdate, New_email, New_password, New_telephone , New_str_expert, New2_lokasi_praktek_expert, New_jenis_ahli, New_almamater_expert},
+    components: { New_nama, New_birthdate, New_email, New_password, New_telephone , New_str_expert, New2_lokasi_praktek_expert, New_jenis_ahli, New_almamater_expert, New_first_job_expert},
     data() {
       return {
         akun_nama: '',
@@ -213,6 +227,7 @@ import New_almamater_expert from '@/components/input/new_almamater_expert.vue';
         lokasi_praktek: '',
         almamater: '', // Add this line
         jenis_ahli: '',
+        first_job: '',
         allFieldsValid: false,
   
         status_daftar: 0,
@@ -227,7 +242,8 @@ import New_almamater_expert from '@/components/input/new_almamater_expert.vue';
           noSTR: null,
           lokasi_praktek: null,
           almamater: null,  // Add this line
-          jenis_ahli: null
+          jenis_ahli: null,
+          first_job: null,
         }
       }
     },
@@ -266,12 +282,12 @@ import New_almamater_expert from '@/components/input/new_almamater_expert.vue';
           telp: this.akun_telp,
           sandi: this.akun_sandi,
           jenis_kelamin: this.jenis_kelamin,
-          birthdate: this.birthdate,
           jenis_ahli: this.jenis_ahli,
+          birthdate: this.birthdate, 
           noSTR: this.noSTR,
-          almamater:this.almamater,
           lokasi_praktek: this.lokasi_praktek,
-          jenis_ahli: this.jenis_ahli,
+          firstJob: this.first_job,
+          almamater:this.almamater,
           expirate: session_expirate(1)
         });
   
