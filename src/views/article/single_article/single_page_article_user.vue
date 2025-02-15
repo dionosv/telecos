@@ -11,7 +11,7 @@
         </div>
 
         <div class="author_handler">
-            Artikel ini di unggah oleh {{ author_name }}, pada
+            Artikel ini di unggah pada
             {{ new Date(artikel.article_date).toLocaleDateString('id-ID', {
                 day: 'numeric', month: 'long', year:
                     'numeric'
@@ -39,6 +39,12 @@
             </div>
         </div>
 
+
+
+        <div class="add_image">
+            <Image_carousel :articleId="article_id"></Image_carousel>
+        </div>
+
         <div class="text_print_out_area">
             <div ref="quillViewer"></div>
         </div>
@@ -64,6 +70,7 @@
 
 </template>
 <script>
+import Image_carousel from '@/components/image/image_carousel.vue';
 import { get_article_by_id } from '@/components/logic/API/artikel/artikel_service';
 import { get_experts_byID } from '@/components/logic/API/experts_service';
 import Spinner from '@/components/spinner/spinner.vue';
@@ -82,7 +89,7 @@ export default {
         },
     },
     components: {
-        Spinner
+        Spinner, Image_carousel
     },
     data() {
         return {
@@ -221,5 +228,10 @@ div.text-header h1.header-title {
     font-weight: 400;
     color: #333;
     margin-bottom: 1rem;
+}
+
+.add_image{
+    margin-top: 3rem;
+    margin-bottom: 3rem;
 }
 </style>

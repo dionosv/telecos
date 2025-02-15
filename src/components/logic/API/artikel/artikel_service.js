@@ -113,5 +113,38 @@ async function get_article_all() {
 }
 
 
+async function getArticlePicName(articleId){
+    let xdata = JSON.stringify({
+        "articleId": articleId
+    });
+    let config = {
+        method: 'post',
+        maxBodyLength: Infinity,
+        url: x_api_endpoint + '/images/article',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        data: xdata
+    };
+    return JSON.parse(await makeRequest(config));
 
-export { create_new_artikel , get_article_by_id , delete_artikel, get_article_all, edit_artikel, get_article_by_expert_id};
+}
+
+async function delete_by_image_name(imageName){
+    let xdata = JSON.stringify({
+        "imageName": imageName
+    });
+    let config = {
+        method: 'post',
+        maxBodyLength: Infinity,
+        url: x_api_endpoint + '/images/delete',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        data: xdata
+    };
+    return JSON.parse(await makeRequest(config));
+
+}
+
+export { create_new_artikel , get_article_by_id , delete_artikel, get_article_all, edit_artikel, get_article_by_expert_id, getArticlePicName, delete_by_image_name};

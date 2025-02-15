@@ -115,11 +115,11 @@
 
                 <div class="center_the_label">
                     <p id="text_label" class="text-gray-400">Mohon tidak menambahkan foto melalui kolom isi artikel.
-                        Anda dapat mengunggah foto tambahan di bagian bawah (foto) ini.</p>
+                        Anda dapat mengunggah foto tambahan di bagian edit artikel.</p>
                 </div>
             </div>
 
-            <div class="allImage">
+            <!-- <div class="allImage">
                 <div class="left_side thumbnail_section">
                     <label for="thumbnail_image" class="block text-sm font-medium leading-6 text-gray-900">
                         Atur Thumbnail Artikel<span class="text-red-500">*</span>
@@ -197,10 +197,9 @@
                             accept="image/jpeg, image/png" multiple hidden>
                     </div>
                     <p v-if="secondErrorMessage" class="text-red-500 text-sm mt-2">{{ secondErrorMessage }}</p>
-                    <!-- <p class="text-sm text-gray-500 mt-2">{{ additionalImages.length }}/5 foto telah dipilih</p> -->
-                </div>
+                    </div>
 
-            </div>
+            </div> -->
 
 
             <div class="button_wrapper">
@@ -485,34 +484,34 @@ export default {
             return this.formErrors.length === 0;
         },
 
-        async uploadImage() {
-            if (!this.imageFile) {
-                return null;
-            }
+        // async uploadImage() {
+        //     if (!this.imageFile) {
+        //         return null;
+        //     }
 
-            const formData = new FormData();
-            formData.append("image", this.imageFile);
-            formData.append("articleId", this.articleId);
+        //     const formData = new FormData();
+        //     formData.append("image", this.imageFile);
+        //     formData.append("articleId", this.articleId);
 
-            try {
-                const response = await fetch("https://claudio.codes/telecos-be/images/upload", {
-                    method: "POST",
-                    body: formData,
-                });
+        //     try {
+        //         const response = await fetch("https://claudio.codes/telecos-be/images/upload", {
+        //             method: "POST",
+        //             body: formData,
+        //         });
 
-                const result = await response.json();
+        //         const result = await response.json();
 
-                if (response.ok && result.status === 1) {
-                    return result.file.filename;
-                } else {
-                    throw new Error(result.message || 'Error uploading image');
-                }
-            } catch (error) {
-                console.error("Upload error:", error);
-                this.formErrors.push('Gagal mengunggah gambar thumbnail');
-                return null;
-            }
-        },
+        //         if (response.ok && result.status === 1) {
+        //             return result.file.filename;
+        //         } else {
+        //             throw new Error(result.message || 'Error uploading image');
+        //         }
+        //     } catch (error) {
+        //         console.error("Upload error:", error);
+        //         this.formErrors.push('Gagal mengunggah gambar thumbnail');
+        //         return null;
+        //     }
+        // },
 
         async handle_article_submit() {
             try {
@@ -544,12 +543,12 @@ export default {
                     this.errorMessage = 'Gagal membuat artikel baru. Silakan coba lagi.';
                 }
 
-                const thumbnailFilename = await this.uploadImage();
-                if (!thumbnailFilename) {
-                    this.formErrors.push('Gagal mengunggah gambar thumbnail');
-                    this.showErrors = true;
-                    return;
-                }
+                // const thumbnailFilename = await this.uploadImage();
+                // if (!thumbnailFilename) {
+                //     this.formErrors.push('Gagal mengunggah gambar thumbnail');
+                //     this.showErrors = true;
+                //     return;
+                // }
 
                 
             } catch (error) {

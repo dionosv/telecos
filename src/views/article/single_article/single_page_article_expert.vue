@@ -11,7 +11,7 @@
         </div>
 
         <div class="author_handler">
-            Artikel ini di unggah oleh {{ author_name }}, pada
+            Artikel ini di unggah pada
             {{ new Date(artikel.article_date).toLocaleDateString('id-ID', {
                 day: 'numeric', month: 'long', year:
                     'numeric'
@@ -39,6 +39,12 @@
             </div>
         </div>
 
+
+
+        <div class="add_image">
+            <Image_carousel :articleId="article_id"></Image_carousel>
+        </div>
+
         <div class="text_print_out_area">
             <div ref="quillViewer"></div>
         </div>
@@ -46,7 +52,7 @@
 
     <div id="article_not_found" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" v-if="data_loaded === false">
         <main class="flex w-full max-w-7xl flex-auto flex-col justify-center py-24 sm:py-64">
-            <p class="text-base font-semibold leading-8 text-orange-600">Mohon maaf, </p>
+            <p class="text-base font-semibold leading-8 text-lime-600">Mohon maaf, </p>
             <h1 class="mt-4 text-3xl font-bold tracking-tight text-gray-900 sm:text-5xl">Artikel tidak di temukan</h1>
             <p class="mt-6 text-base leading-7 text-gray-600">Periksa kembali id artikel
                 <span class="inline-flex items-center rounded-md bg-gray-100 px-2 py-1 text-xs font-medium text-gray-600">{{article_id}}</span>
@@ -54,7 +60,7 @@
 
 
             <div class="mt-10">
-                <router-link :to="{ name: 'landing_page_artikel_expert' }" class="text-sm font-semibold leading-7 text-orange-600">
+                <router-link :to="{ name: 'landing_page_artikel' }" class="text-sm font-semibold leading-7 text-lime-600">
                     Baca artikel lainnya
                 </router-link>
             </div>
@@ -64,6 +70,7 @@
 
 </template>
 <script>
+import Image_carousel from '@/components/image/image_carousel.vue';
 import { get_article_by_id } from '@/components/logic/API/artikel/artikel_service';
 import { get_experts_byID } from '@/components/logic/API/experts_service';
 import Spinner from '@/components/spinner/spinner.vue';
@@ -82,7 +89,7 @@ export default {
         },
     },
     components: {
-        Spinner
+        Spinner, Image_carousel
     },
     data() {
         return {
@@ -221,5 +228,10 @@ div.text-header h1.header-title {
     font-weight: 400;
     color: #333;
     margin-bottom: 1rem;
+}
+
+.add_image{
+    margin-top: 3rem;
+    margin-bottom: 3rem;
 }
 </style>

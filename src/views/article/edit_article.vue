@@ -1,4 +1,11 @@
 <template>
+    <!-- Add the ImageViewer component at the top of your template -->
+    <ImageViewer 
+        :show="showImageViewer" 
+        :imageUrl="selectedImageUrl" 
+        @close="closeImageViewer"
+    />
+
     <div class="notification_success">
         <div aria-live="assertive"
             class="pointer-events-none fixed inset-0 flex items-end px-4 py-6 sm:items-start sm:p-6 z-10">
@@ -16,9 +23,8 @@
                                     <ion-icon name="checkmark-circle" class="text-2xl mb-0 text-green-400"></ion-icon>
                                 </div>
                                 <div class="ml-3 w-0 flex-1 pt-0.5">
-                                    <p class="text-sm font-medium text-gray-900">Pembuatan artikel baru berhasil</p>
-                                    <p class="mt-1 text-sm text-gray-500">Artikel akan di tampilkan setelah di setujui
-                                        oleh Telecos</p>
+                                    <p class="text-sm font-medium text-gray-900">Berhasil Edit Artikel</p>
+                                    <p class="mt-1 text-sm text-gray-500">Artikel berhasil di perbarui</p>
                                 </div>
                                 <div class="ml-4 flex flex-shrink-0">
                                     <button type="button" @click="save_success = false"
@@ -109,7 +115,7 @@
                 </select>
             </div>
 
-            <div>
+            <!-- <div>
                 <label for="content" class="block text-sm font-medium leading-6 text-gray-900">Isi Artikel<span
                         class="text-red-500">*</span></label>
                 <div class="mt-2 w-full rounded-md border-0">
@@ -129,7 +135,11 @@
                     <p id="text_label" class="text-gray-400">Mohon tidak menambahkan foto melalui kolom isi artikel.
                         Anda dapat mengunggah foto tambahan di bagian bawah (foto) ini.</p>
                 </div>
-            </div>
+            </div> -->
+
+            <!-- <div class="nama">
+               add img {{additionalImages}}
+            </div> -->
 
             <div class="allImage">
                 <div class="left_side thumbnail_section">
@@ -150,9 +160,14 @@
                         <div v-else>
                             <div class="center_all">
 
-                                <img :src="imagePreview || existingThumbnail" alt="Image Preview" class="image-preview" />
+                                <img 
+                                    :src="imagePreview || existingThumbnail" 
+                                    alt="Image Preview" 
+                                    class="image-preview cursor-pointer" 
+                                    @click.stop="openImageViewer(imagePreview || existingThumbnail)"
+                                />
 
-                                <p id="image_file_name">{{ imageFile ? imageFile.name : 'Thumbnail saat ini' }}</p>
+                                <p id="image_file_name">{{ formatFileName(imageFile ? imageFile.name : existingImages.find(img => img.isArticleThumbnail === "1")?.imageName || '') }}</p>
                                 <button @click.stop="removeImage" type="button"
                                     class="mt-3 inline-flex items-center gap-x-1.5 rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2">
                                     <ion-icon name="trash"></ion-icon>
@@ -193,9 +208,13 @@
                             </div>
 
                             <div v-for="(image, index) in additionalImages" :key="index" class="additional-image-item">
-                                <img :src="image.preview" :alt="'Additional Image ' + (index + 1)"
-                                    class="additional-image-preview" />
-                                <p class="image-file-name">{{ image.file.name }}</p>
+                                <img 
+                                    :src="image.preview" 
+                                    :alt="'Additional Image ' + (index + 1)"
+                                    class="additional-image-preview cursor-pointer"
+                                    @click.stop="openImageViewer(image.preview)"
+                                />
+                                <p class="image-file-name">{{ formatFileName(image.file.name) }}</p>
                                 <button @click.stop="removeAdditionalImage(index)" type="button"
                                     class="mt-3 inline-flex items-center gap-x-1.5 rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2">
 
@@ -217,7 +236,7 @@
 
             <div class="button_wrapper">
                 <button id="submit_button" @click.prevent="handle_article_submit"
-                    class="rounded-md bg-blue-400 px-3 py-1.5 text-sm font-semibold leading-6 text-white hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-gray-400">
+                    class="rounded-md bg-blue-500 px-3 py-1.5 text-sm font-semibold leading-6 text-white hover:bg-blue-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-gray-400">
                     Edit Artikel</button>
             </div>
 
@@ -254,15 +273,18 @@
     </div>
 </template>
 <script>
-import { create_new_artikel, edit_artikel, get_article_by_id } from '@/components/logic/API/artikel/artikel_service';
+import { create_new_artikel, delete_by_image_name, edit_artikel, get_article_by_id, getArticlePicName } from '@/components/logic/API/artikel/artikel_service';
 import { usetelecos_session_detailsStore } from '@/components/logic/API/admin/admin_save_session_service';
 import Spinner from '@/components/spinner/spinner.vue';
 import { QuillEditor } from '@vueup/vue-quill'
 import '@vueup/vue-quill/dist/vue-quill.snow.css'
+import { article_card_image } from '@/components/logic/API/image_processor_service';
+import ImageViewer from '@/components/image_viewer/ImageViewer.vue';
 
 export default {
     components: {
-        QuillEditor
+        QuillEditor,
+        ImageViewer
     },
     props: {
         articleId: {
@@ -277,7 +299,8 @@ export default {
             this.setupMutationObserver();
             this.disableImageHandling();
         });
-        this.get_article();
+        this.get_article(); 
+        this.edit_getArticlePicName();
     },
     beforeUnmount() {
         if (this.observer) {
@@ -324,7 +347,10 @@ export default {
             article_found : null,
             existingThumbnail: '',
             existingPhotos: [],
-            photosToDelete: []
+            photosToDelete: [],
+            existingImages: [], // Add this to store existing images from getArticlePicName
+            showImageViewer: false,
+            selectedImageUrl: '',
         }
     },
     methods: {
@@ -373,8 +399,7 @@ export default {
                             parsedContent = article.content;
                         }
                         this.mod = parsedContent;
-                        this.content = parsedContent;
-                        console.log('Content loaded:', this.mod); // Debug log
+                        this.content = parsedContent; 
 
                         // Update Quill Editor content explicitly using getEditor()
                         this.$nextTick(() => {
@@ -413,6 +438,38 @@ export default {
                 this.article_found = false;
                 console.error('Failed to load article:', hasil);
            }
+        },
+
+        async edit_getArticlePicName() {
+            try {
+                const response = await getArticlePicName(this.articleId);
+                console.log('Article images response:', response);
+                
+                if (response.status === 1 && response.image) {
+                    this.existingImages = response.image;
+                    
+                    // Handle thumbnail (isArticleThumbnail === "1")
+                    const thumbnail = response.image.find(img => img.isArticleThumbnail === "1");
+                    if (thumbnail) { 
+                        const thumbnailUrl = article_card_image(thumbnail.imageName);
+                        this.existingThumbnail = thumbnailUrl;
+                        this.imagePreview = thumbnailUrl;
+                    }
+
+                    // Handle additional images (isArticleThumbnail === "0")
+                    const additionalImages = response.image.filter(img => img.isArticleThumbnail === "0");
+                    this.additionalImages = additionalImages.map(img => ({ 
+                        preview : article_card_image(img.imageName),
+                        isExisting: true,
+                        imageName: img.imageName,
+                        file: { 
+                            name: img.imageName 
+                        }
+                    }));
+                }
+            } catch (error) {
+                console.error('Error fetching article images:', error);
+            }
         },
 
         triggerFileInput() {
@@ -455,6 +512,7 @@ export default {
             return true;
         },
 
+       
         onFileChange(event) {
             const file = event.target.files[0];
             if (file && this.validateFile(file, 'thumbnail')) {
@@ -479,10 +537,32 @@ export default {
             reader.readAsDataURL(file);
         },
 
-        removeImage() {
+        async removeImage() {
+            if (this.existingThumbnail) {
+                const imageName = this.existingImages.find(img => img.isArticleThumbnail === "1")?.imageName;
+                if (imageName) {
+                    const deleted = await this.try_delete_by_image_name(imageName);
+                    console.log('Thumbnail deletion result:', deleted);
+                    if (deleted) {
+                        this.existingThumbnail = '';
+                        this.imagePreview = '';
+                    }
+                }
+            }
             this.imageFile = null;
             this.imagePreview = '';
             this.errorMessage = '';
+        },
+
+        async try_delete_by_image_name(imageName) {
+            try {
+                const response = await delete_by_image_name(imageName);
+                console.log('Delete image response:', response);
+                return response.status === 1;
+            } catch (error) {
+                console.error('Error deleting image:', error);
+                return false;
+            }
         },
 
         onSecondFileChange(event) {
@@ -519,13 +599,17 @@ export default {
             });
         },
 
-        removeAdditionalImage(index) {
+        async removeAdditionalImage(index) {
             const image = this.additionalImages[index];
-            if (image.isExisting) {
-                // If it's an existing photo, mark it for deletion
-                this.photosToDelete.push(image.id);
+            if (image.isExisting && image.imageName) {
+                const deleted = await this.try_delete_by_image_name(image.imageName);
+                console.log('Additional image deletion result:', deleted);
+                if (deleted) {
+                    this.additionalImages.splice(index, 1);
+                }
+            } else {
+                this.additionalImages.splice(index, 1);
             }
-            this.additionalImages.splice(index, 1);
         },
 
         cek_kalo_content_kosong(content) {
@@ -582,17 +666,15 @@ export default {
             return this.formErrors.length === 0;
         },
 
-        async uploadImage() {
+        async uploadImage(isThumbnail = 0) {
             if (!this.imageFile) {
                 return null;
             }
 
             const formData = new FormData();
             formData.append("articleId", this.articleId);
-            formData.append("isThumbnail", 1);
+            formData.append("isThumbnail", isThumbnail);
             formData.append("image", this.imageFile);
-
-
 
             try {
                 const response = await fetch("https://claudio.codes/telecos-be/images/upload", {
@@ -624,49 +706,45 @@ export default {
                     return;
                 }
 
-                // Upload thumbnail first if provided
+                // Upload thumbnail if provided
                 let thumbnailFilename = null;
                 if (this.imageFile) {
-                    thumbnailFilename = await this.uploadImage();
+                    thumbnailFilename = await this.uploadImage(1);
                     if (!thumbnailFilename) {
-                        // Handle upload failure
                         this.showErrors = true;
                         return;
                     }
                 }
 
-                let formData = new FormData();
-                formData.append('articleId', this.articleId);
-                formData.append('judul', this.judul);
-                formData.append('kategori', this.kategori);
-                formData.append('content', JSON.stringify(this.mod));
-
-                // Append the thumbnail filename if we have one
-                if (thumbnailFilename) {
-                    formData.append('thumbnail', thumbnailFilename);
-                }
-
-                // Handle additional photos (new uploads)
-                const newPhotos = this.additionalImages.filter(img => !img.isExisting).map(img => img.file);
-                newPhotos.forEach((photo, index) => {
-                    formData.append(`photos[${index}]`, photo);
-                });
-
-                // Add list of photos to be deleted
-                if (this.photosToDelete.length > 0) {
-                    formData.append('photosToDelete', JSON.stringify(this.photosToDelete));
-                }
-
-                const response = await edit_artikel(formData);
-                console.log(response);
-
+                // Upload additional images using existing uploadImage function
+                let additionalImageFilenames = [];
+                const newPhotos = this.additionalImages.filter(img => !img.isExisting);
+                
+                for (const image of newPhotos) {
+                    if (image.file) {
+                        this.imageFile = image.file; // Temporarily set imageFile
+                        const filename = await this.uploadImage(0); // Use uploadImage with isThumbnail = 0
+                        if (filename) {
+                            additionalImageFilenames.push(filename);
+                        }
+                    }
+                } 
+                const response = await edit_artikel(this.articleId, this.judul, this.kategori, this.mod);
+ 
                 if (response.status === 1) {
                     this.save_success = true;
                     setTimeout(() => {
-                        // ...existing navigation if needed...
+                        // ...existing navigation code...
                     }, 2000);
                 } else {
                     this.errorMessage = 'Gagal mengubah artikel. Silakan coba lagi.';
+                }
+
+                // Handle deleted images
+                if (this.photosToDelete.length > 0) {
+                    // Add API call to delete these images
+                    // This would need to be implemented in your backend
+                    console.log('Images to delete:', this.photosToDelete);
                 }
             } catch (error) {
                 console.error('Error submitting article:', error);
@@ -708,6 +786,23 @@ export default {
                     document.execCommand('insertText', false, text);
                 });
             }
+        },
+
+        openImageViewer(imageUrl) {
+            this.selectedImageUrl = imageUrl;
+            this.showImageViewer = true;
+        },
+        closeImageViewer() {
+            this.showImageViewer = false;
+            this.selectedImageUrl = '';
+        },
+        formatFileName(fileName) {
+            if (!fileName) return '';
+            if (fileName === 'Existing photo') {
+                const lastPart = fileName.split('/').pop(); // Get the filename from path
+                return '...' + lastPart.slice(-6);
+            }
+            return fileName.length > 10 ? '...' + fileName.slice(-10) : fileName;
         },
     },
     watch: {
@@ -979,4 +1074,11 @@ ul li:first-child {
         margin: 0 auto;
         line-height: 1.5;
     }}
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.cursor-pointer:hover {
+  opacity: 0.9;
+}
 </style>
