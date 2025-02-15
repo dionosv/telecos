@@ -16,7 +16,7 @@
 
             <div class="display_center">
 
-                <button
+                <button @click="handle_tc"
                     class="mt-4 inline-flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500">
                     Balas Telecos Care
                     <ion-icon name="mail" class="w-5 h-5"></ion-icon>
@@ -28,10 +28,10 @@
     </div>
 </template>
 <script>
-import { get_experts_byID } from '@/components/logic/API/experts';
-import { get_laporan_by_ticket_id } from '@/components/logic/API/pusat_bantuan';
-import { usetelecos_session_detailsStore } from '@/components/logic/API/save_session';
-import { get_user_data } from '@/components/logic/API/user';
+import { get_experts_byID } from '@/components/logic/API/experts_service';
+import { get_laporan_by_ticket_id } from '@/components/logic/API/pusat_bantuan_service';
+import { usetelecos_session_detailsStore } from '@/components/logic/API/save_session_service';
+import { get_user_data } from '@/components/logic/API/user_service';
 import Spinner from '@/components/spinner/spinner.vue';
 
 export default {
@@ -46,7 +46,8 @@ export default {
         return {
             laporan_id: "",
             laporan: [],
-            dataLoaded: false
+            dataLoaded: false, 
+            email : ""
         }
     },
     mounted() {
@@ -70,14 +71,16 @@ export default {
         },
 
 
-        async coba_get_email(){
+        async coba_get_email(){ 
+            const email_expert = await get_experts_byID(this.laporan[0].userId);
+            const email_user = await get_user_data(this.laporan[0].userId);  
 
-            // coba cari di userId
-            console.log(await get_experts_byID(this.laporan[0].userId));
-            console.log(await get_user_data(this.laporan[0].userId));
-
-            // coba cari di expert
-
+            if(email_expert.status === 1){
+                this.email = email_expert.user.email
+            }
+            else if (email_user.status === 1){
+                this.email = email_user.user.email
+            }
         },
 
         async check_if_login() {
@@ -86,6 +89,12 @@ export default {
             if (sessionDetails === false) {
                 // kalau ga login reject aja harus login dulu
                 this.$router.push({ name: 'akun', params: { param_1: 'redirect-laporan-telecos-care', param_2: this.laporan_id } });
+            }
+        },
+
+        handle_tc(){
+            if (this.email) {
+                window.location.href = `mailto:${this.email}?subject=Balasan Telecos Care : ${this.laporan[0].ticketHeader}`;
             }
         }
 

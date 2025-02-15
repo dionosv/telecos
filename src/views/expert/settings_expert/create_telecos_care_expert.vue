@@ -196,8 +196,8 @@
 </template>
 
 <script>
-import { create_ticket_telecos_care } from '@/components/logic/API/pusat_bantuan';
-import { usetelecos_session_detailsStore } from '@/components/logic/API/expert/expert_save_session';
+import { create_ticket_telecos_care } from '@/components/logic/API/pusat_bantuan_service';
+import { usetelecos_session_detailsStore } from '@/components/logic/API/expert/expert_save_session_service';
 // import { get_user_data } from '@/components/logic/API/user';
 export default {
     data() {

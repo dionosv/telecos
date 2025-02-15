@@ -92,8 +92,8 @@
     </div>
 </template>
 <script>
-import { usetelecos_session_detailsStore } from '@/components/logic/API/save_session';
-import { get_user_data } from '@/components/logic/API/user';
+import { usetelecos_session_detailsStore } from '@/components/logic/API/save_session_service';
+import { get_user_data } from '@/components/logic/API/user_service';
 import Riwayat_transaksi from '@/components/wallet/riwayat_transaksi.vue';
 
 export default {

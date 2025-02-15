@@ -17,8 +17,7 @@
                                 </div>
                                 <div class="ml-3 w-0 flex-1 pt-0.5">
                                     <p class="text-sm font-medium text-gray-900">Pembuatan artikel baru berhasil</p>
-                                    <p class="mt-1 text-sm text-gray-500">Artikel akan di tampilkan setelah di setujui
-                                        oleh Telecos</p>
+                                    <p class="mt-1 text-sm text-gray-500">Artikel akan di tampilkan pada halaman Telecos</p>
                                 </div>
                                 <div class="ml-4 flex flex-shrink-0">
                                     <button type="button" @click="save_success = false"
@@ -222,8 +221,8 @@
     </div>
 </template>
 <script>
-import { create_new_artikel } from '@/components/logic/API/artikel/artikel';
-import { usetelecos_session_detailsStore } from '@/components/logic/API/expert/expert_save_session';
+import { create_new_artikel } from '@/components/logic/API/artikel/artikel_service';
+import { usetelecos_session_detailsStore } from '@/components/logic/API/admin/admin_save_session_service';
 import { QuillEditor } from '@vueup/vue-quill'
 import '@vueup/vue-quill/dist/vue-quill.snow.css'
 
@@ -311,14 +310,13 @@ export default {
         async try_get_session() {
             try {
                 const sessionStore = usetelecos_session_detailsStore();
-                const sessionDetails = await sessionStore.loadtelecos_session_details();
+                const sessionDetails = await sessionStore.load_admin_telecos(); 
+                // console.log(sessionDetails)
                 if (sessionDetails === false) {
-                    this.$router.push({ name: 'akun_expert' });
-                    console.log('session not found');
-                } else {
-                    if (sessionDetails.phase == 1) {
-                        this.expertId = sessionDetails["userid"]
-                    }
+                    this.$router.push({ name: 'akun_admin' });
+                    
+                } else { 
+                        this.expertId = sessionDetails.userid 
                 }
             } catch (error) {
                 console.error('Failed to load session details:', error);
@@ -487,6 +485,35 @@ export default {
             return this.formErrors.length === 0;
         },
 
+        async uploadImage() {
+            if (!this.imageFile) {
+                return null;
+            }
+
+            const formData = new FormData();
+            formData.append("image", this.imageFile);
+            formData.append("articleId", this.articleId);
+
+            try {
+                const response = await fetch("https://claudio.codes/telecos-be/images/upload", {
+                    method: "POST",
+                    body: formData,
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.status === 1) {
+                    return result.file.filename;
+                } else {
+                    throw new Error(result.message || 'Error uploading image');
+                }
+            } catch (error) {
+                console.error("Upload error:", error);
+                this.formErrors.push('Gagal mengunggah gambar thumbnail');
+                return null;
+            }
+        },
+
         async handle_article_submit() {
             try {
                 if (!this.check_all_variable_is_not_empty()) {
@@ -495,16 +522,36 @@ export default {
                         this.showErrors = false;
                     }, 5000);
                     return;
-                } 
+                }
 
-                const response = await create_new_artikel("expert",this.expertId , this.judul, this.kategori, this.content);
-                console.log(response)
+                // Upload thumbnail image first
+                
+
+                // Create article with thumbnail filename
+                const response = await create_new_artikel(
+                    "admin",
+                    this.expertId,
+                    this.judul,
+                    this.kategori,
+                    this.content,
+                );
+
+                console.log(response);
 
                 if (response.status === 1) {
-                    this.$router.push({ name: 'berhasil_buat_artikel_expert' });
+                    this.$router.push({ name: 'berhasil_buat_artikel_admin' });
                 } else {
                     this.errorMessage = 'Gagal membuat artikel baru. Silakan coba lagi.';
                 }
+
+                const thumbnailFilename = await this.uploadImage();
+                if (!thumbnailFilename) {
+                    this.formErrors.push('Gagal mengunggah gambar thumbnail');
+                    this.showErrors = true;
+                    return;
+                }
+
+                
             } catch (error) {
                 console.error('Error submitting article:', error);
                 this.formErrors = ['Terjadi kesalahan. Silakan coba lagi.'];

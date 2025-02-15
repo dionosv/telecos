@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import Cookies from 'js-cookie';
-import { session_expirate } from './admin';
+import { session_expirate } from './admin_service';
 
 export const usetelecos_session_detailsStore = defineStore('admin_telecos_session_details', {
   state: () => ({

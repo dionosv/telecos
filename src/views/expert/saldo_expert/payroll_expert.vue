@@ -97,9 +97,9 @@
     </div>
 </template>
 <script>
-import { usetelecos_session_detailsStore } from '@/components/logic/API/expert/expert_save_session';
-import { get_experts_byID } from '@/components/logic/API/experts'; 
-import { get_transaction_by_user_id } from '@/components/logic/API/transaction/transaction';
+import { usetelecos_session_detailsStore } from '@/components/logic/API/expert/expert_save_session_service';
+import { get_experts_byID } from '@/components/logic/API/experts_service'; 
+import { get_transaction_by_user_id } from '@/components/logic/API/transaction/transaction_service';
 
 // import Riwayat_transaksi from '@/components/wallet/riwayat_transaksi.vue';
 import Riwayat_transaksi_expert from '@/components/wallet/riwayat_transaksi_expert.vue';

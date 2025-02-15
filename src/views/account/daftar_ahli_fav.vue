@@ -19,9 +19,9 @@
 </template>
 <script>
 import ahli_contact_card from '@/components/ahli/ahli_contact_card.vue';
-import { get_all_experts } from '@/components/logic/API/experts';
-import { get_fav_by_user_id } from '@/components/logic/API/favourite';
-import { usetelecos_session_detailsStore } from '@/components/logic/API/save_session';
+import { get_all_experts } from '@/components/logic/API/experts_service';
+import { get_fav_by_user_id } from '@/components/logic/API/favourite_service';
+import { usetelecos_session_detailsStore } from '@/components/logic/API/save_session_service';
 import Spinner from '@/components/spinner/spinner.vue';
 
 export default {

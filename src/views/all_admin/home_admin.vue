@@ -12,11 +12,11 @@
               <h3 class="text-sm font-medium text-gray-900">
                 <router-link :to="{ name: '' }" class="focus:outline-none">
                   <span class="absolute inset-0" aria-hidden="true" />
-                  <span>Akun</span>
+                  <span>Pengguna</span>
                   <span aria-hidden="true"> &rarr;</span>
                 </router-link>
               </h3>
-              <p class="mt-1 text-sm text-gray-500">Pengaturan Akun</p>
+              <p class="mt-1 text-sm text-gray-500">Manajemen Pengguna</p>
             </div>
           </div>
         </li>
@@ -34,7 +34,7 @@
                   <span aria-hidden="true"> &rarr;</span>
                 </router-link>
               </h3>
-              <p class="mt-1 text-sm text-gray-500">Manajemen ahli</p>
+              <p class="mt-1 text-sm text-gray-500">Manajemen Ahli</p>
             </div>
           </div>
         </li>
@@ -52,12 +52,12 @@
                   <span aria-hidden="true"> &rarr;</span>
                 </router-link>
               </h3>
-              <p class="mt-1 text-sm text-gray-500">Manajemen artikel</p>
+              <p class="mt-1 text-sm text-gray-500">Manajemen Artikel</p>
             </div>
           </div>
         </li>
 
-        <li class="flow-root">
+        <!-- <li class="flow-root">
           <div class="relative -m-2 flex items-center space-x-4 rounded-xl p-2 focus-within:ring-2 focus-within:ring-blue-500 hover:bg-gray-50">
             <div class="bg-blue-600 flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-lg">
               <ion-icon name="grid" class="h-6 w-6 text-white"></ion-icon>
@@ -73,7 +73,7 @@
               <p class="mt-1 text-sm text-gray-500">Manajemen sesi</p>
             </div>
           </div>
-        </li>
+        </li> -->
 
         <li class="flow-root">
           <div class="relative -m-2 flex items-center space-x-4 rounded-xl p-2 focus-within:ring-2 focus-within:ring-blue-500 hover:bg-gray-50">
@@ -126,7 +126,7 @@
 </template>
 
 <script>
-import { usetelecos_session_detailsStore } from '@/components/logic/API/admin/admin_save_session';
+import { usetelecos_session_detailsStore } from '@/components/logic/API/admin/admin_save_session_service';
 
 export default {
   name: 'HomeAdmin',

@@ -72,8 +72,8 @@
 
 
 <script>
-import { get_laporan_all, get_laporan_by_userid } from '@/components/logic/API/pusat_bantuan';
-import { usetelecos_session_detailsStore } from '@/components/logic/API/save_session';
+import { get_laporan_all, get_laporan_by_userid } from '@/components/logic/API/pusat_bantuan_service';
+import { usetelecos_session_detailsStore } from '@/components/logic/API/admin/admin_save_session_service';
 import Spinner from '@/components/spinner/spinner.vue';
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
 import { RouterLink } from 'vue-router';
@@ -109,10 +109,10 @@ export default {
         async getuser() {
             try {
                 const sessionStore = usetelecos_session_detailsStore();
-                const sessionDetails = await sessionStore.loadtelecos_session_details();
+                const sessionDetails = await sessionStore.load_admin_telecos();
 
                 if (sessionDetails === false) {
-                    this.$router.push({ name: 'akun', params: { param_1: 'redirect-telecos-care', param_2: 'redirect-telecos-care' } });
+                    this.$router.push({ name: 'akun_admin'});
                 }
                 else {
                     this.user_id = sessionDetails.userid;

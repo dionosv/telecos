@@ -1,11 +1,11 @@
-import {makeRequest, x_api_endpoint} from '../API.js';
+import {makeRequest, x_api_endpoint} from './API_service.js';
 import Cookies from 'js-cookie'; 
 async function logout() { 
 
   let config = {
     method: 'get',
     maxBodyLength: Infinity,
-    url: x_api_endpoint+'/experts/logout',
+    url: x_api_endpoint+'/users/logout',
     headers: {  
       'Content-Type': 'application/json'
     },
@@ -26,7 +26,7 @@ async function login(email, password) {
   let config = {
     method: 'post',
     maxBodyLength: Infinity,
-    url: x_api_endpoint+'/experts/login',
+    url: x_api_endpoint+'/users/login',
     headers: {  
       'Content-Type': 'application/json'
     },
@@ -37,25 +37,20 @@ async function login(email, password) {
 }
 
 
-async function register(name,email,telpon,gender,dob,password,jenis_ahli,firstJob,noSTR,workspace,almamater) {
+async function register(name,email,telpon,gender,dob,password){
   let data = JSON.stringify({
-    "name": name,
+    "name":name,
     "email": email,
     "password": password,
-    "description": jenis_ahli,
     "phoneNum": telpon,
     "gender": gender,
-    "dateOfBirth": dob,
-    "firstJob": firstJob,
-    "strNum": noSTR,
-    "currentWorkspace": workspace,
-    "almamater":almamater
+    "dateOfBirth": dob
   });
   
   let config = {
     method: 'post',
     maxBodyLength: Infinity,
-    url: x_api_endpoint+'/experts/register',
+    url: x_api_endpoint+'/users/register',
     headers: {  
       'Content-Type': 'application/json'
     },
@@ -67,13 +62,13 @@ async function register(name,email,telpon,gender,dob,password,jenis_ahli,firstJo
 
 async function get_user_data(user_id=""){
   let data = JSON.stringify({
-    "expertId": user_id
+    "userId": user_id
    });
   
    let config = {
     method: 'post',
     maxBodyLength: Infinity,
-    url: x_api_endpoint+'/experts/get',
+    url: x_api_endpoint+'/users/get',
     headers: {  
       'Content-Type': 'application/json'
     },
@@ -90,7 +85,7 @@ function session_expirate(max_date=30) {
 }
 
 function set_otp_count(email,otp_send,otp_try){
-  Cookies.set('otp_telecos_expert', JSON.stringify({
+  Cookies.set('otp_telecos', JSON.stringify({
     email: email, //kalo phase 1 user udah login
     otp_send : otp_send,
     otp_try : otp_try ,
@@ -100,12 +95,12 @@ function set_otp_count(email,otp_send,otp_try){
 }
 
 function get_otp_count() {
-  const otp_telecos_expert = JSON.parse(Cookies.get('otp_telecos_expert')); 
-  if (otp_telecos_expert) {  
+  const otp_telecos = JSON.parse(Cookies.get('otp_telecos')); 
+  if (otp_telecos) {  
       return {
-        email: otp_telecos_expert.email,
-        otp_send: otp_telecos_expert.otp_send,
-        otp_try: otp_telecos_expert.otp_try, 
+        email: otp_telecos.email,
+        otp_send: otp_telecos.otp_send,
+        otp_try: otp_telecos.otp_try, 
       };
     }  
   else {
@@ -114,7 +109,7 @@ function get_otp_count() {
 }
 
 function clear_otp_count() {
-  Cookies.remove('otp_telecos_expert');
+  Cookies.remove('otp_telecos');
 }
 
 
@@ -136,6 +131,9 @@ async function send_otp(email){
   return JSON.parse(await makeRequest(config));  
   // console.log(JSON.parse(await makeRequest(config)));  
 } 
+
+
+
 
 async function verify_otp(email,code){
   let data = JSON.stringify({
@@ -172,7 +170,8 @@ async function forget_password_otp(email){
     data : data
   };
 
-  return JSON.parse(await makeRequest(config));    
+  return JSON.parse(await makeRequest(config));  
+  // console.log(JSON.parse(await makeRequest(config)));  
 } 
 
 async function reset_password(email){
@@ -190,27 +189,23 @@ async function reset_password(email){
     data : data
   };
 
-  return JSON.parse(await makeRequest(config));   
+  return JSON.parse(await makeRequest(config));  
+  // console.log(JSON.parse(await makeRequest(config)));  
 } 
 
-async function change_user_profile(expertId,name,description,phoneNum,gender,dateOfBirth, first_job, strNum, currentWorkspace, almamater){
-  let data = JSON.stringify({ 
-    "expertId":expertId,
+async function change_user_profile(userId,name,phoneNum,gender,dateOfBirth){
+  let data = JSON.stringify({
+    "userId":userId,
     "name":name,
-    "description":description, 
-    "phoneNum": phoneNum,
-    "gender": gender,
-    "dateOfBirth": dateOfBirth,
-    "firstJob": first_job,
-    "strNum": strNum,
-    "currentWorkspace": currentWorkspace,
-    "almamater":almamater 
+    "phoneNum":phoneNum,
+    "gender":gender,
+    "dateOfBirth" :dateOfBirth
    }); 
   
    let config = {
     method: 'post',
     maxBodyLength: Infinity,
-    url: x_api_endpoint+'/experts/update',
+    url: x_api_endpoint+'/users/update',
     headers: {  
       'Content-Type': 'application/json'
     },
@@ -223,7 +218,7 @@ async function change_user_profile(expertId,name,description,phoneNum,gender,dat
 
 async function change_user_password(userId,currentPassword,newPassword){
   let data = JSON.stringify({
-    "expertId":userId,
+    "userId":userId,
     "currentPassword":currentPassword,
     "password":newPassword
    }); 
@@ -231,7 +226,7 @@ async function change_user_password(userId,currentPassword,newPassword){
    let config = {
     method: 'post',
     maxBodyLength: Infinity,
-    url: x_api_endpoint+'/experts/updatePassword',
+    url: x_api_endpoint+'/users/updatePassword',
     headers: {  
       'Content-Type': 'application/json'
     },
@@ -240,6 +235,5 @@ async function change_user_password(userId,currentPassword,newPassword){
 
   return JSON.parse(await makeRequest(config));    
 } 
- 
 
 export {login, register, logout, set_otp_count, get_user_data, reset_password ,get_otp_count, change_user_profile, change_user_password, clear_otp_count, session_expirate, send_otp,forget_password_otp, verify_otp};

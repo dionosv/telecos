@@ -30,7 +30,7 @@
 </template>
 
 <script>
-import { usetelecos_session_detailsStore } from '@/components/logic/API/expert/expert_save_session';
+import { usetelecos_session_detailsStore } from '@/components/logic/API/expert/expert_save_session_service';
 
 export default {
   data() {

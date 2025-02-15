@@ -175,8 +175,8 @@
 
 <script>
 import New_password from '@/components/input/new_password.vue';
-import { usetelecos_session_detailsStore } from '@/components/logic/API/expert/expert_save_session';
-import { change_user_password, get_user_data } from '@/components/logic/API/expert/expert';
+import { usetelecos_session_detailsStore } from '@/components/logic/API/expert/expert_save_session_service';
+import { change_user_password, get_user_data } from '@/components/logic/API/expert/expert_service';
 import Spinner from '@/components/spinner/spinner.vue';
 
 export default {

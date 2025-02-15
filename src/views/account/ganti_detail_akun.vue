@@ -199,8 +199,8 @@ import New_telephone from '@/components/input/new_telephone.vue';
 import New_birthdate from '@/components/input/new_birthdate.vue';
 import New_nama from '@/components/input/new_nama.vue';
 import New_gender from '@/components/input/new_gender.vue';
-import { change_user_profile, get_user_data } from '@/components/logic/API/user';
-import { usetelecos_session_detailsStore } from '@/components/logic/API/save_session';
+import { change_user_profile, get_user_data } from '@/components/logic/API/user_service';
+import { usetelecos_session_detailsStore } from '@/components/logic/API/save_session_service';
 import Spinner from '@/components/spinner/spinner.vue';
 
 export default {

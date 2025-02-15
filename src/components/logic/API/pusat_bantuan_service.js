@@ -1,4 +1,4 @@
-import {makeRequest, x_api_endpoint} from './API.js';
+import {makeRequest, x_api_endpoint} from './API_service.js';
 
 async function create_ticket_telecos_care(userid, judul_tiket, isi_tiket) {
     let xdata = JSON.stringify({

@@ -1,4 +1,4 @@
-import { makeRequest, x_api_endpoint } from '../API.js';
+import { makeRequest, x_api_endpoint } from '../API_service.js';
 
 async function create_new_artikel(author_type="expert",author_id,judul, kategori, payload) {
     let xdata = JSON.stringify({
@@ -29,13 +29,32 @@ async function edit_artikel(articleId, title, category, content) {
         "category": category,
         "content": JSON.stringify(content)
     });
-
-    console.log(content);
+ 
 
     let config = {
         method: 'post',
         maxBodyLength: Infinity,
         url: x_api_endpoint + '/articles/edit',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        data: xdata
+    };
+
+    return JSON.parse(await makeRequest(config));
+}
+
+
+async function delete_artikel(articleId) {
+    let xdata = JSON.stringify({
+        "articleId": articleId
+    });
+ 
+
+    let config = {
+        method: 'post',
+        maxBodyLength: Infinity,
+        url: x_api_endpoint + '/articles/delete',
         headers: {
             'Content-Type': 'application/json'
         },
@@ -95,4 +114,4 @@ async function get_article_all() {
 
 
 
-export { create_new_artikel , get_article_by_id , get_article_all, edit_artikel, get_article_by_expert_id};
+export { create_new_artikel , get_article_by_id , delete_artikel, get_article_all, edit_artikel, get_article_by_expert_id};

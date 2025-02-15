@@ -189,8 +189,8 @@
 
 <script>
 import New_password from '@/components/input/new_password.vue';
-import { usetelecos_session_detailsStore } from '@/components/logic/API/save_session';
-import { change_user_password, get_user_data } from '@/components/logic/API/user';
+import { usetelecos_session_detailsStore } from '@/components/logic/API/save_session_service';
+import { change_user_password, get_user_data } from '@/components/logic/API/user_service';
 
 export default {
     components: { New_password },

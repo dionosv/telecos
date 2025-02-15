@@ -82,11 +82,11 @@
 
 
 <script>
-import { session_expirate, login } from '@/components/logic/API/user';
+import { session_expirate, login } from '@/components/logic/API/user_service';
 import Logo from '@/components/logo/logo_divisi_akun.vue';
-import { usetelecos_session_detailsStore } from '@/components/logic/API/admin/admin_save_session';
+import { usetelecos_session_detailsStore } from '@/components/logic/API/admin/admin_save_session_service';
 import { handle_url_page_title, url_preprocess } from '@/components/logic/user_url_preprocess/user_preprocess';
-import { login_admin } from '@/components/logic/API/admin/admin';
+import { login_admin } from '@/components/logic/API/admin/admin_service';
 
 export default {
   components: { Logo },

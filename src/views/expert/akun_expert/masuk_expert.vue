@@ -110,9 +110,9 @@
 
 
 <script>
-import { session_expirate, login } from '@/components/logic/API/expert/expert';
+import { session_expirate, login } from '@/components/logic/API/expert/expert_service';
 import Logo from '@/components/logo/logo_divisi_akun.vue';
-import { usetelecos_session_detailsStore } from '@/components/logic/API/expert/expert_save_session';
+import { usetelecos_session_detailsStore } from '@/components/logic/API/expert/expert_save_session_service';
 
 export default {
   components: { Logo },

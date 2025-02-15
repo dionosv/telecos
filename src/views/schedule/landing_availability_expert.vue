@@ -15,7 +15,7 @@
 
 <script>
 import Kalender_available_expert from '@/components/kalender/kalender_available_expert.vue';
-import { usetelecos_session_detailsStore } from '@/components/logic/API/expert/expert_save_session'; 
+import { usetelecos_session_detailsStore } from '@/components/logic/API/expert/expert_save_session_service'; 
 import Spinner from '@/components/spinner/spinner.vue';
 
 export default {

@@ -5,7 +5,7 @@
     </div>
 </template>
 <script>
-import { usetelecos_session_detailsStore } from '@/components/logic/API/admin/admin_save_session';
+import { usetelecos_session_detailsStore } from '@/components/logic/API/admin/admin_save_session_service';
 import Masuk_admin from './masuk_admin.vue';
 import Pengaturan_admin from './pengaturan_admin.vue';
 

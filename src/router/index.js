@@ -351,7 +351,6 @@ const router = createRouter({
           component: () => import('../views/all_admin/akses_admin/acc_ahli.vue'),
         },
         
-        
         {
           path: 'daftar-ahli',
           name: 'lihat_ahli_admin',
@@ -398,7 +397,7 @@ const router = createRouter({
               component: () => import('../views/article/create_article.vue'),
             },
             {
-              path: 'lihat-artikel-saya/',
+              path: 'lihat-artikel-saya/', 
               name: 'lihat_artikel_saya_admin',
               component: () => import('../views/article/lihat_artikel_saya.vue'),
             },

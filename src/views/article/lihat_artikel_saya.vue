@@ -1,7 +1,7 @@
 <template>
     <div id="all_semua" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="my_article">
-            <h1 class="text-m font-bold tracking-tight text-gray-900 sm:text-3xl">Daftar Artikel Saya</h1>
+            <h1 class="text-m font-bold tracking-tight text-gray-900 sm:text-3xl">Daftar Artikel</h1>
         </div>
 
         <div v-if="loading"> 
@@ -19,19 +19,19 @@
                         <div class="flex min-w-0 gap-x-4">
                             <div class="min-w-0 flex-auto">
                                 <p class="text-sm font-semibold leading-6 text-gray-900">
-                                    <a href="#">
+                             
                                         <span class="inset-x-0 -top-px bottom-0" />
                                         {{ article.title }}
-                                    </a>
+                                    
                                 </p>
                                 <p class="mt-1 flex items-center gap-4 text-xs leading-5 text-gray-500" id="bottom_text">
-                                    <span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium"
+                                    <!-- <span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium"
                                         :class="{
                                             'bg-gray-100 text-gray-600': article.status === 'published',
                                             'bg-pink-100 text-pink-600': article.status === 'waiting'
                                         }">
                                         {{ article.status === 'published' ? 'Terpublikasi' : 'Pending' }}
-                                    </span>
+                                    </span> -->
                                     <span>{{ formatDate(article.date) }}</span>
                                     <!-- <span class="text-gray-500">Kategori: {{ article.category }}</span> -->
                                     <span class="text-gray-500">Views: {{ article.viewCount }}</span>
@@ -40,7 +40,7 @@
                         </div>
                         <div class="flex shrink-0 items-center gap-x-4">
                             <div class="hidden sm:flex sm:flex-row sm:gap-4 sm:items-end">
-                                <router-link :to="{ name: 'edit_artikel_expert', params: { articleId: article.articleId }}"
+                                <router-link :to="{ name: 'edit_artikel_admin', params: { articleId: article.articleId }}"
                                     class="rounded bg-white px-2 py-1 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
                                     Edit Artikel
                                 </router-link>
@@ -58,8 +58,8 @@
 </template>
 
 <script>
-import { get_article_by_expert_id } from '@/components/logic/API/artikel/artikel';
-import { usetelecos_session_detailsStore } from '@/components/logic/API/expert/expert_save_session';
+import { delete_artikel, get_article_all, get_article_by_expert_id } from '@/components/logic/API/artikel/artikel_service';
+import { usetelecos_session_detailsStore } from '@/components/logic/API/admin/admin_save_session_service';
 import Spinner from '@/components/spinner/spinner.vue';
 
 export default {
@@ -84,10 +84,10 @@ export default {
         async getuser() {
             try {
                 const sessionStore = usetelecos_session_detailsStore();
-                const sessionDetails = await sessionStore.loadtelecos_session_details();
+                const sessionDetails = await sessionStore.load_admin_telecos();
 
                 if (!sessionDetails) {
-                    this.$router.push({ name: 'akun_expert' });
+                    this.$router.push({ name: 'akun_admin' });
                     return;
                 }
 
@@ -102,10 +102,13 @@ export default {
         async get_article_by_expert() {
             try {
                 this.loading = true;
-                const hasil = await get_article_by_expert_id(this.expertId);
+                const hasil = await get_article_all();
+
+                console.log(hasil);
                 
-                if (hasil.status === 1 && Array.isArray(hasil.article)) {
-                    this.articles = hasil.article;
+                if (hasil.status === 1 && Array.isArray(hasil.articles)) {
+                    this.articles = hasil.articles;
+                    console.log(this.articles);
                 } else {
                     this.error = 'Data artikel tidak valid';
                 }
@@ -126,11 +129,10 @@ export default {
             }
         },
 
-        confirmDelete(articleId) {
-            if (confirm('Apakah Anda yakin ingin menghapus artikel ini?')) {
-                // Implement delete functionality here
-                console.log('Deleting article:', articleId);
-            }
+        async confirmDelete(articleId) {
+            await delete_artikel(articleId)
+
+            await this.get_article_by_expert();
         }
     }
 }

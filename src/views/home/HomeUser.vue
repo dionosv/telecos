@@ -89,8 +89,8 @@ import Bigmenu from '@/components/home_widget/bigmenu.vue';
 import New_user_tabs_artikel from '@/components/home_widget/new_user_tabs_artikel.vue';
 import Tawaran_ahli from '@/components/home_widget/tawaran_ahli.vue';
 import User_upcoming_events from '@/components/home_widget/user_upcoming_events.vue';
-import { usetelecos_session_detailsStore } from '@/components/logic/API/save_session';
-import { get_user_data } from '@/components/logic/API/user';
+import { usetelecos_session_detailsStore } from '@/components/logic/API/save_session_service';
+import { get_user_data } from '@/components/logic/API/user_service';
 import Logo_aja from '@/components/logo/logo_aja.vue';
 
 

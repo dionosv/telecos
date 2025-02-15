@@ -1,4 +1,4 @@
-import {makeRequest, x_api_endpoint} from '../API.js';
+import {makeRequest, x_api_endpoint} from '../API_service.js';
 
 async function set_schedule_id(expertId, dateStart, dateEnd, rate) {
 

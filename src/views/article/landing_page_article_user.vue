@@ -17,7 +17,7 @@
 </template>
 <script>
 import Artikel_single_card from '@/components/artikel/artikel_single_card.vue';
-import { get_article_all } from '@/components/logic/API/artikel/artikel';
+import { get_article_all } from '@/components/logic/API/artikel/artikel_service';
 import Spinner from '@/components/spinner/spinner.vue';
 
 export default {

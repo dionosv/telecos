@@ -204,8 +204,8 @@
   import New_telephone from '@/components/input/new_telephone.vue';
   import New_birthdate from '@/components/input/new_birthdate.vue';
   import New_nama from '@/components/input/new_nama.vue';
-  import { session_expirate, register, send_otp, set_otp_count } from '@/components/logic/API/expert/expert';
-  import { usetelecos_session_detailsStore } from '@/components/logic/API/expert/expert_save_session';
+  import { session_expirate, register, send_otp, set_otp_count } from '@/components/logic/API/expert/expert_service';
+  import { usetelecos_session_detailsStore } from '@/components/logic/API/expert/expert_save_session_service';
 import New_str_expert from '@/components/input/new_str_expert.vue';
 import New2_lokasi_praktek_expert from '@/components/input/new2_lokasi_praktek_expert.vue';
 import New_jenis_ahli from '@/components/input/new_jenis_ahli.vue';

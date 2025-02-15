@@ -207,7 +207,7 @@
 <script>
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
 import tidak_ada_acara from './tidak_ada_acara.vue';
-import { delete_by_schedule_id, get_schedule_by_expert_id, set_schedule_id } from '../logic/API/schedule/schedule';
+import { delete_by_schedule_id, get_schedule_by_expert_id, set_schedule_id } from '../logic/API/schedule/schedule_service';
 import Spinner from '../spinner/spinner.vue';
 
 export default {

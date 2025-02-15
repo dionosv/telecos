@@ -63,8 +63,8 @@
     </div>
 </template>
 <script>
-import { create_favourite, remove_favourite } from '../logic/API/favourite';
-import { expert_profile_picture } from '../logic/API/image_processor';
+import { create_favourite, remove_favourite } from '../logic/API/favourite_service';
+import { expert_profile_picture } from '../logic/API/image_processor_service';
 
 export default {
     mounted() {

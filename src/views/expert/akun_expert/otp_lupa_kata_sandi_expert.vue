@@ -139,8 +139,8 @@
   
   
   <script>
-  import { usetelecos_session_detailsStore } from '@/components/logic/API/save_session';
-  import { clear_otp_count, get_otp_count, register, reset_password, send_otp, set_otp_count, verify_otp } from '@/components/logic/API/user';
+  import { usetelecos_session_detailsStore } from '@/components/logic/API/save_session_service';
+  import { clear_otp_count, get_otp_count, register, reset_password, send_otp, set_otp_count, verify_otp } from '@/components/logic/API/user_service';
   
   export default { 
     data() {

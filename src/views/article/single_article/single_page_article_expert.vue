@@ -64,8 +64,8 @@
 
 </template>
 <script>
-import { get_article_by_id } from '@/components/logic/API/artikel/artikel';
-import { get_experts_byID } from '@/components/logic/API/experts';
+import { get_article_by_id } from '@/components/logic/API/artikel/artikel_service';
+import { get_experts_byID } from '@/components/logic/API/experts_service';
 import Spinner from '@/components/spinner/spinner.vue';
 import Quill from "quill";
 

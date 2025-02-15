@@ -43,7 +43,7 @@
 
 <script>
 
-import { usetelecos_session_detailsStore } from '@/components/logic/API/admin/admin_save_session';
+import { usetelecos_session_detailsStore } from '@/components/logic/API/admin/admin_save_session_service';
 // import { logout } from '@/components/logic/API/user';
 
 export default {

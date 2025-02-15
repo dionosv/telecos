@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import { usetelecos_session_detailsStore } from '@/components/logic/API/expert/expert_save_session';
+import { usetelecos_session_detailsStore } from '@/components/logic/API/expert/expert_save_session_service';
 import Masuk from './masuk_expert.vue';
 import Daftar from './daftar_expert.vue';
 import Pengaturan_akun from './pengaturan_expert.vue';

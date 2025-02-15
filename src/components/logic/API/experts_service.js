@@ -1,4 +1,4 @@
-import {makeRequest, x_api_endpoint} from './API.js';
+import {makeRequest, x_api_endpoint} from './API_service.js';
 import Cookies from 'js-cookie'; 
 
 async function get_all_experts() { 

@@ -149,8 +149,8 @@ import New_password from '@/components/input/new_password.vue';
 import New_telephone from '@/components/input/new_telephone.vue';
 import New_birthdate from '@/components/input/new_birthdate.vue';
 import New_nama from '@/components/input/new_nama.vue';
-import { session_expirate, register, send_otp, set_otp_count } from '@/components/logic/API/user';
-import { usetelecos_session_detailsStore } from '@/components/logic/API/save_session';
+import { session_expirate, register, send_otp, set_otp_count } from '@/components/logic/API/user_service';
+import { usetelecos_session_detailsStore } from '@/components/logic/API/save_session_service';
 
 export default {
   components: { New_nama, New_birthdate, New_email, New_password, New_telephone },

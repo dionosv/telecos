@@ -9,7 +9,7 @@
 
             <article class="single_card">
                 <div class="image_card">
-                    <img :src="article.imageName" :alt="article.title">
+                    <img :src=link_image :alt="article.title">
                 </div>
 
                 <div class="bottom_card">
@@ -82,6 +82,8 @@
     </div>
 </template>
 <script>
+import { article_card_image } from '../logic/API/image_processor_service';
+
 export default {
     props: {
         article: {
@@ -99,6 +101,20 @@ export default {
             type: String,
             required: true,
             default: ''
+        }
+    },
+    mounted(){
+        this.handle_image()
+    },
+
+    data() {
+        return {
+            link_image: ''
+        }
+    },
+    methods:{
+        handle_image(){
+            this.link_image = article_card_image(this.article.imageName)
         }
     }
 }

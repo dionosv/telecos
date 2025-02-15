@@ -115,11 +115,13 @@
                 <div class="mt-2 w-full rounded-md border-0">
                     <quill-editor 
                       ref="quillEditor"  
-                      v-model:content="mod" 
+                      v-model="mod"
 
+                   
 
                       :options="editorOptions" 
                       id="quill_editor" 
+                      @update:content="onEditorChange"
                     />
                 </div>
 
@@ -136,7 +138,7 @@
                     </label>
                     <div class="drop-zone thumbnail_drop" @dragover.prevent @drop.prevent="onDrop"
                         @click="triggerFileInput">
-                        <div class="fileinputan" v-if="!imageFile">
+                        <div class="fileinputan" v-if="!imageFile && !existingThumbnail">
                             <ion-icon name="image"></ion-icon>
                             <p id="thumbnail_drag_text" class="file_drag_text">
                                 Drag & Drop foto yang akan di set sebagai thumbnail artikel
@@ -148,9 +150,9 @@
                         <div v-else>
                             <div class="center_all">
 
-                                <img :src="imagePreview" alt="Image Preview" class="image-preview" />
+                                <img :src="imagePreview || existingThumbnail" alt="Image Preview" class="image-preview" />
 
-                                <p id="image_file_name">{{ imageFile.name }}</p>
+                                <p id="image_file_name">{{ imageFile ? imageFile.name : 'Thumbnail saat ini' }}</p>
                                 <button @click.stop="removeImage" type="button"
                                     class="mt-3 inline-flex items-center gap-x-1.5 rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2">
                                     <ion-icon name="trash"></ion-icon>
@@ -215,8 +217,8 @@
 
             <div class="button_wrapper">
                 <button id="submit_button" @click.prevent="handle_article_submit"
-                    class="rounded-md bg-orange-400 px-3 py-1.5 text-sm font-semibold leading-6 text-white hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-gray-400">
-                    Buat Artikel</button>
+                    class="rounded-md bg-blue-400 px-3 py-1.5 text-sm font-semibold leading-6 text-white hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:bg-gray-400">
+                    Edit Artikel</button>
             </div>
 
         </div>
@@ -226,7 +228,7 @@
 
     <div id="article_not_found" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" v-if="article_found === false">
         <main class="flex w-full max-w-7xl flex-auto flex-col justify-center py-24 sm:py-64">
-            <p class="text-base font-semibold leading-8 text-orange-600">Mohon maaf, </p>
+            <p class="text-base font-semibold leading-8 text-blue-600">Mohon maaf, </p>
             <h1 class="mt-4 text-3xl font-bold tracking-tight text-gray-900 sm:text-5xl">Artikel tidak di temukan</h1>
             <p class="mt-6 text-base leading-7 text-gray-600">Periksa kembali id artikel
                 <span class="inline-flex items-center rounded-md bg-gray-100 px-2 py-1 text-xs font-medium text-gray-600">{{articleId}}</span>
@@ -234,7 +236,7 @@
 
 
             <div class="mt-10">
-                <router-link :to="{ name: 'lihat_artikel_saya_expert' }" class="text-sm font-semibold leading-7 text-orange-600">
+                <router-link :to="{ name: 'lihat_artikel_saya_expert' }" class="text-sm font-semibold leading-7 text-blue-600">
                     Kembali ke artikel saya
                 </router-link>
             </div>
@@ -252,8 +254,8 @@
     </div>
 </template>
 <script>
-import { create_new_artikel, edit_artikel, get_article_by_id } from '@/components/logic/API/artikel/artikel';
-import { usetelecos_session_detailsStore } from '@/components/logic/API/expert/expert_save_session';
+import { create_new_artikel, edit_artikel, get_article_by_id } from '@/components/logic/API/artikel/artikel_service';
+import { usetelecos_session_detailsStore } from '@/components/logic/API/admin/admin_save_session_service';
 import Spinner from '@/components/spinner/spinner.vue';
 import { QuillEditor } from '@vueup/vue-quill'
 import '@vueup/vue-quill/dist/vue-quill.snow.css'
@@ -309,7 +311,7 @@ export default {
             errorMessage: '',
             judul: '',
             kategori: '1',
-            content: '', // Initialize as empty string instead of Delta object
+            content: '',
             save_success: false,
             formErrors: [],
             showErrors: false,
@@ -319,7 +321,10 @@ export default {
             secondErrorMessage: '',
             additionalImages: [], // Array to store multiple images
             maxAdditionalImages: 5,
-            article_found : null
+            article_found : null,
+            existingThumbnail: '',
+            existingPhotos: [],
+            photosToDelete: []
         }
     },
     methods: {
@@ -330,14 +335,13 @@ export default {
         async try_get_session() {
             try {
                 const sessionStore = usetelecos_session_detailsStore();
-                const sessionDetails = await sessionStore.loadtelecos_session_details();
+                const sessionDetails = await sessionStore.load_admin_telecos(); 
+                // console.log(sessionDetails)
                 if (sessionDetails === false) {
-                    this.$router.push({ name: 'akun_expert' });
-                    console.log('session not found');
-                } else {
-                    if (sessionDetails.phase == 1) {
-                        this.expertId = sessionDetails["userid"]
-                    }
+                    this.$router.push({ name: 'akun_admin' });
+                    
+                } else { 
+                        this.expertId = sessionDetails.userid 
                 }
             } catch (error) {
                 console.error('Failed to load session details:', error);
@@ -346,17 +350,68 @@ export default {
 
         async get_article(){
            const hasil = await get_article_by_id(this.articleId);
-        //    console.log(hasil.articles[0])
-           if (hasil.status === 1) {
+           console.log('Article response:', hasil); // Debug log
+           if (hasil.status === 1 && hasil.articles && hasil.articles[0]) {
                 this.article_found = true;
-                this.judul = hasil.articles[0].title;
-                this.kategori = hasil.articles[0].category;
-                this.content = hasil.articles[0].content || '';
-                this.mod = this.content;
-           }
+                const article = hasil.articles[0];
+                
+                // Set basic article data
+                this.judul = article.title;
+                this.kategori = article.category;
 
-           else{
+                // Handle content and update Quill editor
+                if (article.content) {
+                    try {
+                        let parsedContent;
+                        if (typeof article.content === 'string') {
+                            try {
+                                parsedContent = JSON.parse(article.content);
+                            } catch {
+                                parsedContent = article.content;
+                            }
+                        } else {
+                            parsedContent = article.content;
+                        }
+                        this.mod = parsedContent;
+                        this.content = parsedContent;
+                        console.log('Content loaded:', this.mod); // Debug log
+
+                        // Update Quill Editor content explicitly using getEditor()
+                        this.$nextTick(() => {
+                          if (this.$refs.quillEditor && typeof this.$refs.quillEditor.getEditor === 'function') {
+                              const quill = this.$refs.quillEditor.getEditor();
+                              if (quill && typeof quill.setContents === 'function') {
+                                  quill.setContents(this.mod);
+                              }
+                          }
+                        });
+                    } catch (error) {
+                        console.error('Error processing content:', error);
+                        this.mod = '';
+                        this.content = '';
+                    }
+                }
+
+                // Handle thumbnail and additional photos as before
+                if (article.thumbnail) {
+                    this.existingThumbnail = article.thumbnail;
+                    this.imagePreview = article.thumbnail;
+                }
+                if (article.photos && Array.isArray(article.photos)) {
+                    this.existingPhotos = article.photos.map(photo => ({
+                        id: photo.id,
+                        url: photo.url
+                    }));
+                    this.additionalImages = this.existingPhotos.map(photo => ({
+                        preview: photo.url,
+                        isExisting: true,
+                        id: photo.id,
+                        file: { name: 'Existing photo' } // Dummy file name for display
+                    }));
+                }
+           } else {
                 this.article_found = false;
+                console.error('Failed to load article:', hasil);
            }
         },
 
@@ -465,6 +520,11 @@ export default {
         },
 
         removeAdditionalImage(index) {
+            const image = this.additionalImages[index];
+            if (image.isExisting) {
+                // If it's an existing photo, mark it for deletion
+                this.photosToDelete.push(image.id);
+            }
             this.additionalImages.splice(index, 1);
         },
 
@@ -522,6 +582,38 @@ export default {
             return this.formErrors.length === 0;
         },
 
+        async uploadImage() {
+            if (!this.imageFile) {
+                return null;
+            }
+
+            const formData = new FormData();
+            formData.append("articleId", this.articleId);
+            formData.append("isThumbnail", 1);
+            formData.append("image", this.imageFile);
+
+
+
+            try {
+                const response = await fetch("https://claudio.codes/telecos-be/images/upload", {
+                    method: "POST",
+                    body: formData,
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.status === 1) {
+                    return result.file.filename;
+                } else {
+                    throw new Error(result.message || 'Error uploading image');
+                }
+            } catch (error) {
+                console.error("Upload error:", error);
+                this.formErrors.push('Gagal mengunggah gambar thumbnail');
+                return null;
+            }
+        },
+
         async handle_article_submit() {
             try {
                 if (!this.check_all_variable_is_not_empty()) {
@@ -532,18 +624,49 @@ export default {
                     return;
                 }
 
-                // console.log(this.content)
-                // const response = await edit_artikel(
-                //     this.articleId,
-                //     this.judul,
-                //     this.kategori,
-                //     this.content // Send content directly
-                // );
+                // Upload thumbnail first if provided
+                let thumbnailFilename = null;
+                if (this.imageFile) {
+                    thumbnailFilename = await this.uploadImage();
+                    if (!thumbnailFilename) {
+                        // Handle upload failure
+                        this.showErrors = true;
+                        return;
+                    }
+                }
+
+                let formData = new FormData();
+                formData.append('articleId', this.articleId);
+                formData.append('judul', this.judul);
+                formData.append('kategori', this.kategori);
+                formData.append('content', JSON.stringify(this.mod));
+
+                // Append the thumbnail filename if we have one
+                if (thumbnailFilename) {
+                    formData.append('thumbnail', thumbnailFilename);
+                }
+
+                // Handle additional photos (new uploads)
+                const newPhotos = this.additionalImages.filter(img => !img.isExisting).map(img => img.file);
+                newPhotos.forEach((photo, index) => {
+                    formData.append(`photos[${index}]`, photo);
+                });
+
+                // Add list of photos to be deleted
+                if (this.photosToDelete.length > 0) {
+                    formData.append('photosToDelete', JSON.stringify(this.photosToDelete));
+                }
+
+                const response = await edit_artikel(formData);
+                console.log(response);
 
                 if (response.status === 1) {
-                    this.$router.push({ name: 'berhasil_buat_artikel_expert' });
+                    this.save_success = true;
+                    setTimeout(() => {
+                        // ...existing navigation if needed...
+                    }, 2000);
                 } else {
-                    this.errorMessage = 'Gagal membuat artikel baru. Silakan coba lagi.';
+                    this.errorMessage = 'Gagal mengubah artikel. Silakan coba lagi.';
                 }
             } catch (error) {
                 console.error('Error submitting article:', error);
@@ -588,8 +711,11 @@ export default {
         },
     },
     watch: {
-        mod(newVal) {
-            this.content = newVal;
+        mod: {
+            handler(newVal) {
+                this.content = newVal;
+            },
+            deep: true
         }
     }
 }

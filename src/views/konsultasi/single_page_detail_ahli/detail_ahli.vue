@@ -224,10 +224,10 @@ div.set_middle div.favkan ion-icon {
 
 <script>
 import Kalender_pesan_jadwal_ahli from '@/components/kalender/kalender_pesan_jadwal_ahli.vue';
-import { get_experts_byID } from '@/components/logic/API/experts';
-import { check_fav_by_userId_and_expertId, create_favourite, remove_favourite } from '@/components/logic/API/favourite';
-import { expert_profile_picture } from '@/components/logic/API/image_processor';
-import { usetelecos_session_detailsStore } from '@/components/logic/API/save_session';
+import { get_experts_byID } from '@/components/logic/API/experts_service';
+import { check_fav_by_userId_and_expertId, create_favourite, remove_favourite } from '@/components/logic/API/favourite_service';
+import { expert_profile_picture } from '@/components/logic/API/image_processor_service';
+import { usetelecos_session_detailsStore } from '@/components/logic/API/save_session_service';
 import { always_scroll_on_top } from '@/components/logic/tools/handle_always_scroll_on_top';
 import Spinner from '@/components/spinner/spinner.vue';
 // Import JSON data directly

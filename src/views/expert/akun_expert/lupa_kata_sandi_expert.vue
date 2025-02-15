@@ -109,8 +109,8 @@
   
   <script>
   import New_email from '@/components/input/new_email.vue';
-  import { usetelecos_session_detailsStore } from '@/components/logic/API/expert/expert_save_session';
-  import { forget_password_otp, session_expirate, set_otp_count } from '@/components/logic/API/expert/expert';
+  import { usetelecos_session_detailsStore } from '@/components/logic/API/expert/expert_save_session_service';
+  import { forget_password_otp, session_expirate, set_otp_count } from '@/components/logic/API/expert/expert_service';
   import Logo from '@/components/logo/logo_divisi_akun.vue';
   
   export default {

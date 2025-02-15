@@ -12,7 +12,7 @@
 </template>
 <script>
 import Artikel_single_card from '../artikel/artikel_single_card.vue';
-import { get_article_all } from '@/components/logic/API/artikel/artikel';
+import { get_article_all } from '@/components/logic/API/artikel/artikel_service';
 
 export default {
     components: { 

@@ -1,4 +1,4 @@
-import {makeRequest, x_api_endpoint} from '../API.js';
+import {makeRequest, x_api_endpoint} from '../API_service.js';
 
 
 async function create_new_session(expertId, userId, sessionName, rate, dateStart, dateEnd) {

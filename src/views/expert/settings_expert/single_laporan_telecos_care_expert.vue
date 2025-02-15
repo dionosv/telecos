@@ -13,8 +13,8 @@
     </div>
 </template>
 <script>
-import { get_laporan_by_ticket_id } from '@/components/logic/API/pusat_bantuan';
-import { usetelecos_session_detailsStore } from '@/components/logic/API/expert/expert_save_session';
+import { get_laporan_by_ticket_id } from '@/components/logic/API/pusat_bantuan_service';
+import { usetelecos_session_detailsStore } from '@/components/logic/API/expert/expert_save_session_service';
 import Spinner from '@/components/spinner/spinner.vue';
 
 export default {

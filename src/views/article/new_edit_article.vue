@@ -226,8 +226,8 @@
     </div>
 </template>
 <script>
-import { create_new_artikel, get_article_by_id } from '@/components/logic/API/artikel/artikel';
-import { usetelecos_session_detailsStore } from '@/components/logic/API/expert/expert_save_session';
+import { create_new_artikel, get_article_by_id } from '@/components/logic/API/artikel/artikel_service';
+import { usetelecos_session_detailsStore } from '@/components/logic/API/admin/admin_save_session_service';
 import { QuillEditor } from '@vueup/vue-quill'
 import '@vueup/vue-quill/dist/vue-quill.snow.css'
 
@@ -325,7 +325,7 @@ export default {
                 const sessionStore = usetelecos_session_detailsStore();
                 const sessionDetails = await sessionStore.loadtelecos_session_details();
                 if (sessionDetails === false) {
-                    this.$router.push({ name: 'akun_expert' });
+                    // this.$router.push({ name: 'akun_admin' });
                     console.log('session not found');
                 } else {
                     if (sessionDetails.phase == 1) {

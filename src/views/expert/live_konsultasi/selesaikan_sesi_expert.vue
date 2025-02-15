@@ -39,9 +39,9 @@
   </template>
   
   <script>
-import { tambah_saldo_selesai_konsultasi_expert } from '@/components/logic/API/saldo/saldo';
-import { change_session_id_status } from '@/components/logic/API/session/session';
-import { new_transaction_user_konsultasi_selesai } from '@/components/logic/API/transaction/transaction';
+import { tambah_saldo_selesai_konsultasi_expert } from '@/components/logic/API/saldo/saldo_service';
+import { change_session_id_status } from '@/components/logic/API/session/session_service';
+import { new_transaction_user_konsultasi_selesai } from '@/components/logic/API/transaction/transaction_service';
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue' 
 
   export default {

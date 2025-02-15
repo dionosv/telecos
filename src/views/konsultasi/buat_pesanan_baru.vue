@@ -182,17 +182,17 @@
     </div>
 </template>
 <script>
-import { get_experts_byID } from '@/components/logic/API/experts';
-import { check_fav_by_userId_and_expertId } from '@/components/logic/API/favourite';
-import { expert_profile_picture } from '@/components/logic/API/image_processor';
-import { usetelecos_session_detailsStore } from '@/components/logic/API/save_session';
+import { get_experts_byID } from '@/components/logic/API/experts_service';
+import { check_fav_by_userId_and_expertId } from '@/components/logic/API/favourite_service';
+import { expert_profile_picture } from '@/components/logic/API/image_processor_service';
+import { usetelecos_session_detailsStore } from '@/components/logic/API/save_session_service';
 import Logo_aja from '@/components/logo/logo_aja.vue';
-import { get_user_data } from '@/components/logic/API/user';
-import { block_by_schedule_id, check_schedule_availability, get_schedule_by_schedule_id } from '@/components/logic/API/schedule/schedule';
+import { get_user_data } from '@/components/logic/API/user_service';
+import { block_by_schedule_id, check_schedule_availability, get_schedule_by_schedule_id } from '@/components/logic/API/schedule/schedule_service';
 import Spinner from '@/components/spinner/spinner.vue';
-import { kurangi_saldo } from '@/components/logic/API/saldo/saldo';
-import { new_transaction_user_konsultasi_mulai } from '@/components/logic/API/transaction/transaction';
-import { create_new_session } from '@/components/logic/API/session/session';
+import { kurangi_saldo } from '@/components/logic/API/saldo/saldo_service';
+import { new_transaction_user_konsultasi_mulai } from '@/components/logic/API/transaction/transaction_service';
+import { create_new_session } from '@/components/logic/API/session/session_service';
 
 export default {
     components: {

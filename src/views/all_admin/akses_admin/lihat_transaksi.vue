@@ -3,7 +3,7 @@
         <h2>Transaksi</h2>
         <Spinner v-if="loading"></Spinner>
         <div v-if="!loading && transaksi.length">
-            <div v-for="(trans, index) in transaksi" :key="index" class="transaction">
+            <div v-for="(trans, index) in sortedTransactions" :key="index" class="transaction">
                 <p><strong>Transaction ID:</strong> {{ trans.transactionId }}</p>
                 <p><strong>Sender:</strong> {{ getSenderName(trans) }} ({{ trans.senderType }})</p>
                 <p><strong>Receiver:</strong> {{ getReceiverName(trans) }} ({{ trans.receiverType }})</p>
@@ -19,9 +19,9 @@
     </div>
 </template>
 <script>
-import { get_experts_byID } from '@/components/logic/API/experts';
-import { get_all_transaction } from '@/components/logic/API/transaction/transaction';
-import { get_user_data } from '@/components/logic/API/user';
+import { get_experts_byID } from '@/components/logic/API/experts_service';
+import { get_all_transaction } from '@/components/logic/API/transaction/transaction_service';
+import { get_user_data } from '@/components/logic/API/user_service';
 import Spinner from '@/components/spinner/spinner.vue';
 
 export default {
@@ -40,6 +40,13 @@ export default {
     },
     mounted(){
         this.getTransaksi()
+    },
+    computed: {
+        sortedTransactions() {
+            return [...this.transaksi].sort((a, b) => {
+                return new Date(b.timestamp) - new Date(a.timestamp);
+            });
+        }
     },
     methods: {
         async getTransaksi(){

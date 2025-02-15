@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import { usetelecos_session_detailsStore } from '@/components/logic/API/save_session';
+import { usetelecos_session_detailsStore } from '@/components/logic/API/save_session_service';
 import Masuk from './masuk.vue';
 import Daftar from './daftar.vue';
 import Pengaturan_akun from './pengaturan_akun.vue';

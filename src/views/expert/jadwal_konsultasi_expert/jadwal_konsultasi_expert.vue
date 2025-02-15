@@ -46,12 +46,12 @@
     <Spinner v-if="!loaded"></Spinner>
 </template>
 <script>
-import { get_experts_byID } from '@/components/logic/API/experts';
-import { usetelecos_session_detailsStore } from '@/components/logic/API/expert/expert_save_session';
-import { get_session_by_expert_Id, get_session_by_user_Id } from '@/components/logic/API/session/session';
+import { get_experts_byID } from '@/components/logic/API/experts_service';
+import { usetelecos_session_detailsStore } from '@/components/logic/API/expert/expert_save_session_service';
+import { get_session_by_expert_Id, get_session_by_user_Id } from '@/components/logic/API/session/session_service';
 import { always_scroll_on_top } from '@/components/logic/tools/handle_always_scroll_on_top';
 import Spinner from '@/components/spinner/spinner.vue';
-import { get_user_data } from '@/components/logic/API/user';
+import { get_user_data } from '@/components/logic/API/user_service';
 
 export default {
     mounted() {

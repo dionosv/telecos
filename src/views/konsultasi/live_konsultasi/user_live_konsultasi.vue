@@ -55,11 +55,11 @@
     </div>
 </template>
 <script>
-import { get_experts_byID } from '@/components/logic/API/experts';
-import { expert_profile_picture } from '@/components/logic/API/image_processor';
-import { usetelecos_session_detailsStore } from '@/components/logic/API/save_session';
-import { get_session_by_session_Id } from '@/components/logic/API/session/session';
-import { get_user_data } from '@/components/logic/API/user';
+import { get_experts_byID } from '@/components/logic/API/experts_service';
+import { expert_profile_picture } from '@/components/logic/API/image_processor_service';
+import { usetelecos_session_detailsStore } from '@/components/logic/API/save_session_service';
+import { get_session_by_session_Id } from '@/components/logic/API/session/session_service';
+import { get_user_data } from '@/components/logic/API/user_service';
 import Spinner_no_full_screen from '@/components/spinner/spinner_no_full_screen.vue';
 
 export default {

@@ -5,9 +5,7 @@
             <ion-icon name="checkmark-circle"></ion-icon>
             <h1 class="success-title">Artikel Berhasil Dibuat!</h1>
             <p class="success-message">
-                Artikel Anda telah akan di review terlebih dahulu sebelum di tampilkan di halaman telecos. Mohon
-                menunggu untuk proses review
-                oleh admin sebelum artikel ditampilkan di halaman publik Telecos.
+                Artikel telah di upload dan sudah di tampilkan di halaman Telecos.
             </p>
 
            
