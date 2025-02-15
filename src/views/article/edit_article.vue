@@ -279,7 +279,7 @@ import Spinner from '@/components/spinner/spinner.vue';
 import { QuillEditor } from '@vueup/vue-quill'
 import '@vueup/vue-quill/dist/vue-quill.snow.css'
 import { article_card_image } from '@/components/logic/API/image_processor_service';
-import ImageViewer from '@/components/image_viewer/ImageViewer.vue';
+import ImageViewer from '@/components/image/ImageViewer.vue';
 
 export default {
     components: {

@@ -10,7 +10,7 @@
             </div>
             <div>
               <h3 class="text-sm font-medium text-gray-900">
-                <router-link :to="{ name: '' }" class="focus:outline-none">
+                <router-link :to="{ name: 'lihat_user_admin' }" class="focus:outline-none">
                   <span class="absolute inset-0" aria-hidden="true" />
                   <span>Pengguna</span>
                   <span aria-hidden="true"> &rarr;</span>

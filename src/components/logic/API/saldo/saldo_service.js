@@ -64,5 +64,27 @@ async function kurangi_saldo(userid,nominal){
     // console.log(JSON.parse(await makeRequest(config)));  
   }
 
+  async function tambah_saldo_user(userid,nominal){ 
+    let data = JSON.stringify({
+      "userId": userid,
+      "amount":nominal
+     });
+    
+     let config = {
+      method: 'post',
+      maxBodyLength: Infinity,
+      url: x_api_endpoint+'/users/topUp',
+      headers: {  
+        'Content-Type': 'application/json'
+      },
+      data : data
+    };
 
-export {kurangi_saldo, kurangi_saldo_expert, tambah_saldo_selesai_konsultasi_expert};
+    return JSON.parse(await makeRequest(config));   
+  }
+
+
+
+
+
+export {kurangi_saldo, kurangi_saldo_expert, tambah_saldo_selesai_konsultasi_expert, tambah_saldo_user};

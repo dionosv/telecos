@@ -14,6 +14,8 @@
 
         <ul v-else role="list" class="divide-y divide-gray-100">
             <li v-for="article in articles" :key="article.articleId" class="relative py-5 hover:bg-gray-50">
+
+                <router-link :to="{name : 'single_page_article_admin', params : {'articleId' : article.articleId}}">
                 <div class="px-4 sm:px-6 lg:px-8">
                     <div class="mx-auto flex justify-between gap-x-6">
                         <div class="flex min-w-0 gap-x-4">
@@ -52,6 +54,8 @@
                         </div>
                     </div>
                 </div>
+
+            </router-link>
             </li>
         </ul>
     </div>

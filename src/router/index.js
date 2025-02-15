@@ -378,12 +378,34 @@ const router = createRouter({
         },
 
         {
+          path : "pengguna",
+          children: [
+            {
+              path :"",
+              name : "lihat_user_admin",
+              component: () => import('../views/all_admin/akses_admin/pengguna/user_admin.vue'),
+            },
+            {
+              path :"lihat-semua-user",
+              name : "lihat_semua_user_admin",
+              component: () => import('../views/all_admin/akses_admin/pengguna/lihat_semua_pengguna.vue'),
+            },
+            {
+              path :"top-up-user",
+              name : "top_up_user_admin",
+              component: () => import('../views/all_admin/akses_admin/pengguna/top_up_user.vue'),
+            }
+
+          ]
+        },
+
+        {
           path: "artikel",
           children: [
             {
               path: '',
               name: 'artikel_admin',
-              component: () => import('../views/all_admin/akses_admin/artikel_ahli.vue'),
+              component: () => import('../views/all_admin/akses_admin/artikel_admin.vue'),
             }, 
             {
               path: 'baca/:articleId',

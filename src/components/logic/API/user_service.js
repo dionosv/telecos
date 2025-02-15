@@ -193,6 +193,25 @@ async function reset_password(email){
   // console.log(JSON.parse(await makeRequest(config)));  
 } 
 
+async function get_all_user(){
+  let data = JSON.stringify({ 
+
+   });
+  
+   let config = {
+    method: 'get',
+    maxBodyLength: Infinity,
+    url: x_api_endpoint+'/users/getAll',
+    headers: {  
+      'Content-Type': 'application/json'
+    },
+    data : data
+  };
+
+  return JSON.parse(await makeRequest(config));  
+  // console.log(JSON.parse(await makeRequest(config)));  
+} 
+
 async function change_user_profile(userId,name,phoneNum,gender,dateOfBirth){
   let data = JSON.stringify({
     "userId":userId,
@@ -236,4 +255,4 @@ async function change_user_password(userId,currentPassword,newPassword){
   return JSON.parse(await makeRequest(config));    
 } 
 
-export {login, register, logout, set_otp_count, get_user_data, reset_password ,get_otp_count, change_user_profile, change_user_password, clear_otp_count, session_expirate, send_otp,forget_password_otp, verify_otp};
+export {login, register, logout, set_otp_count, get_user_data, reset_password ,get_otp_count, change_user_profile, change_user_password, clear_otp_count, session_expirate, send_otp,forget_password_otp, verify_otp, get_all_user};
