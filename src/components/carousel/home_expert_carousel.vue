@@ -2,15 +2,15 @@
     <div>
         <div class="swiper mySwiper">
             <div class="swiper-wrapper">
-                <div class="swiper-slide">Slide 1</div>
-                <div class="swiper-slide">Slide 2</div>
-                <div class="swiper-slide">Slide 3</div>
-                <div class="swiper-slide">Slide 4</div>
-                <div class="swiper-slide">Slide 5</div>
-                <div class="swiper-slide">Slide 6</div>
-                <div class="swiper-slide">Slide 7</div>
-                <div class="swiper-slide">Slide 8</div>
-                <div class="swiper-slide">Slide 9</div>
+                <div class="swiper-slide">
+                    <img src="@/assets/User_Carousel/Expert_1.png" alt="">
+                </div>
+                <div class="swiper-slide">
+                    <img src="@/assets/User_Carousel/Expert_2.png" alt="">
+                </div>
+                <div class="swiper-slide">
+                    <img src="@/assets/User_Carousel/Expert_3.png" alt="">
+                </div>  
             </div>
             <div class="swiper-pagination"></div>
             <div class="autoplay-progress">
@@ -28,14 +28,14 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import { Swiper } from 'swiper';
-import { Navigation, Pagination, Autoplay } from 'swiper/modules'; 
+import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 
 export default {
-    name: 'HomeUserCarousel', 
+    name: 'HomeUserCarousel',
     mounted() {
         const progressLine = document.querySelector(".progress-line");
         const progressContent = document.querySelector(".autoplay-progress span");
-        
+
         const swiper = new Swiper(".mySwiper", {
             modules: [Navigation, Pagination, Autoplay],
             spaceBetween: 30,
@@ -60,7 +60,7 @@ export default {
 }
 </script>
 
-<style scoped> 
+<style scoped>
 .swiper {
     width: 100%;
     height: 400px;
@@ -88,7 +88,7 @@ export default {
     bottom: 16px;
     transform: translateX(-50%);
     z-index: 10;
-    width: 150px; 
+    width: 150px;
     height: 30px;
     display: flex;
     align-items: center;

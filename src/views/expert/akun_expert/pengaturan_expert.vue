@@ -13,6 +13,16 @@
             <ul role="list" class="-mx-2 space-y-1">
 
                 <li>
+                    <div class="p-4 bg-orange-50 rounded-lg">
+                        <p class="text-sm font-semibold text-gray-700">Rating Anda</p>
+                        <div class="flex items-center mt-2">
+                            <span class="text-2xl font-bold text-orange-500">{{ expertRating.toFixed(1) }}</span>
+                            <ion-icon name="star" class="text-orange-500 ml-1 text-2xl"></ion-icon>
+                        </div>
+                    </div>
+                </li>
+ 
+                <li>
                     <router-link :to="{ name: 'detail_akun_expert' }"
                         class="text-gray-700 hover:bg-orange-50 hover:text-orange-500 group flex gap-x-3 rounded-md p-2 pl-3 text-sm font-semibold leading-6">Detail Akun</router-link>
                 </li>
@@ -44,13 +54,17 @@
 <script>
 
 import { usetelecos_session_detailsStore } from '@/components/logic/API/expert/expert_save_session_service';
+
 // import { logout } from '@/components/logic/API/user';
 
-export default {
-
+export default { 
     data() {
-        return { 
+        return {
+            expertRating: 0.0
         }
+    },
+    async created() { 
+        this.expertRating = 4.5
     },
     methods: {
         async logout(){

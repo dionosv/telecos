@@ -40,6 +40,14 @@
                         </div>
 
                         <div class="menu_list">
+                            <ion-icon name="star"></ion-icon>
+                            <div class="detail_ahli">
+                                <p id="atas">Rating</p>
+                                <p id="bawah">4.5</p>
+                            </div>
+                        </div>
+
+                        <div class="menu_list">
                             <ion-icon name="bag-remove"></ion-icon>
                             <div class="detail_ahli">
                                 <p id="atas">Pengalaman</p>

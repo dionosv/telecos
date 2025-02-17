@@ -71,7 +71,7 @@
         </div>
 
         <div class="kanann">
-          <Bigmenu></Bigmenu>
+          <Bigmenu id="big_menu"></Bigmenu>
           <User_upcoming_events></User_upcoming_events>
         </div>
 
@@ -190,5 +190,10 @@ export default {
     font-size: 20px;
 
   }
+
+  .split_2 {
+  display: block;  
+}
+ 
 }
 </style>

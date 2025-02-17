@@ -236,7 +236,7 @@ div.menu_panjang ion-icon.md.hydrated {
         height: 60px;
     }
     .menu_panjang{
-        width: 320px;
+        width: 360px;
         height: 60px;
     }
 
@@ -247,5 +247,10 @@ div.menu_panjang ion-icon.md.hydrated {
     div.menu_panjang ion-icon.md.hydrated {
         font-size: 24px !important;
     }
+
+    .all_menu { 
+        margin-top: 15px;
+        margin-bottom: 35px;
+}
 }
 </style>

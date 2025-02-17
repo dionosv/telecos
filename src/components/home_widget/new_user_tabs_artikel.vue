@@ -90,7 +90,7 @@ export default {
 @media screen and (max-width: 768px) {
     .all_artikel_home {
         width: 100%;
-        padding: 0 15px;
+        padding: 0;
     }
 
     .all_article {
