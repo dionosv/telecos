@@ -109,7 +109,7 @@
     margin-top: auto;
     margin-bottom: auto;
     gap: 20px;
-    animation: flyIn 0.3s ease-in; /* Updated animation */
+    animation: flyIn 0.3s ease-in;
 
 }
 

@@ -66,8 +66,10 @@
       <div class="split_2" id="already_login">
 
         <div class="kiri">
-          <h1>Halo, {{ nama }}</h1>
-          <Logo_aja></Logo_aja>
+          <div class="logo-container">
+            <Logo_aja></Logo_aja>
+          </div>
+          <h1 class="greeting">Halo, {{ nama }}</h1>
         </div>
 
         <div class="kanann">
@@ -172,6 +174,31 @@ export default {
 
 }
 
+#already_login {
+  width: 100%;
+}
+
+.kiri {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.kiri h1 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.logo-container {
+  display: flex;
+  justify-content: center;
+}
+
+.greeting {
+  text-align: center;
+}
+
 @media screen and (max-width: 768px) {
   .kannan {
     flex-direction: column;
@@ -194,6 +221,38 @@ export default {
   .split_2 {
   display: block;  
 }
- 
+
+  #already_login {
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .kiri {
+    width: 100%;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .greeting {
+    order: 2;
+    margin-top: 1rem;
+  }
+
+  .logo-container {
+    order: 1;
+  }
+
+  .kanann {
+    width: 100%;
+    flex-direction: column;
+    height: auto;
+    gap: 2rem;
+  }
+
+  #big_menu {
+    width: 100%;
+  }
 }
 </style>

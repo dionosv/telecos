@@ -22,8 +22,7 @@
                                 <button type="button" @click="mencapai_maksimum_sesi = false"
                                     class="inline-flex rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                                     <span class="sr-only">Close</span>
-                                    <ion-icon name="close"></ion-icon>
-                                    <!-- <XMarkIcon class="h-5 w-5" aria-hidden="true" /> -->
+                                    <ion-icon name="close"></ion-icon> 
                                 </button>
                             </div>
                         </div>
@@ -163,7 +162,6 @@
                             meeting.occupied ? 'bg-orange-100 hover:bg-orange-300' : '']"
                             @click="handle_toogle_block(meeting.id, meeting.startDatetime, meeting.endDatetime , meeting.availability)">
 
-                            <!-- <ion-icon name="add-circle" ></ion-icon> -->
                             <ion-icon name="checkmark-circle"
                                 class="h-10 w-10 flex-none rounded-full fill-orange-500 bg-white-100"
                                 v-if="meeting.occupied"></ion-icon>
