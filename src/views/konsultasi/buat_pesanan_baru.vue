@@ -444,6 +444,7 @@ export default {
         async proses_buat_session(){
             const x_sessionName = `Sesi Konsultasi dengan ${this.data_ahli.name}`;
             const res = (await create_new_session(this.expertId, this.userId, x_sessionName, this.meeting.price , this.meeting.tz_start, this.meeting.tz_end));
+            console.log(res);
             return res.sessionId;
         },
 

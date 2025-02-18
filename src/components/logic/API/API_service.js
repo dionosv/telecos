@@ -6,7 +6,7 @@ async function makeRequest(config) {
   let hasil ={}
 
   try {
-    const response = await axios.request(config); 
+    const response = await axios.request(config);  
     hasil = JSON.stringify(response.data); 
   }
   catch (error) { 
