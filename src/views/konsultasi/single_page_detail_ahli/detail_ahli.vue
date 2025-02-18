@@ -43,7 +43,7 @@
                             <ion-icon name="star"></ion-icon>
                             <div class="detail_ahli">
                                 <p id="atas">Rating</p>
-                                <p id="bawah">4.5</p>
+                                <p id="bawah">{{ expertRating }}</p>
                             </div>
                         </div>
 
@@ -240,6 +240,7 @@ import { always_scroll_on_top } from '@/components/logic/tools/handle_always_scr
 import Spinner from '@/components/spinner/spinner.vue';
 // Import JSON data directly
 import provinsiData from '@/components/data_lokasi/provinsi.json';
+import { get_rating_by_expert_id } from '@/components/logic/API/rating/rating_service';
 
 export default {
     components: {
@@ -267,7 +268,7 @@ export default {
                 almamater: ''
             },
             final_data:false,
-
+            expertRating: 0.0,
             toogle_fav: false,
             kota: '',
             provinsi: ''
@@ -309,6 +310,7 @@ export default {
                     this.final_data = true;
 
                     this.decode_kode_lokasi();
+                    await this.get_rating_by_expert_idnya();
                 }
                 else {
                     this.$router.push({ name: 'home' });
@@ -386,6 +388,15 @@ export default {
             await create_favourite(this.userId, this.expertId);
         },
 
+        async get_rating_by_expert_idnya() {
+            if (!this.expertId) return;
+            const rating = await get_rating_by_expert_id(this.expertId);
+            if (rating.status == 1) {
+                this.expertRating = rating.rating[0].ratingScore || 0;
+            } else {
+                this.expertRating = 0;
+            }
+        },
 
     }
 }
