@@ -89,7 +89,7 @@ export default {
             if (!this.all_session.session) return [];
 
             return [...this.all_session.session]
-                .filter(session => session.status === "pending") // Only show pending sessions
+                .filter(session => session.status === "pending")
                 .sort((a, b) => {
                     const dateA = new Date(a.date);
                     const dateB = new Date(b.date);
@@ -127,8 +127,7 @@ export default {
         },
 
         async get_session_by_id() {
-            this.all_session = await get_session_by_user_Id(this.userId);
-            // After getting sessions, fetch expert details for each session
+            this.all_session = await get_session_by_user_Id(this.userId); 
             if (this.all_session.status === 1) {
                 const expertIds = new Set(this.all_session.session.map(s => s.expertId));
                 await Promise.all(
@@ -179,8 +178,7 @@ export default {
             const dateNum = String(date.getDate()).padStart(2, '0');
             const month = months[date.getMonth()];
             const year = date.getFullYear();
-
-            // Convert UTC to WIB (UTC+7)
+ 
             const startDate = new Date(startTime);
             const endDate = new Date(endTime);
 

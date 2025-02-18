@@ -54,27 +54,49 @@
 <script>
 
 import { usetelecos_session_detailsStore } from '@/components/logic/API/expert/expert_save_session_service';
+import { get_rating_by_expert_id } from '@/components/logic/API/rating/rating_service';
 
 // import { logout } from '@/components/logic/API/user';
 
 export default { 
+    props: {
+        expert_id: {
+            type: [String, Number], // Allow both string and number
+            required: true
+        }
+    },
     data() {
         return {
             expertRating: 0.0
         }
     },
-    async created() { 
-        this.expertRating = 4.5
+    watch: {
+        expert_id: {
+            immediate: true,
+            handler(newVal) {
+                if (newVal) {
+                    this.get_rating_by_expert_idnya();
+                }
+            }
+        }
     },
     methods: {
         async logout(){
             const sessionStore = usetelecos_session_detailsStore();
             await sessionStore.cleartelecos_session_details();
             window.location.reload();
+        },
+        async get_rating_by_expert_idnya() {
+            if (!this.expert_id) return; 
+            const rating = await get_rating_by_expert_id(this.expert_id);
+            console.log(rating);
+            // if (rating) {
+            //     this.expertRating = rating;
+            // } else {
+            //     this.expertRating = 0.0;
+            // }
         }
-
     },
-
 }
 </script>
 

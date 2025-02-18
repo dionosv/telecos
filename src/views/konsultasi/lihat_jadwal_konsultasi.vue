@@ -67,7 +67,7 @@ export default {
             session: {},
             all_session: {},
             loaded: false,
-            expertDetails: {} // Add this line
+            expertDetails: {} 
         }
     },
     computed: {
@@ -75,7 +75,7 @@ export default {
             if (!this.all_session.session) return [];
 
             return [...this.all_session.session]
-                .filter(session => session.status === "pending") // Only show pending sessions
+                .filter(session => session.status === "pending")
                 .sort((a, b) => {
                     const dateA = new Date(a.date);
                     const dateB = new Date(b.date);
@@ -113,8 +113,7 @@ export default {
         },
 
         async get_session_by_id() {
-            this.all_session = await get_session_by_user_Id(this.userId);
-            // After getting sessions, fetch expert details for each session
+            this.all_session = await get_session_by_user_Id(this.userId); 
             if (this.all_session.status === 1) {
                 const expertIds = new Set(this.all_session.session.map(s => s.expertId));
                 await Promise.all(

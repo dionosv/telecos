@@ -4,10 +4,7 @@
             <h1>Riwayat Konsultasi Anda</h1>
         </div>
         <ul role="list" class="divide-y divide-gray-100" v-if="all_session.status === 1">
-            <router-link :to="{name:'rating_sesi', params:{session_id : session.id}}"   v-for="session in sortedSessions" :key="session.sessionId">
-
-
-
+            <router-link :to="{name:'rating_sesi', params:{session_id : session.sessionId}}"   v-for="session in sortedSessions" :key="session.sessionId">
                 <div
                     class="relative flex justify-between gap-x-6 px-4 py-5 hover:bg-gray-50 sm:px-6 lg:px-8">
                     <div class="flex items-center gap-x-4">
@@ -79,7 +76,7 @@ export default {
             if (!this.all_session.session) return [];
 
             return [...this.all_session.session]
-                .filter(session => session.status === "pending") // Only show pending sessions
+                .filter(session => session.status === "done") // Only show pending sessions
                 .sort((a, b) => {
                     const dateA = new Date(a.date);
                     const dateB = new Date(b.date);
@@ -100,7 +97,7 @@ export default {
                 } else {
                     if (sessionDetails.phase == 1) {
                         this.userId = sessionDetails.userid;
-                        console.log("user id : " + this.userId);
+                        // console.log("user id : " + this.userId);
                         await this.wrapper_get_session_by_user_Id();
                         await this.get_session_by_id();
                     }
@@ -117,8 +114,7 @@ export default {
         },
 
         async get_session_by_id() {
-            this.all_session = await get_session_by_user_Id(this.userId);
-            // After getting sessions, fetch expert details for each session
+            this.all_session = await get_session_by_user_Id(this.userId); 
             if (this.all_session.status === 1) {
                 const expertIds = new Set(this.all_session.session.map(s => s.expertId));
                 await Promise.all(

@@ -1,6 +1,6 @@
 <template>
     <div class="logout_button" v-if="onsession">
-        <Pengaturan_akun></Pengaturan_akun>
+        <Pengaturan_akun :expert_id="expert_id"></Pengaturan_akun>
     </div>
     <div class="wrapper_akun" v-if="!onsession">
         <Banner_akun_expert></Banner_akun_expert>
@@ -31,7 +31,8 @@ export default {
         return {
             onsession: false,
             user_have_account: true,
-            additional_param: []
+            additional_param: [],
+            expert_id: null
         }
     },
     methods: {
@@ -44,7 +45,8 @@ export default {
                 } else {
                     if (sessionDetails.phase == 1) {
                         this.user_have_account = true;
-                        this.onsession = true;
+                        this.onsession = true;  
+                        this.expert_id = sessionDetails.userid; 
                         this.handle_add_param();
                     }
                     else if (sessionDetails.phase == 2) {

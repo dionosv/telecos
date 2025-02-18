@@ -2,36 +2,64 @@
     <div class="end_side">
         <div class="header_1">
             <Logo_aja></Logo_aja>
-            <div class="tanggal">
-                <p>{{ current_date }}</p>
-                <p>{{ current_time }}</p>
-            </div>
-        </div>
-
-        <div class="detail">
-            <div class="split_1">
-                <p>Konsultasi {{ data_ahli.description }}</p>
-                <p>Rp {{ meeting.price }}</p>
-            </div>
-
-            <div class="split_1">
-                <p>Metode Pembayaran</p>
-                <p>Wallet</p>
-            </div>
         </div>
 
         <div class="rating-container">
-            <h2>Beri Rating Konsultasi</h2>
+            <h2>Bagaimana Konsultasi Anda?</h2>
+            <p class="session-name">{{ meeting.sessionName }}</p>
             <div class="stars">
                 <span v-for="star in 5" :key="star" class="star" :class="{ 'active': star <= rating }"
                     @click="setRating(star)">★</span>
             </div>
-            <p>{{ rating }} dari 5</p>
+            <p class="rating-text">{{ rating }} dari 5</p>
+            
+            <!-- Add notes textarea -->
+            <div class="mt-4 mb-6">
+                <label for="notes" class="block text-sm font-medium text-gray-700 mb-2">
+                    Tambahkan Catatan (Opsional)
+                </label>
+                <textarea
+                    id="notes"
+                    v-model="notes"
+                    rows="3"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-green-500 
+                           focus:border-green-500 resize-none text-sm"
+                    placeholder="Bagaimana pengalaman konsultasi Anda?"
+                ></textarea>
+            </div>
+
+            <button 
+                class="bg-green-500 text-white px-8 py-3 rounded-full text-base font-medium
+                       hover:bg-green-600 transition-colors duration-200 ease-in-out
+                       disabled:bg-gray-300 disabled:cursor-not-allowed shadow-sm
+                       focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                @click="submitRating" 
+                :disabled="rating === 0">
+                Kirim Rating
+            </button>
+        </div>
+
+        <div class="summary-container">
+            <h3>Detail Konsultasi</h3>
+            <div class="summary-item">
+                <span class="label">Tanggal</span>
+                <span class="value">{{ formatDate(meeting.date) }}</span>
+            </div>
+            <div class="summary-item">
+                <span class="label">Waktu</span>
+                <span class="value">{{ formatTime(meeting.date) }} - {{ formatTime(meeting.endDate) }}</span>
+            </div>
+            <div class="summary-item">
+                <span class="label">Biaya</span>
+                <span class="value price">Rp {{ formatPrice(meeting.rate) }}</span>
+            </div>
         </div>
     </div>
 </template>
 
 <script>
+import { new_rating } from '@/components/logic/API/rating/rating_service';
+import { get_session_by_session_Id } from '@/components/logic/API/session/session_service';
 import Logo_aja from '@/components/logo/logo_aja.vue';
 
 export default {
@@ -39,25 +67,98 @@ export default {
     components: {
         Logo_aja
     },
+    
     data() {
         return {
             rating: 0,
             current_date: new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
             current_time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false }),
-            // Add these properties and populate them with your data
             data_ahli: {
                 description: ''
             },
             meeting: {
-                price: ''
-            }
+                sessionId: '',
+                sessionName: '',
+                date: '',
+                endDate: '',
+                expertId: '',
+                rate: 0,
+                status: '',
+                userId: ''
+            },
+            session_id: this.$route.params.session_id,
+            notes: ''  // Add this line
         }
+    },
+
+    mounted() {
+        this.get_trx_by_trx_id();
     },
     methods: {
         setRating(value) {
             this.rating = value;
+        },
+        async get_trx_by_trx_id(){
+            const hasil = await get_session_by_session_Id(this.session_id);
+            const sessionData = hasil.session[0];
+            this.meeting = {
+                sessionId: sessionData.sessionId,
+                sessionName: sessionData.sessionName,
+                date: sessionData.date,
+                endDate: sessionData.endDate,
+                expertId: sessionData.expertId,
+                rate: sessionData.rate,
+                status: sessionData.status,
+                userId: sessionData.userId
+            };
+        },
+        formatDateTime(dateString) {
+            return new Date(dateString).toLocaleString('id-ID', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        },
+        formatDate(dateString) {
+            return new Date(dateString).toLocaleDateString('id-ID', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        },
+        
+        formatTime(dateString) {
+            return new Date(dateString).toLocaleTimeString('id-ID', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        },
+
+        formatPrice(price) {
+            return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        },
+
+        async submitRating() {
+            try {
+                await new_rating(
+                    "0",
+                    this.meeting.expertId,
+                    this.rating,
+                    this.notes
+                );
+                // Optional: Add success notification or redirect
+                alert('Rating berhasil dikirim!');
+                // Redirect to another page or show success message
+            } catch (error) {
+                console.error('Error submitting rating:', error);
+                alert('Gagal mengirim rating. Silakan coba lagi.');
+            }
         }
-    }
+    },
+
 }
 </script>
 
@@ -65,103 +166,99 @@ export default {
 .end_side {
     background-color: white;
     width: 400px;
-    padding: 20px 15px;
-    font-family: 'Courier New', monospace;
+    padding: 30px 25px;
+    font-family: 'Inter', sans-serif;
     position: relative;
     min-height: 400px;
-    border: 1px solid #ddd;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     margin: 0 auto;
-}
-
-.end_side::before,
-.end_side::after {
-    content: '';
-    position: absolute;
-    left: -5px;
-    right: -5px;
-    height: 5px;
-    background: repeating-linear-gradient(90deg,
-            #fff 0px,
-            #fff 4px,
-            transparent 4px,
-            transparent 8px);
-}
-
-.end_side::before {
-    top: -5px;
-}
-
-.end_side::after {
-    bottom: -5px;
 }
 
 .header_1 {
     text-align: center;
-    padding-bottom: 15px;
-    margin-bottom: 15px;
-    border-bottom: 1px dashed #000;
+    margin-bottom: 30px;
 }
 
-.tanggal {
-    margin-top: 15px;
-    font-size: 0.8rem;
-    color: #333;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.detail {
-    padding: 10px 0;
-    border-bottom: 1px dashed #000;
-}
-
-.split_1 {
-    padding: 8px 0;
-    font-size: 0.85rem;
-    color: #000;
-    display: flex;
-    justify-content: space-between;
-    line-height: 1.4;
-}
-
-.split_1 p:last-child {
-    font-weight: bold;
-}
-
-/* Existing rating styles */
 .rating-container {
     text-align: center;
-    padding: 20px;
+    padding: 20px 0 30px;
+    border-bottom: 1px solid #eee;
+}
+
+.rating-container h2 {
+    font-size: 1.5rem;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.session-name {
+    color: #666;
+    margin-bottom: 20px;
+    font-size: 1.1rem;
 }
 
 .stars {
     display: flex;
     justify-content: center;
-    gap: 10px;
+    gap: 15px;
     margin: 20px 0;
 }
 
 .star {
-    font-size: 30px;
+    font-size: 35px;
     cursor: pointer;
     color: #ddd;
+    transition: color 0.2s ease;
 }
 
 .star.active {
-    color: #ffd700;
+    color: #FFD700;
 }
 
-.star:hover {
-    color: #ffd700;
+.rating-text {
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.summary-container {
+    padding: 30px 0 0;
+}
+
+.summary-container h3 {
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.label {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.value {
+    color: #333;
+    font-weight: 500;
+}
+
+.price {
+    color: #4CAF50;
+    font-weight: 600;
 }
 
 @media (max-width: 768px) {
     .end_side {
-        width: 100%;
-        max-width: 100%;
-        margin: 10px auto;
+        width: 90%;
+        max-width: 400px;
+        margin: 20px auto;
+        padding: 20px 15px;
     }
 }
 </style>

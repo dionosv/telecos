@@ -37,9 +37,9 @@
         <div class="not_found" v-if="all_session.status === 0">
             <ion-icon name="alert-circle"></ion-icon>
             <p class="s_query">Tidak ada jadwal konsultasi</p>
-            <router-link :to="{ name: 'daftar_ahli_konsultasi' }"
+            <!-- <router-link :to="{ name: 'daftar_ahli_konsultasi' }"
                 class="rounded-md bg-orange-400 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600">Buat
-                Sesi Konsultasi</router-link>
+                Sesi Konsultasi</router-link> -->
         </div>
     </div>
 
