@@ -1,13 +1,15 @@
 <template>
-    <div class="end_side">
+    <Spinner v-if="isLoading"></Spinner>
+
+    <div class="end_side" v-else>
         <div class="header_1">
             <Logo_aja></Logo_aja>
         </div>
 
         <div class="rating-container">
-            <h2>Bagaimana Konsultasi Anda?</h2>
+            <h2>{{ canRate ? 'Bagaimana Konsultasi Anda?' : 'Anda Sudah Memberikan Rating' }}</h2>
             <p class="session-name">{{ meeting.sessionName }}</p>
-            <div class="stars">
+            <div class="stars" :class="{ 'pointer-events-none opacity-50': !canRate }">
                 <span v-for="star in 5" :key="star" class="star" :class="{ 'active': star <= rating }"
                     @click="setRating(star)">★</span>
             </div>
@@ -25,6 +27,8 @@
                     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-green-500 
                            focus:border-green-500 resize-none text-sm"
                     placeholder="Bagaimana pengalaman konsultasi Anda?"
+                    :disabled="!canRate"
+                    :class="{ 'bg-gray-100': !canRate }"
                 ></textarea>
             </div>
 
@@ -34,9 +38,11 @@
                        disabled:bg-gray-300 disabled:cursor-not-allowed shadow-sm
                        focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
                 @click="submitRating" 
-                :disabled="rating === 0">
+                :disabled="rating === 0 || !canRate"
+                v-if="canRate">
                 Kirim Rating
             </button>
+            <p v-else class="text-gray-500 mt-4">Rating telah dikirim sebelumnya</p>
         </div>
 
         <div class="summary-container">
@@ -55,17 +61,19 @@
             </div>
         </div>
     </div>
+
 </template>
 
 <script>
-import { new_rating } from '@/components/logic/API/rating/rating_service';
+import { get_rating_by_session_id, new_rating } from '@/components/logic/API/rating/rating_service';
 import { get_session_by_session_Id } from '@/components/logic/API/session/session_service';
 import Logo_aja from '@/components/logo/logo_aja.vue';
+import Spinner from '@/components/spinner/spinner.vue';
 
 export default {
     name: 'RatingKonsultasi',
     components: {
-        Logo_aja
+        Logo_aja, Spinner
     },
     
     data() {
@@ -87,16 +95,22 @@ export default {
                 userId: ''
             },
             session_id: this.$route.params.session_id,
-            notes: ''  // Add this line
+            notes: '',  // Add this line
+            canRate: true,
+            existingRating: null,
+            isLoading: true
         }
     },
 
     mounted() {
         this.get_trx_by_trx_id();
+        this.check_rating();
     },
     methods: {
         setRating(value) {
-            this.rating = value;
+            if (this.canRate) {
+                this.rating = value;
+            }
         },
         async get_trx_by_trx_id(){
             const hasil = await get_session_by_session_Id(this.session_id);
@@ -141,16 +155,39 @@ export default {
             return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
         },
 
+        async check_rating(){
+            this.isLoading = true;
+            try {
+                const hasil = await get_rating_by_session_id(this.session_id);
+                if (hasil.status === 1 && hasil.rating?.[0]) {
+                    this.canRate = false;
+                    this.existingRating = hasil.rating[0];
+                    this.rating = hasil.rating[0].ratingScore;
+                    this.notes = hasil.rating[0].ratingContent;
+                } else {
+                    this.canRate = true;
+                }
+            } catch (error) {
+                console.error('Error checking rating:', error);
+                this.canRate = true;
+            } finally {
+                this.isLoading = false;
+            }
+        },
+
         async submitRating() {
             try {
-                await new_rating(
-                    "0",
+                const hasil = await new_rating(
+                    this.meeting.userId,
                     this.meeting.expertId,
+                    this.meeting.sessionId,
                     this.rating,
                     this.notes
-                );
-                // Optional: Add success notification or redirect
-                alert('Rating berhasil dikirim!');
+                ); 
+
+                console.log(hasil);
+
+                // alert('Rating berhasil dikirim!');
                 // Redirect to another page or show success message
             } catch (error) {
                 console.error('Error submitting rating:', error);

@@ -16,7 +16,7 @@
                     <div class="p-4 bg-orange-50 rounded-lg">
                         <p class="text-sm font-semibold text-gray-700">Rating Anda</p>
                         <div class="flex items-center mt-2">
-                            <span class="text-2xl font-bold text-orange-500">{{ expertRating.toFixed(1) }}</span>
+                            <span class="text-2xl font-bold text-orange-500">{{ expertRating }}</span>
                             <ion-icon name="star" class="text-orange-500 ml-1 text-2xl"></ion-icon>
                         </div>
                     </div>
@@ -86,15 +86,15 @@ export default {
             await sessionStore.cleartelecos_session_details();
             window.location.reload();
         },
+
         async get_rating_by_expert_idnya() {
             if (!this.expert_id) return; 
             const rating = await get_rating_by_expert_id(this.expert_id);
-            console.log(rating);
-            // if (rating) {
-            //     this.expertRating = rating;
-            // } else {
-            //     this.expertRating = 0.0;
-            // }
+            if (rating.status == 1) {
+                this.expertRating = rating.rating[0].ratingScore || 0;
+            } else {
+                this.expertRating = 0;
+            }
         }
     },
 }
