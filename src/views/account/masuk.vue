@@ -121,7 +121,7 @@ export default {
   data() {
     return {
       akun_email: 'dion.hananto14@gmail.com',
-      akun_sandi: 'Solo2121!',
+      akun_sandi: 'Dion1234!',
       login_failed: false,
       login_success: false,
       redirection_page_name: "Home"
