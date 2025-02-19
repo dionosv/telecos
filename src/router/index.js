@@ -301,13 +301,7 @@ const router = createRouter({
               path:'',
               name:'view_payroll',
               component:()=>import('../views/expert/saldo_expert/payroll_expert.vue')
-            },
-
-            {
-              path:'tarik-saldo',
-              name:'tarik_saldo',
-              component:()=>import('../views/expert/saldo_expert/withdraw_saldo.vue')
-            },
+            }
           ]
         },
         

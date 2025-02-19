@@ -67,8 +67,7 @@ export default {
         Spinner_no_full_screen
     },
     mounted() {
-        this.try_get_session();
-        this.startTimer();
+        this.initializeSession();
     },
     data() {
         return {
@@ -95,7 +94,8 @@ export default {
             session_id: this.$route.params.session_id,
             seconds: 0,
             timerInterval: null,
-            cameraStream: null
+            cameraStream: null,
+            permissionGranted: false
         }
     },
     computed: {
@@ -137,7 +137,7 @@ export default {
                 this.permissionGranted = false;
                 console.error('Error accessing camera and microphone:', err);
                 alert('Mohon izinkan akses kamera dan mikrofon untuk menggunakan fitur ini');
-                // alert('Please allow camera and microphone access to use this feature');
+                this.$router.push({ name: 'akun' });
             }
         },
 
@@ -214,6 +214,13 @@ export default {
             this.timerInterval = setInterval(() => {
                 this.seconds++;
             }, 1000);
+        },
+        async initializeSession() {
+            await this.requestCameraPermission();
+            if (this.permissionGranted) {
+                this.try_get_session();
+                this.startTimer();
+            }
         }
     },
     beforeUnmount() {
