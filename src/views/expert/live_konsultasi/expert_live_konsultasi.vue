@@ -248,9 +248,9 @@ export default {
     /* background-color: #959595; */
     height: 75vh;
     width: 100%;
-    border-radius: 1.5rem;
+    /* border-radius: 1.5rem;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px); */
     display: flex;
     justify-content: center;
     align-items: center;
