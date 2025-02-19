@@ -99,7 +99,8 @@
 <script>
 import { usetelecos_session_detailsStore } from '@/components/logic/API/expert/expert_save_session_service';
 import { get_experts_byID } from '@/components/logic/API/experts_service'; 
-import { get_transaction_by_user_id } from '@/components/logic/API/transaction/transaction_service';
+import { get_transaction_by_user_id, new_transaction_expert_withdrawal } from '@/components/logic/API/transaction/transaction_service';
+import { kurangi_saldo_expert } from '@/components/logic/API/saldo/saldo_service';
 
 // import Riwayat_transaksi from '@/components/wallet/riwayat_transaksi.vue';
 import Riwayat_transaksi_expert from '@/components/wallet/riwayat_transaksi_expert.vue';
@@ -150,9 +151,51 @@ export default {
                 this.transactions = response.transaction;
             }
         },
-        submitWithdrawal() {
-            // Handle the withdrawal logic here
-            console.log(this.withdrawalData);
+        
+        async submitWithdrawal() {
+            try {
+                if (this.withdrawalData.amount <= 0) {
+                    alert('Jumlah penarikan harus lebih dari 0');
+                    return;
+                }
+
+                if (parseInt(this.withdrawalData.amount) > parseInt(this.saldo.replace(/\./g, ''))) {
+                    alert('Saldo tidak mencukupi');
+                    return;
+                }
+
+                // Create transaction record first
+                const transactionResponse = await new_transaction_expert_withdrawal(
+                    Date.now().toString(), // Using timestamp as session ID
+                    this.user_id,
+                    this.withdrawalData.amount
+                );
+
+                if (transactionResponse.status !== 1) {
+                    alert('Gagal membuat transaksi: ' + transactionResponse.message);
+                    return;
+                }
+
+                // If transaction is created successfully, proceed with reducing balance
+                const withdrawalResponse = await kurangi_saldo_expert(this.user_id, this.withdrawalData.amount);
+                
+                if (withdrawalResponse.status === 1) {
+                    alert('Penarikan berhasil');
+                    await this.get_user_details();
+                    await this.get_data();
+                    this.withdrawalData = {
+                        bank: '',
+                        accountNumber: '',
+                        accountName: '',
+                        amount: ''
+                    };
+                } else {
+                    alert('Penarikan gagal: ' + withdrawalResponse.message);
+                }
+            } catch (error) {
+                console.error('Error during withdrawal:', error);
+                alert('Terjadi kesalahan saat melakukan penarikan');
+            }
         }
          
     }
