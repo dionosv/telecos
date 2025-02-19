@@ -71,6 +71,7 @@ export default {
     mounted() {
         always_scroll_on_top();
         this.try_get_session();
+        this.requestMediaPermissions(); // Add this line
     },
     components: {
         Spinner
@@ -99,6 +100,19 @@ export default {
         }
     },
     methods: {
+        // Add this new method
+        async requestMediaPermissions() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: true,
+                    audio: true
+                });
+                // Stop the stream immediately since we just want the permissions
+                stream.getTracks().forEach(track => track.stop());
+            } catch (error) {
+                console.error('Error requesting media permissions:', error);
+            }
+        },
 
         async try_get_session() {
             try {
