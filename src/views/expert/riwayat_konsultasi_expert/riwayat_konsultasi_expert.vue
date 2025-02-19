@@ -92,7 +92,7 @@ export default {
                 const sessionDetails = await sessionStore.loadtelecos_session_details();
 
                 if (sessionDetails === false) {
-                    this.$router.push({ name: 'akun' });
+                    this.$router.push({ name: 'akun_expert' });
                 } else {
                     if (sessionDetails.phase == 1) {
                         this.userId = sessionDetails.userid;
