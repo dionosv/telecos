@@ -85,7 +85,7 @@
             </div>
 
             <div class="content" id="kanan">
-                <Riwayat_transaksi></Riwayat_transaksi>
+                <Riwayat_transaksi :user_id="user_id"></Riwayat_transaksi>
             </div>
         </div>
 

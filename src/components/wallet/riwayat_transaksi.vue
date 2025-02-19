@@ -13,7 +13,8 @@
             <div class="flex min-w-0 flex-1 justify-between space-x-4 pt-1.5">
               <div>
                 <p class="text-sm text-gray-500">
-                  {{ event.content }} <a :href="event.href" class="font-medium text-gray-900">{{ event.target }}</a>
+                  {{ event.content }} <span class="font-medium text-gray-900">{{ event.target }}</span>
+                  <span class="ml-2">Rp {{ event.amount }}</span>
                 </p>
               </div>
               <div class="whitespace-nowrap text-right text-sm text-gray-500">
@@ -28,155 +29,60 @@
 </template>
 
 <script>
-import { defineComponent } from 'vue' 
+import { get_transaction_by_user_id } from '../logic/API/transaction/transaction_service';
 
-export default defineComponent({
+export default {
   name: 'RiwayatTransaksi',
+  props: {
+    user_id: {
+      type: String,
+      required: true
+    }
+  },
   data() {
     return {
-      timeline: [
-        {
-          id: 1,
-          content: 'Top Up via',
-          target: 'Virtual Account BCA',
-          href: '#',
-          date: 'Dec 15',
-          datetime: '2023-12-15',
-          icon: 'arrow-down-circle',
-          iconBackground: 'bg-green-500',
-        },
-        {
-          id: 2,
-          content: 'Konsultasi dengan',
-          target: 'Dr. Sarah Wijaya, Sp.KK',
-          href: '#',
-          date: 'Dec 13',
-          datetime: '2023-12-13',
-          icon: 'arrow-up-circle',
-          iconBackground: 'bg-red-500',
-        },
-        {
-          id: 3,
-          content: 'Top Up via',
-          target: 'Virtual Account Mandiri',
-          href: '#',
-          date: 'Dec 10',
-          datetime: '2023-12-10',
-          icon: 'arrow-down-circle',
-          iconBackground: 'bg-green-500',
-        },
-        {
-          id: 4,
-          content: 'Konsultasi dengan',
-          target: 'Dr. Jessica Lee, Sp.KK',
-          href: '#',
-          date: 'Dec 8',
-          datetime: '2023-12-08',
-          icon: 'arrow-up-circle',
-          iconBackground: 'bg-red-500',
-        },
-        {
-          id: 5,
-          content: 'Top Up via',
-          target: 'Virtual Account BCA',
-          href: '#',
-          date: 'Dec 5',
-          datetime: '2023-12-05',
-          icon: 'arrow-down-circle',
-          iconBackground: 'bg-green-500',
-        },
-        {
-          id: 6,
-          content: 'Konsultasi dengan',
-          target: 'Dr. Michael Tanner, Sp.KK',
-          href: '#',
-          date: 'Dec 3',
-          datetime: '2023-12-03',
-          icon: 'arrow-up-circle',
-          iconBackground: 'bg-red-500',
-        },
-        {
-          id: 7,
-          content: 'Top Up via',
-          target: 'Virtual Account Mandiri',
-          href: '#',
-          date: 'Nov 30',
-          datetime: '2023-11-30',
-          icon: 'arrow-down-circle',
-          iconBackground: 'bg-green-500',
-        },
-        {
-          id: 8,
-          content: 'Konsultasi dengan',
-          target: 'Dr. Amanda Putri, Sp.KK',
-          href: '#',
-          date: 'Nov 28',
-          datetime: '2023-11-28',
-          icon: 'arrow-up-circle',
-          iconBackground: 'bg-red-500',
-        },
-        {
-          id: 9,
-          content: 'Top Up via',
-          target: 'Virtual Account BCA',
-          href: '#',
-          date: 'Nov 25',
-          datetime: '2023-11-25',
-          icon: 'arrow-down-circle',
-          iconBackground: 'bg-green-500',
-        },
-        {
-          id: 10,
-          content: 'Konsultasi dengan',
-          target: 'Dr. Kevin Susanto, Sp.KK',
-          href: '#',
-          date: 'Nov 23',
-          datetime: '2023-11-23',
-          icon: 'arrow-up-circle',
-          iconBackground: 'bg-red-500',
-        },
-        {
-          id: 11,
-          content: 'Top Up via',
-          target: 'Virtual Account Mandiri',
-          href: '#',
-          date: 'Nov 20',
-          datetime: '2023-11-20',
-          icon: 'arrow-down-circle',
-          iconBackground: 'bg-green-500',
-        },
-        {
-          id: 12,
-          content: 'Konsultasi dengan',
-          target: 'Dr. Linda Wijaya, Sp.KK',
-          href: '#',
-          date: 'Nov 18',
-          datetime: '2023-11-18',
-          icon: 'arrow-up-circle',
-          iconBackground: 'bg-red-500',
-        },
-        {
-          id: 13,
-          content: 'Top Up via',
-          target: 'Virtual Account BCA',
-          href: '#',
-          date: 'Nov 15',
-          datetime: '2023-11-15',
-          icon: 'arrow-down-circle',
-          iconBackground: 'bg-green-500',
-        },
-        {
-          id: 14,
-          content: 'Konsultasi dengan',
-          target: 'Dr. David Chen, Sp.KK',
-          href: '#',
-          date: 'Nov 13',
-          datetime: '2023-11-13',
-          icon: 'arrow-up-circle',
-          iconBackground: 'bg-red-500',
+      timeline: []
+    }
+  },
+  watch: {
+    user_id: {
+      immediate: true,
+      handler(newVal) {
+        if (newVal) {
+          this.get_data_transaksi();
         }
-      ]
+      }
+    }
+  },
+  methods: {
+    async get_data_transaksi(){
+      try {
+        console.log("Fetching transactions for user:", this.user_id);
+        const hasil = await get_transaction_by_user_id("user", this.user_id);
+        console.log("API Response:", hasil);
+        
+        if (hasil.status === 1 && hasil.transaction) {
+          this.timeline = hasil.transaction.map((trans, index) => {
+            const date = new Date(trans.timestamp);
+            const formattedDate = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            
+            return {
+              id: index + 1,
+              content: trans.transactionType === 'Konsultasi Ahli' ? 'Konsultasi dengan' : 'Top Up via',
+              target: trans.transactionType === 'Konsultasi Ahli' ? 'Dokter' : trans.receiverId,
+              date: formattedDate,
+              datetime: trans.timestamp,
+              amount: trans.amount.toLocaleString('id-ID'),
+              icon: trans.transactionType === 'Konsultasi Ahli' ? 'arrow-up-circle' : 'arrow-down-circle',
+              iconBackground: trans.transactionType === 'Konsultasi Ahli' ? 'bg-red-500' : 'bg-green-500',
+            };
+          });
+          console.log("Processed timeline:", this.timeline);
+        }
+      } catch (error) {
+        console.error('Error fetching transaction data:', error);
+      }
     }
   }
-})
+}
 </script>
