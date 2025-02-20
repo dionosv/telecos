@@ -62,21 +62,23 @@ export default {
         console.log("API Response:", hasil);
         
         if (hasil.status === 1 && hasil.transaction) {
-          this.timeline = hasil.transaction.map((trans, index) => {
-            const date = new Date(trans.timestamp);
-            const formattedDate = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-            
-            return {
-              id: index + 1,
-              content: trans.transactionType === 'Konsultasi Ahli' ? 'Konsultasi dengan' : 'Top Up via',
-              target: trans.transactionType === 'Konsultasi Ahli' ? 'Dokter' : trans.receiverId,
-              date: formattedDate,
-              datetime: trans.timestamp,
-              amount: trans.amount.toLocaleString('id-ID'),
-              icon: trans.transactionType === 'Konsultasi Ahli' ? 'arrow-up-circle' : 'arrow-down-circle',
-              iconBackground: trans.transactionType === 'Konsultasi Ahli' ? 'bg-red-500' : 'bg-green-500',
-            };
-          });
+          this.timeline = hasil.transaction
+            .map((trans, index) => {
+              const date = new Date(trans.timestamp);
+              const formattedDate = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+              
+              return {
+                id: index + 1,
+                content: trans.transactionType === 'Konsultasi Ahli' ? 'Konsultasi dengan' : 'Top Up',
+                target: trans.transactionType === 'Konsultasi Ahli' ? 'Dokter' : 'Telecos',
+                date: formattedDate,
+                datetime: trans.timestamp,
+                amount: trans.amount.toLocaleString('id-ID'),
+                icon: trans.transactionType === 'Konsultasi Ahli' ? 'arrow-up-circle' : 'arrow-down-circle',
+                iconBackground: trans.transactionType === 'Konsultasi Ahli' ? 'bg-red-500' : 'bg-green-500',
+              };
+            })
+            .sort((a, b) => new Date(b.datetime) - new Date(a.datetime)); // Sort by date, newest first
           console.log("Processed timeline:", this.timeline);
         }
       } catch (error) {

@@ -49,7 +49,7 @@ async function new_transaction_top_up(
     return await create_new_transaction(sessionId,
         receiverType,
         receiverId,
-        "Top Up",
+        "Telecos",
         senderId,
         "Top Up",
         amount,

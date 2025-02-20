@@ -1,6 +1,15 @@
 <template>
     <div>
-        <h2>Transaksi</h2>
+        <div class="split_bagi">
+            <h2>Transaksi</h2>
+            <button @click="showTopup" class="rounded-md bg-blue-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">Top Up</button>
+        </div>
+
+        <PopUpTopup 
+            v-if="isTopupOpen" 
+            @close="closeTopup"
+        />
+
         <Spinner v-if="loading"></Spinner>
         <div v-if="!loading && transaksi.length">
             <div v-for="(trans, index) in sortedTransactions" :key="index" class="transaction">
@@ -23,20 +32,21 @@ import { get_experts_byID } from '@/components/logic/API/experts_service';
 import { get_all_transaction } from '@/components/logic/API/transaction/transaction_service';
 import { get_user_data } from '@/components/logic/API/user_service';
 import Spinner from '@/components/spinner/spinner.vue';
+import PopUpTopup from './pop_up_topup.vue'
 
 export default {
-
+    components: {
+        Spinner,
+        PopUpTopup
+    },
     data(){
         return {
+            isTopupOpen: false,
             transaksi: [],
             loading: false,
             userNames: new Map(),
             expertNames: new Map()
         }
-    },
-
-    components: {
-        Spinner
     },
     mounted(){
         this.getTransaksi()
@@ -49,22 +59,26 @@ export default {
         }
     },
     methods: {
+        showTopup() {
+            this.isTopupOpen = true
+        },
+        closeTopup() {
+            this.isTopupOpen = false
+        },
         async getTransaksi(){
             this.loading = true;
             try {
                 const response = await get_all_transaction();
                 if (response.status === 1) {
                     this.transaksi = response.transaction;
-                    
-                    // Process each transaction to get names
+                     
                     for (const trans of this.transaksi) {
                         if (trans.senderType === 'User') {
                             await this.fetchUserName(trans.senderId);
                         } else if (trans.senderType === 'Ahli') {
                             await this.fetchExpertName(trans.senderId);
                         }
-                        
-                        // Do the same for receiver if needed
+                         
                         if (trans.receiverType === 'User') {
                             await this.fetchUserName(trans.receiverId);
                         } else if (trans.receiverType === 'Ahli') {
@@ -97,7 +111,7 @@ export default {
                 try {
                     const response = await get_experts_byID(expertId);
                     if (response.status === 1) {
-                        this.expertNames.set(expertId, response.user.name); // Changed from response.expert.name to response.user.name
+                        this.expertNames.set(expertId, response.user.name);
                     }
                 } catch (error) {
                     console.error('Error fetching expert data:', error);
@@ -174,8 +188,13 @@ export default {
 
 h2 {
     color: #2c3e50;
-    font-size: 24px;
-    margin-bottom: 25px;
+    font-size: 24px; 
     font-weight: 600;
+} 
+.split_bagi {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
 }
 </style>
