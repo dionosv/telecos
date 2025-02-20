@@ -121,8 +121,7 @@ export default {
             }
             else{
                 this.user_id = sessionDetails.userid;
-                const data_user = await get_user_data(this.user_id);
-                console.log(data_user)
+                const data_user = await get_user_data(this.user_id); 
                 this.user_name = data_user.user.name;
                 this.saldo = data_user.user.wallet.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
             }
